@@ -1,0 +1,45 @@
+{
+  "name": "kfin-insurance",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "node --experimental-strip-types --test \"**/*.test.mjs\"",
+    "test:coverage": "node --experimental-strip-types --experimental-test-coverage --test \"**/*.test.mjs\"",
+    "typecheck": "tsc --noEmit",
+    "env:setup": "node scripts/setup-local-env.mjs",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "node scripts/migrate.mjs"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "1.1.15",
+    "@vercel/analytics": "1.6.1",
+    "@vercel/functions": "^3.7.5",
+    "clsx": "^2.1.1",
+    "drizzle-orm": "^0.45.2",
+    "lucide-react": "^0.564.0",
+    "next": "16.2.4",
+    "node-rsa": "^1.1.1",
+    "pg": "^8.22.0",
+    "react": "^19",
+    "react-dom": "^19",
+    "recharts": "2.15.0",
+    "tailwind-merge": "^3.3.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.0",
+    "@types/node": "^22",
+    "@types/node-rsa": "^1.1.4",
+    "@types/pg": "^8.20.0",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.10",
+    "postcss": "^8.5",
+    "tailwindcss": "^4.2.0",
+    "tw-animate-css": "1.3.3",
+    "typescript": "5.7.3"
+  }
+}
