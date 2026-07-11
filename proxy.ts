@@ -17,6 +17,21 @@ function applySecurityHeaders(response: NextResponse): NextResponse {
 }
 
 export function proxy(request: NextRequest): NextResponse {
+  const isDemoOnly =
+    process.env.INSURANCE_DEMO_ONLY === "true" ||
+    !process.env.CODEF_CLIENT_ID ||
+    !process.env.CODEF_CLIENT_SECRET ||
+    !process.env.CODEF_PUBLIC_KEY
+
+  if (isDemoOnly) {
+    return applySecurityHeaders(
+      NextResponse.json(
+        { error: "실데이터 조회는 현재 비활성화되어 있습니다. 데모 모드를 이용해 주세요." },
+        { status: 503 },
+      ),
+    )
+  }
+
   const decision = evaluatePreviewAuth(request.headers.get("authorization"), {
     isDeployed: Boolean(process.env.VERCEL),
     expectedUser: process.env.INSURANCE_PREVIEW_USER,
@@ -24,17 +39,15 @@ export function proxy(request: NextRequest): NextResponse {
   })
 
   if (!decision.allowed) {
-    const isChallenge = decision.status === 401
-    const response = new NextResponse(
-      isChallenge ? "Authentication required" : "Preview access is not configured",
+    const response = NextResponse.json(
+      {
+        error:
+          decision.status === 401
+            ? "Live API authorization is required"
+            : "Live API authorization is not configured",
+      },
       { status: decision.status },
     )
-    if (isChallenge) {
-      response.headers.set(
-        "WWW-Authenticate",
-        'Basic realm="KFin Insurance Preview", charset="UTF-8"',
-      )
-    }
     return applySecurityHeaders(response)
   }
 
@@ -45,5 +58,5 @@ export function proxy(request: NextRequest): NextResponse {
 }
 
 export const config = {
-  matcher: ["/insurance/:path*", "/api/insurance/:path*"],
+  matcher: ["/api/insurance/:path*"],
 }
