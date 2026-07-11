@@ -5,6 +5,7 @@ import { NextRequest } from "next/server.js"
 import { config, proxy } from "./proxy.ts"
 
 const original = {
+  NODE_ENV: process.env.NODE_ENV,
   VERCEL: process.env.VERCEL,
   user: process.env.INSURANCE_PREVIEW_USER,
   password: process.env.INSURANCE_PREVIEW_PASSWORD,
@@ -16,6 +17,7 @@ const original = {
 
 afterEach(() => {
   for (const [key, value] of [
+    ["NODE_ENV", original.NODE_ENV],
     ["VERCEL", original.VERCEL],
     ["INSURANCE_PREVIEW_USER", original.user],
     ["INSURANCE_PREVIEW_PASSWORD", original.password],
@@ -34,6 +36,10 @@ function request(authorization) {
   return new NextRequest("https://insurance.example/api/insurance/history", { headers })
 }
 
+function uiRequest() {
+  return new NextRequest("https://insurance.example/insurance")
+}
+
 function configurePreview() {
   process.env.VERCEL = "1"
   process.env.INSURANCE_PREVIEW_USER = "reviewer"
@@ -44,8 +50,20 @@ function configurePreview() {
   delete process.env.INSURANCE_DEMO_ONLY
 }
 
-test("keeps the insurance UI public and gates only its live API", () => {
-  assert.deepEqual(config.matcher, ["/api/insurance/:path*"])
+test("applies the proxy security boundary to both the public UI and live API", () => {
+  assert.deepEqual(config.matcher, ["/insurance/:path*", "/api/insurance/:path*"])
+})
+
+test("passes the public insurance UI without auth while preserving security headers", () => {
+  process.env.INSURANCE_DEMO_ONLY = "true"
+
+  const response = proxy(uiRequest())
+
+  assert.equal(response.status, 200)
+  assert.equal(response.headers.get("x-middleware-next"), "1")
+  assert.equal(response.headers.get("www-authenticate"), null)
+  assert.equal(response.headers.get("cache-control"), "private, no-store")
+  assert.equal(response.headers.get("x-frame-options"), "DENY")
 })
 
 test("returns JSON without a browser login challenge before an insurance handler runs", async () => {
@@ -97,4 +115,20 @@ test("returns 503 when deployed without configured preview credentials", () => {
 
   assert.equal(response.status, 503)
   assert.equal(response.headers.get("cache-control"), "private, no-store")
+})
+
+test("fails closed outside Vercel when a production live API lacks access credentials", () => {
+  process.env.NODE_ENV = "production"
+  delete process.env.VERCEL
+  process.env.CODEF_CLIENT_ID = "sandbox-client"
+  process.env.CODEF_CLIENT_SECRET = "sandbox-secret"
+  process.env.CODEF_PUBLIC_KEY = "sandbox-public-key"
+  delete process.env.INSURANCE_PREVIEW_USER
+  delete process.env.INSURANCE_PREVIEW_PASSWORD
+  delete process.env.INSURANCE_DEMO_ONLY
+
+  const response = proxy(request())
+
+  assert.equal(response.status, 503)
+  assert.equal(response.headers.get("www-authenticate"), null)
 })
