@@ -8,6 +8,10 @@ const original = {
   VERCEL: process.env.VERCEL,
   user: process.env.INSURANCE_PREVIEW_USER,
   password: process.env.INSURANCE_PREVIEW_PASSWORD,
+  demoOnly: process.env.INSURANCE_DEMO_ONLY,
+  codefClientId: process.env.CODEF_CLIENT_ID,
+  codefClientSecret: process.env.CODEF_CLIENT_SECRET,
+  codefPublicKey: process.env.CODEF_PUBLIC_KEY,
 }
 
 afterEach(() => {
@@ -15,6 +19,10 @@ afterEach(() => {
     ["VERCEL", original.VERCEL],
     ["INSURANCE_PREVIEW_USER", original.user],
     ["INSURANCE_PREVIEW_PASSWORD", original.password],
+    ["INSURANCE_DEMO_ONLY", original.demoOnly],
+    ["CODEF_CLIENT_ID", original.codefClientId],
+    ["CODEF_CLIENT_SECRET", original.codefClientSecret],
+    ["CODEF_PUBLIC_KEY", original.codefPublicKey],
   ]) {
     if (value === undefined) delete process.env[key]
     else process.env[key] = value
@@ -30,20 +38,40 @@ function configurePreview() {
   process.env.VERCEL = "1"
   process.env.INSURANCE_PREVIEW_USER = "reviewer"
   process.env.INSURANCE_PREVIEW_PASSWORD = "a-long-preview-password"
+  process.env.CODEF_CLIENT_ID = "sandbox-client"
+  process.env.CODEF_CLIENT_SECRET = "sandbox-secret"
+  process.env.CODEF_PUBLIC_KEY = "sandbox-public-key"
+  delete process.env.INSURANCE_DEMO_ONLY
 }
 
-test("protects both the insurance UI and API", () => {
-  assert.deepEqual(config.matcher, ["/insurance/:path*", "/api/insurance/:path*"])
+test("keeps the insurance UI public and gates only its live API", () => {
+  assert.deepEqual(config.matcher, ["/api/insurance/:path*"])
 })
 
-test("returns a private Basic challenge before an insurance handler runs", () => {
+test("returns JSON without a browser login challenge before an insurance handler runs", async () => {
   configurePreview()
   const response = proxy(request())
 
   assert.equal(response.status, 401)
-  assert.equal(response.headers.get("www-authenticate"), 'Basic realm="KFin Insurance Preview", charset="UTF-8"')
+  assert.equal(response.headers.get("www-authenticate"), null)
+  assert.match((await response.json()).error, /authorization/i)
   assert.equal(response.headers.get("cache-control"), "private, no-store")
   assert.equal(response.headers.get("x-frame-options"), "DENY")
+})
+
+test("fails closed in public demo mode without opening a browser login prompt", async () => {
+  process.env.VERCEL = "1"
+  process.env.INSURANCE_DEMO_ONLY = "true"
+  delete process.env.CODEF_CLIENT_ID
+  delete process.env.CODEF_CLIENT_SECRET
+  delete process.env.CODEF_PUBLIC_KEY
+
+  const response = proxy(request())
+
+  assert.equal(response.status, 503)
+  assert.equal(response.headers.get("www-authenticate"), null)
+  assert.match((await response.json()).error, /데모 모드/)
+  assert.equal(response.headers.get("cache-control"), "private, no-store")
 })
 
 test("passes exact credentials without forwarding the Authorization header", () => {
@@ -59,6 +87,9 @@ test("passes exact credentials without forwarding the Authorization header", () 
 
 test("returns 503 when deployed without configured preview credentials", () => {
   process.env.VERCEL = "1"
+  process.env.CODEF_CLIENT_ID = "sandbox-client"
+  process.env.CODEF_CLIENT_SECRET = "sandbox-secret"
+  process.env.CODEF_PUBLIC_KEY = "sandbox-public-key"
   delete process.env.INSURANCE_PREVIEW_USER
   delete process.env.INSURANCE_PREVIEW_PASSWORD
 
