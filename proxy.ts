@@ -17,6 +17,13 @@ function applySecurityHeaders(response: NextResponse): NextResponse {
 }
 
 export function proxy(request: NextRequest): NextResponse {
+  if (
+    request.nextUrl.pathname === "/insurance" ||
+    request.nextUrl.pathname.startsWith("/insurance/")
+  ) {
+    return applySecurityHeaders(NextResponse.next())
+  }
+
   const isDemoOnly =
     process.env.INSURANCE_DEMO_ONLY === "true" ||
     !process.env.CODEF_CLIENT_ID ||
@@ -33,7 +40,7 @@ export function proxy(request: NextRequest): NextResponse {
   }
 
   const decision = evaluatePreviewAuth(request.headers.get("authorization"), {
-    isDeployed: Boolean(process.env.VERCEL),
+    isDeployed: process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL),
     expectedUser: process.env.INSURANCE_PREVIEW_USER,
     expectedPassword: process.env.INSURANCE_PREVIEW_PASSWORD,
   })
@@ -58,5 +65,5 @@ export function proxy(request: NextRequest): NextResponse {
 }
 
 export const config = {
-  matcher: ["/api/insurance/:path*"],
+  matcher: ["/insurance/:path*", "/api/insurance/:path*"],
 }
