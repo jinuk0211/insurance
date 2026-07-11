@@ -2,6 +2,12 @@
 
 CODEF 보험계약 조회 결과를 읽기 쉬운 대시보드로 정리하는 Next.js 애플리케이션입니다.
 
+## 배포본
+
+- Production: <https://insurance-eta-gray.vercel.app>
+- 접근 잠금이 적용되어 있으며 저장소 소유자가 별도로 자격증명을 관리합니다.
+- Railway PostgreSQL 스키마는 배포되어 있지만, 유출된 CODEF 자격증명은 운영 환경에 등록하지 않았습니다.
+
 ## 로컬 실행
 
 ```bash
