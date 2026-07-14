@@ -9,6 +9,7 @@ import {
   ChevronRight,
   CircleHelp,
   ClipboardCheck,
+  Database,
   FilePlus2,
   FileSearch,
   FileText,
@@ -22,6 +23,7 @@ import {
   Settings2,
   ShieldCheck,
   SlidersHorizontal,
+  Stethoscope,
   type LucideIcon,
 } from "lucide-react"
 import {
@@ -52,9 +54,16 @@ import {
   type InsuranceDashboardContract,
   type InsuranceDashboardModel,
   type InsurancePolicyFinding,
+  type InsuranceProposal,
 } from "@/lib/insurance-dashboard"
+import {
+  DataQualityPanel,
+  DecisionPanel,
+  ProposalInputDialog,
+  ReportApproval,
+} from "@/components/insurance/advisor-panels"
 
-type DashboardTab = "overview" | "contracts" | "diagnosis" | "charts" | "consulting" | "terms"
+type DashboardTab = "overview" | "contracts" | "quality" | "diagnosis" | "decision" | "charts" | "consulting" | "terms"
 type ContractFilter = "all" | "active" | "inactive" | "unknown"
 
 interface Props {
@@ -77,7 +86,9 @@ interface TabDefinition {
 const TABS: readonly TabDefinition[] = [
   { id: "overview", label: "보장현황", shortLabel: "현황", description: "고객 보험 요약", icon: LayoutDashboard },
   { id: "contracts", label: "가입현황", shortLabel: "계약", description: "보험 계약 목록", icon: FileText },
+  { id: "quality", label: "수집·검증", shortLabel: "검증", description: "데이터 품질과 담보 검토", icon: Database },
   { id: "diagnosis", label: "진단·상세", shortLabel: "진단", description: "상품명 연관 신호", icon: FileSearch },
+  { id: "decision", label: "질병·치료", shortLabel: "판정", description: "약관 기준 질문 검토", icon: Stethoscope },
   { id: "charts", label: "그래프·니즈", shortLabel: "그래프", description: "검토 우선순위", icon: BarChart3 },
   { id: "consulting", label: "컨설팅", shortLabel: "비교", description: "계약 비교 워크시트", icon: ClipboardCheck },
   { id: "terms", label: "약관·위험", shortLabel: "약관", description: "지급조건·변경 위험", icon: ShieldCheck },
@@ -327,8 +338,12 @@ function SignalCard({ category, model }: { category: InsuranceDashboardCategory;
         <div><h3 className="font-black text-neutral-950">{category.label}</h3><p className={`mt-1 text-sm font-bold ${isRelated ? "text-blue-700" : "text-neutral-600"}`}>{isRelated ? `관련 계약 ${category.relatedCount}건` : "계약명에서 미확인"}</p></div>
         {isRelated ? <CheckCircle2 className="h-5 w-5 text-blue-600" aria-hidden="true" /> : <CircleHelp className="h-5 w-5 text-neutral-500" aria-hidden="true" />}
       </div>
-      <p className="mt-3 line-clamp-2 text-[10px] leading-4 text-neutral-500">{related.length ? related.map((contract) => contract.name).join(" · ") : "상품명만으로 관련성을 찾지 못했습니다."}</p>
-      <p className="mt-2 inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-bold text-amber-900">상세 확인 필요</p>
+      <p className="mt-3 line-clamp-2 text-[10px] leading-4 text-neutral-500">{related.length ? related.map((contract) => contract.name).join(" · ") : "상품명과 수집 담보에서 관련성을 찾지 못했습니다."}</p>
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        {category.knownAmountCount > 0 && <span className="inline-flex rounded-full bg-white px-2.5 py-1 text-[10px] font-black text-blue-900 ring-1 ring-blue-200">확인 금액 {formatWon(category.knownAmount)}</span>}
+        {category.unknownAmountCount > 0 && <span className="inline-flex rounded-full bg-rose-100 px-2.5 py-1 text-[10px] font-bold text-rose-900">금액 미수집 {category.unknownAmountCount}건</span>}
+        <span className="inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-bold text-amber-900">{category.evidenceKind === "coverage" ? "담보 확인 · 조건 검토" : "상세 확인 필요"}</span>
+      </div>
     </article>
   )
 }
@@ -348,8 +363,11 @@ function DiagnosisPanel({ model, onOpenTargets }: { model: InsuranceDashboardMod
 }
 
 function ChartsNeedsPanel({ model, configuredTargets, onOpenTargets }: { model: InsuranceDashboardModel; configuredTargets: number; onOpenTargets: () => void }) {
-  const radarData = model.groups.map((group) => ({ group: group.label, contracts: group.relatedCount }))
-  const barData = model.categories.map((category) => ({ category: category.label, contracts: category.relatedCount }))
+  const radarData = model.groups.map((group) => ({
+    group: group.label,
+    amount: Math.round(model.categories.filter((category) => category.groupId === group.id).reduce((sum, category) => sum + category.knownAmount, 0) / 10000),
+  }))
+  const barData = model.categories.map((category) => ({ category: category.label, amount: Math.round(category.knownAmount / 10000), unknown: category.unknownAmountCount }))
   const reviewQueue = model.categories.filter((category) => category.signal === "not_found")
 
   return (
@@ -357,14 +375,14 @@ function ChartsNeedsPanel({ model, configuredTargets, onOpenTargets }: { model: 
       <PreliminaryNotice />
       <div className="grid gap-5 xl:grid-cols-2">
         <section className="result-surface p-5" aria-labelledby="radar-title">
-          <h2 id="radar-title" className="text-lg font-black">보장군별 관련 계약 수</h2><p className="mt-1 text-xs text-neutral-500">보장금액이나 적정성을 나타내는 차트가 아닙니다.</p>
-          <div className="mt-4 h-[260px] sm:h-[300px]" role="img" aria-label="보장군별 관련 계약 수 레이더 차트"><ResponsiveContainer width="100%" height="100%"><RadarChart data={radarData}><PolarGrid stroke="#d5d0c6" /><PolarAngleAxis dataKey="group" tick={{ fontSize: 11, fill: "#525252" }} /><Radar dataKey="contracts" stroke="#df2444" fill="#df2444" fillOpacity={0.2} strokeWidth={2} /><Tooltip /></RadarChart></ResponsiveContainer></div>
-          <table className="sr-only"><caption>보장군별 관련 계약 수</caption><tbody>{radarData.map((item) => <tr key={item.group}><th>{item.group}</th><td>{item.contracts}</td></tr>)}</tbody></table>
+          <h2 id="radar-title" className="text-lg font-black">보장군별 확인 금액</h2><p className="mt-1 text-xs text-neutral-500">가입금액이 수집된 담보만 합산하며 미수집 금액은 0원으로 포함하지 않습니다.</p>
+          <div className="mt-4 h-[260px] sm:h-[300px]" role="img" aria-label="보장군별 확인 가입금액 레이더 차트"><ResponsiveContainer width="100%" height="100%"><RadarChart data={radarData}><PolarGrid stroke="#d5d0c6" /><PolarAngleAxis dataKey="group" tick={{ fontSize: 11, fill: "#525252" }} /><Radar dataKey="amount" name="확인 금액(만원)" stroke="#df2444" fill="#df2444" fillOpacity={0.2} strokeWidth={2} /><Tooltip formatter={(value) => `${Number(value).toLocaleString("ko-KR")}만원`} /></RadarChart></ResponsiveContainer></div>
+          <table className="sr-only"><caption>보장군별 확인 가입금액</caption><tbody>{radarData.map((item) => <tr key={item.group}><th>{item.group}</th><td>{item.amount}만원</td></tr>)}</tbody></table>
         </section>
         <section className="result-surface overflow-x-auto p-5" aria-labelledby="bar-title">
-          <h2 id="bar-title" className="text-lg font-black">항목별 상품명 연관 신호</h2><p className="mt-1 text-xs text-neutral-500">관련 상품명이 몇 건 확인됐는지 비교합니다.</p>
-          <div className="mt-4 h-[300px] min-w-[520px]" role="img" aria-label="항목별 상품명 연관 계약 수 막대 차트"><ResponsiveContainer width="100%" height="100%"><BarChart data={barData} margin={{ left: 0, right: 8, top: 8, bottom: 55 }}><CartesianGrid vertical={false} stroke="#e5e1d8" /><XAxis dataKey="category" angle={-35} textAnchor="end" interval={0} tick={{ fontSize: 9, fill: "#525252" }} /><YAxis allowDecimals={false} width={24} tick={{ fontSize: 10 }} /><Tooltip /><Bar dataKey="contracts" fill="#3155d9" radius={[8, 8, 0, 0]} /></BarChart></ResponsiveContainer></div>
-          <table className="sr-only"><caption>항목별 관련 계약 수</caption><tbody>{barData.map((item) => <tr key={item.category}><th>{item.category}</th><td>{item.contracts}</td></tr>)}</tbody></table>
+          <h2 id="bar-title" className="text-lg font-black">항목별 확인 가입금액</h2><p className="mt-1 text-xs text-neutral-500">담보 원본 금액을 표준 항목별로 합산합니다.</p>
+          <div className="mt-4 h-[300px] min-w-[520px]" role="img" aria-label="항목별 확인 가입금액 막대 차트"><ResponsiveContainer width="100%" height="100%"><BarChart data={barData} margin={{ left: 0, right: 8, top: 8, bottom: 55 }}><CartesianGrid vertical={false} stroke="#e5e1d8" /><XAxis dataKey="category" angle={-35} textAnchor="end" interval={0} tick={{ fontSize: 9, fill: "#525252" }} /><YAxis allowDecimals={false} width={44} tick={{ fontSize: 10 }} /><Tooltip formatter={(value) => `${Number(value).toLocaleString("ko-KR")}만원`} /><Bar dataKey="amount" name="확인 금액" fill="#3155d9" radius={[8, 8, 0, 0]} /></BarChart></ResponsiveContainer></div>
+          <table className="sr-only"><caption>항목별 확인 가입금액</caption><tbody>{barData.map((item) => <tr key={item.category}><th>{item.category}</th><td>{item.amount}만원</td></tr>)}</tbody></table>
         </section>
       </div>
       <section className="result-open-section" aria-labelledby="needs-title">
@@ -375,23 +393,42 @@ function ChartsNeedsPanel({ model, configuredTargets, onOpenTargets }: { model: 
   )
 }
 
-function ConsultingPanel({ model, selectedIds, onToggle, onOpenAdditional }: { model: InsuranceDashboardModel; selectedIds: string[]; onToggle: (id: string) => void; onOpenAdditional: () => void }) {
+function ConsultingPanel({ model, selectedIds, onToggle, onOpenAdditional, proposals, onOpenProposal, reportStatus, onReportStatusChange }: {
+  model: InsuranceDashboardModel
+  selectedIds: string[]
+  onToggle: (id: string) => void
+  onOpenAdditional: () => void
+  proposals: InsuranceProposal[]
+  onOpenProposal: () => void
+  reportStatus: "draft" | "reviewed" | "approved"
+  onReportStatusChange: (status: "draft" | "reviewed" | "approved") => void
+}) {
   const selected = model.contracts.filter((contract) => selectedIds.includes(contract.id))
   const selectedPremiums = selected.filter((contract) => contract.premium !== null)
   const premiumTotal = selectedPremiums.reduce((sum, contract) => sum + (contract.premium ?? 0), 0)
   const relatedSignals = new Set(selected.flatMap((contract) => contract.categoryIds)).size
+  const primaryProposal = proposals[0]
+  const proposalAmount = primaryProposal?.coverages.reduce((sum, coverage) => sum + (coverage.amount ?? 0), 0) ?? null
 
   return (
     <div className="space-y-6">
       <PreliminaryNotice />
       <section className="result-open-section">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#c71935]">Consulting worksheet</p><h2 className="mt-1 text-xl font-black">비교할 계약을 선택하세요</h2><p className="mt-1 text-xs text-neutral-500">선택 내용은 현재 화면의 비교 워크시트에만 반영됩니다.</p></div><button onClick={onOpenAdditional} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#df2444] bg-white px-4 text-xs font-bold text-[#c71935] transition-colors hover:bg-[#df2444] hover:text-white"><Plus className="h-4 w-4" />추가 계약 보기</button></div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#c71935]">Consulting worksheet</p><h2 className="mt-1 text-xl font-black">비교할 계약을 선택하세요</h2><p className="mt-1 text-xs text-neutral-500">선택 내용은 현재 화면의 비교 워크시트에만 반영됩니다.</p></div><div className="flex flex-wrap gap-2"><button onClick={onOpenAdditional} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#df2444] bg-white px-4 text-xs font-bold text-[#c71935] transition-colors hover:bg-[#df2444] hover:text-white"><Plus className="h-4 w-4" />기존 계약 선택</button><button onClick={onOpenProposal} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-neutral-950 px-4 text-xs font-bold text-white transition-colors hover:bg-[#df2444]"><FilePlus2 className="h-4 w-4" />신규 설계 추가</button></div></div>
         <div className="mt-5 grid gap-3 lg:grid-cols-2">{model.contracts.map((contract) => <ContractCard key={contract.id} contract={contract} selectable selected={selectedIds.includes(contract.id)} onToggle={() => onToggle(contract.id)} />)}</div>
       </section>
-      <section className="result-surface overflow-hidden" aria-labelledby="compare-title">
-        <div className="border-b border-black/10 p-5"><h2 id="compare-title" className="text-lg font-black">컨설팅 비교 요약</h2><p className="mt-1 text-xs text-neutral-500">신규 설계안은 입력되지 않았으며, 현재 조회 계약과 상담 선택만 비교합니다.</p></div>
-        <div className="overflow-x-auto"><table className="w-full min-w-[680px] border-collapse text-sm"><thead><tr className="bg-neutral-950 text-left text-white"><th className="p-4">비교 항목</th><th className="p-4">현재 조회 전체</th><th className="bg-[#df2444] p-4">상담 선택</th><th className="p-4">신규 설계</th></tr></thead><tbody className="divide-y divide-black/10"><tr><th className="p-4 text-left">계약 수</th><td className="p-4">{model.contracts.length}건</td><td className="p-4 font-bold">{selected.length}건</td><td className="p-4 text-neutral-400">미입력</td></tr><tr><th className="p-4 text-left">표시 보험료 합계</th><td className="p-4">{model.premiumKnownCount ? formatWon(model.totalPremium) : "미표시"}</td><td className="p-4 font-bold">{selectedPremiums.length ? formatWon(premiumTotal) : "미표시"}</td><td className="p-4 text-neutral-400">미입력</td></tr><tr><th className="p-4 text-left">관련 항목 신호</th><td className="p-4">{model.relatedCategoryCount}개</td><td className="p-4 font-bold">{relatedSignals}개</td><td className="p-4 text-neutral-400">상세 확인 필요</td></tr></tbody></table></div>
+      <section className="result-open-section" aria-labelledby="proposal-title">
+        <div className="mb-4 flex items-center justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#3155d9]">New proposals</p><h2 id="proposal-title" className="mt-1 text-lg font-black">신규 가입설계</h2></div><span className="text-xs font-bold text-neutral-500">{proposals.length}건</span></div>
+        <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
+          {proposals.map((proposal) => <article key={proposal.id} className="result-surface overflow-hidden"><div className="border-b border-black/10 p-4"><div className="flex items-center justify-between gap-2"><span className="text-xs font-black text-[#3155d9]">{proposal.insurer}</span><span className="rounded-full bg-neutral-100 px-2 py-1 text-[9px] font-bold">{proposal.source === "manual" ? "직접 입력" : "가입설계서"}</span></div><h3 className="mt-2 line-clamp-2 text-sm font-black">{proposal.productName}</h3><p className="mt-1 text-[10px] text-neutral-500">{proposal.planType || "설계 조건 확인 필요"}</p></div><div className="p-4"><p className="text-xl font-black tabular-nums">{formatWon(proposal.monthlyPremium)}</p><p className="mt-1 text-[10px] text-neutral-500">월 보험료</p><div className="mt-3 space-y-2">{proposal.coverages.map((coverage, index) => <div key={`${proposal.id}-${coverage.categoryId}-${index}`} className="flex items-center justify-between gap-3 text-xs"><span className="truncate text-neutral-600">{coverage.label}</span><strong className="shrink-0 tabular-nums">{formatWon(coverage.amount)}</strong></div>)}{proposal.coverages.length === 0 && <p className="text-xs text-amber-800">담보 내역 확인 필요</p>}</div></div></article>)}
+          {proposals.length === 0 && <button onClick={onOpenProposal} className="flex min-h-[180px] flex-col items-center justify-center rounded-[22px] border border-dashed border-blue-300 bg-blue-50/50 p-5 text-blue-800"><Plus className="h-6 w-6" /><span className="mt-3 text-sm font-black">신규 설계 추가</span><span className="mt-1 text-[10px]">가입설계서 또는 수기 입력</span></button>}
+        </div>
       </section>
+      <section className="result-surface overflow-hidden" aria-labelledby="compare-title">
+        <div className="border-b border-black/10 p-5"><h2 id="compare-title" className="text-lg font-black">컨설팅 비교 요약</h2><p className="mt-1 text-xs text-neutral-500">확인된 금액과 입력된 설계만 비교하며, 면책·감액·정의 차이는 약관 탭에서 별도 검토합니다.</p></div>
+        <div className="overflow-x-auto"><table className="w-full min-w-[680px] border-collapse text-sm"><thead><tr className="bg-neutral-950 text-left text-white"><th className="p-4">비교 항목</th><th className="p-4">현재 조회 전체</th><th className="bg-[#df2444] p-4">상담 선택</th><th className="p-4">{primaryProposal?.productName || "신규 설계"}</th></tr></thead><tbody className="divide-y divide-black/10"><tr><th className="p-4 text-left">계약·설계 수</th><td className="p-4">{model.contracts.length}건</td><td className="p-4 font-bold">{selected.length}건</td><td className="p-4">{primaryProposal ? "1건" : "미입력"}</td></tr><tr><th className="p-4 text-left">표시 보험료</th><td className="p-4">{model.premiumKnownCount ? formatWon(model.totalPremium) : "미표시"}</td><td className="p-4 font-bold">{selectedPremiums.length ? formatWon(premiumTotal) : "미표시"}</td><td className="p-4">{primaryProposal ? formatWon(primaryProposal.monthlyPremium) : "미입력"}</td></tr><tr><th className="p-4 text-left">확인 담보·항목</th><td className="p-4">{model.coverageItems.length}개 담보</td><td className="p-4 font-bold">{relatedSignals}개 표준항목</td><td className="p-4">{primaryProposal ? `${primaryProposal.coverages.length}개 담보` : "미입력"}</td></tr><tr><th className="p-4 text-left">표시 가입금액 합계</th><td className="p-4">항목별 확인 필요</td><td className="p-4 font-bold">미수집 금액 제외</td><td className="p-4">{primaryProposal && proposalAmount !== null ? formatWon(proposalAmount) : "미입력"}</td></tr></tbody></table></div>
+      </section>
+      <ReportApproval status={reportStatus} onChange={onReportStatusChange} hasProposal={proposals.length > 0} evidenceCount={model.enrichment.policyFindings.length} />
     </div>
   )
 }
@@ -548,8 +585,11 @@ export function StepResult({ data, onReset, onLogout, userName, demoMode = false
   const [tab, setTab] = useState<DashboardTab>("overview")
   const [targetsOpen, setTargetsOpen] = useState(false)
   const [additionalOpen, setAdditionalOpen] = useState(false)
+  const [proposalOpen, setProposalOpen] = useState(false)
   const [targetValues, setTargetValues] = useState<Record<string, string>>({})
   const [selectedIds, setSelectedIds] = useState<string[]>(() => model.activeContracts.map((contract) => contract.id))
+  const [proposals, setProposals] = useState<InsuranceProposal[]>(() => model.enrichment.proposals)
+  const [reportStatus, setReportStatus] = useState<"draft" | "reviewed" | "approved">("draft")
   const activeTab = TABS.find((item) => item.id === tab) ?? TABS[0]
   const displayName = userName?.trim() || "조회 고객"
   const initial = Array.from(displayName)[0] || "고"
@@ -634,7 +674,7 @@ export function StepResult({ data, onReset, onLogout, userName, demoMode = false
                   <Kpi label="정상 계약" value={metricValue(model.activeCount)} />
                   <Kpi label="실효·해지" value={metricValue(model.inactiveCount)} accent="text-[#c71935]" />
                   <Kpi label="표시 보험료 합계" value={model.premiumKnownCount ? formatWon(model.totalPremium) : "미표시"} />
-                  <Kpi label="관련 계약 신호" value={metricValue(model.relatedCategoryCount, "개")} accent="text-[#3155d9]" />
+                  <Kpi label="확인 필요" value={metricValue(model.dataQuality.unresolvedCount, "개")} accent="text-[#3155d9]" />
                 </div>
                 <div className="flex gap-2 print:hidden"><ActionButton onClick={() => window.print()} title="현재 대시보드 인쇄"><Printer className="h-4 w-4" /></ActionButton><ActionButton onClick={onReset} title={resetLabel}><RefreshCw className="h-4 w-4" /></ActionButton>{onLogout && <ActionButton onClick={onLogout} title="로그아웃"><LogOut className="h-4 w-4" /></ActionButton>}</div>
               </div>
@@ -646,9 +686,11 @@ export function StepResult({ data, onReset, onLogout, userName, demoMode = false
           <main id={`panel-${tab}`} aria-label={activeTab.label} className="dashboard-panel p-4 sm:p-6 lg:p-8">
             {tab === "overview" && <OverviewPanel model={model} onNavigate={setTab} demoMode={demoMode} />}
             {tab === "contracts" && <ContractsPanel model={model} onOpenAdditional={() => setAdditionalOpen(true)} />}
+            {tab === "quality" && <DataQualityPanel model={model} />}
             {tab === "diagnosis" && <DiagnosisPanel model={model} onOpenTargets={() => setTargetsOpen(true)} />}
+            {tab === "decision" && <DecisionPanel model={model} />}
             {tab === "charts" && <ChartsNeedsPanel model={model} configuredTargets={Object.values(targetValues).filter(Boolean).length} onOpenTargets={() => setTargetsOpen(true)} />}
-            {tab === "consulting" && <ConsultingPanel model={model} selectedIds={selectedIds} onToggle={toggleSelected} onOpenAdditional={() => setAdditionalOpen(true)} />}
+            {tab === "consulting" && <ConsultingPanel model={model} selectedIds={selectedIds} onToggle={toggleSelected} onOpenAdditional={() => setAdditionalOpen(true)} proposals={proposals} onOpenProposal={() => setProposalOpen(true)} reportStatus={reportStatus} onReportStatusChange={setReportStatus} />}
             {tab === "terms" && <TermsRiskPanel model={model} demoMode={demoMode} />}
           </main>
           </section>
@@ -656,6 +698,7 @@ export function StepResult({ data, onReset, onLogout, userName, demoMode = false
 
         <TargetSettingsDialog open={targetsOpen} onOpenChange={setTargetsOpen} model={model} values={targetValues} onChange={(id, value) => setTargetValues((current) => ({ ...current, [id]: value }))} onReset={() => setTargetValues({})} />
         <AdditionalContractsDialog open={additionalOpen} onOpenChange={setAdditionalOpen} model={model} selectedIds={selectedIds} onToggle={toggleSelected} />
+        <ProposalInputDialog open={proposalOpen} onOpenChange={setProposalOpen} onAdd={(proposal) => setProposals((current) => [...current, proposal])} />
       </div>
     </div>
   )

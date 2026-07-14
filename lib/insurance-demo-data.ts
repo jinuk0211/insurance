@@ -26,6 +26,13 @@ export const INSURANCE_DEMO_DATA = {
         resPaymentPeriod: "20년납",
         resPaidCount: 30,
         resTotalPaymentCount: 240,
+        resCoverageList: [
+          { resCoverageName: "일반암 진단비", resCoverageAmount: 30000000, source: "codef", confidence: 96, reviewStatus: "confirmed" },
+          { resCoverageName: "소액암 진단비", resCoverageAmount: 5000000, source: "codef", confidence: 94, reviewStatus: "confirmed" },
+          { resCoverageName: "뇌혈관질환 진단비", resCoverageAmount: 20000000, source: "codef", confidence: 91, reviewStatus: "reviewed" },
+          { resCoverageName: "허혈성심장질환 진단비", resCoverageAmount: 20000000, source: "codef", confidence: 90, reviewStatus: "reviewed" },
+          { resCoverageName: "항암약물치료비", resCoverageAmount: null, source: "codef", confidence: 86, reviewStatus: "missing" },
+        ],
       },
       {
         resContractNo: "SAMPLE-002",
@@ -52,6 +59,9 @@ export const INSURANCE_DEMO_DATA = {
         resPaymentPeriod: "1년 갱신",
         resPaidCount: 40,
         resTotalPaymentCount: 120,
+        resCoverageList: [
+          { resCoverageName: "질병·상해 실손의료비", resCoverageAmount: null, source: "codef", confidence: 95, reviewStatus: "needs_review" },
+        ],
       },
       {
         resContractNo: "SAMPLE-004",
@@ -65,6 +75,10 @@ export const INSURANCE_DEMO_DATA = {
         resPaymentPeriod: "20년납",
         resPaidCount: 69,
         resTotalPaymentCount: 240,
+        resCoverageList: [
+          { resCoverageName: "중증치매 진단생활자금", resCoverageAmount: 30000000, source: "certificate", confidence: 99, reviewStatus: "confirmed" },
+          { resCoverageName: "간병인 사용입원일당", resCoverageAmount: 100000, source: "certificate", confidence: 99, reviewStatus: "confirmed" },
+        ],
       },
       {
         resContractNo: "SAMPLE-005",
@@ -78,6 +92,10 @@ export const INSURANCE_DEMO_DATA = {
         resPaymentPeriod: "20년납",
         resPaidCount: 17,
         resTotalPaymentCount: 240,
+        resCoverageList: [
+          { resCoverageName: "교통사고처리지원금", resCoverageAmount: 200000000, source: "certificate", confidence: 98, reviewStatus: "confirmed" },
+          { resCoverageName: "자동차사고 변호사선임비용", resCoverageAmount: 50000000, source: "certificate", confidence: 98, reviewStatus: "confirmed" },
+        ],
       },
       {
         resContractNo: "SAMPLE-006",
@@ -104,10 +122,102 @@ export const INSURANCE_DEMO_DATA = {
         resPaymentPeriod: "20년납",
         resPaidCount: 44,
         resTotalPaymentCount: 240,
+        resCoverageList: [
+          { resCoverageName: "골절 진단비", resCoverageAmount: 300000, source: "codef", confidence: 92, reviewStatus: "needs_review" },
+          { resCoverageName: "화상 수술비", resCoverageAmount: 1000000, source: "codef", confidence: 89, reviewStatus: "needs_review" },
+        ],
       },
     ],
   },
   insuranceDashboardEnrichment: {
+    documents: [
+      {
+        id: "SAMPLE-DOC-001",
+        contractId: "",
+        type: "codef",
+        name: "CODEF 보험계약 조회 응답",
+        status: "connected",
+        source: "codef",
+        note: "계약 7건 수집 완료 · 일부 담보 가입금액 미제공",
+      },
+      {
+        id: "SAMPLE-DOC-002",
+        contractId: "SAMPLE-001",
+        type: "certificate",
+        name: "가온 종합보험 보험증권 (가상 샘플)",
+        status: "connected",
+        source: "certificate",
+        note: "주요 진단비 가입금액 확인",
+      },
+      {
+        id: "SAMPLE-DOC-003",
+        contractId: "SAMPLE-001",
+        type: "terms",
+        name: "가온 종합보험 암진단 특별약관 (가상 샘플)",
+        status: "connected",
+        source: "terms",
+        note: "문서 버전 및 원문 페이지 연결 완료",
+      },
+      {
+        id: "SAMPLE-DOC-004",
+        contractId: "SAMPLE-003",
+        type: "certificate",
+        name: "다온 실손의료비 보험증권",
+        status: "missing",
+        source: "unknown",
+        note: "가입금액 및 자기부담 구조 확인 필요",
+      },
+    ],
+    decisionScenarios: [
+      {
+        id: "SAMPLE-SCENARIO-001",
+        question: "일반 갑상선암이면 어떤 보장을 검토하나요?",
+        diagnosis: "일반 갑상선암",
+        treatment: "진단",
+        resultStatus: "needs_review",
+        summary: "소액암 계열 진단비의 지급 검토 대상입니다. 일반암 납입면제 포함 여부는 연결된 정식 약관에서 별도 확인해야 합니다.",
+        candidateAmount: 5000000,
+        checks: ["최초 1회 지급 여부", "가입 당시 질병분류표", "일반암 납입면제 제외 여부", "증권상 실제 가입금액"],
+        sourceFindingIds: ["SAMPLE-FINDING-001"],
+      },
+      {
+        id: "SAMPLE-SCENARIO-002",
+        question: "갑상선암으로 항암약물치료를 받으면 어떻게 되나요?",
+        diagnosis: "갑상선암",
+        treatment: "항암약물치료",
+        resultStatus: "candidate",
+        summary: "항암약물치료 담보가 확인되지만 가입금액이 수집되지 않았습니다. 종합병원 여부, 직접 치료 목적, 연간 횟수를 확인한 뒤 지급 후보를 계산합니다.",
+        candidateAmount: null,
+        checks: ["약관상 항암약물치료 정의", "직접적인 치료 목적", "의료기관 요건", "1일 및 연간 지급한도", "담보 가입금액"],
+        sourceFindingIds: ["SAMPLE-FINDING-001"],
+      },
+      {
+        id: "SAMPLE-SCENARIO-003",
+        question: "암 진단 후 새 보험으로 바꿔도 되나요?",
+        diagnosis: "암 진단 전 계약변경",
+        treatment: "승환 검토",
+        resultStatus: "needs_review",
+        summary: "신규 계약의 90일 암 보장개시와 초기 감액기간 때문에 기존 보장을 먼저 해지하면 공백이 생길 수 있습니다.",
+        candidateAmount: null,
+        checks: ["신규 계약 승인일", "암 보장개시일", "초기 감액기간", "기존 계약 해지일", "고지 및 인수 결과"],
+        sourceFindingIds: ["SAMPLE-FINDING-001"],
+      },
+    ],
+    proposals: [
+      {
+        id: "SAMPLE-PROPOSAL-001",
+        insurer: "새길생명 (가상)",
+        productName: "새길 비갱신 암보장 플랜 (시연용)",
+        monthlyPremium: 43800,
+        planType: "비갱신형 · 20년납 · 무해약환급금형",
+        source: "proposal",
+        coverages: [
+          { categoryId: "cancer", label: "일반암 진단비", amount: 30000000 },
+          { categoryId: "cancer", label: "소액암 진단비", amount: 5000000 },
+          { categoryId: "treatment", label: "항암약물치료비", amount: 10000000 },
+        ],
+      },
+    ],
     policyFindings: [
       {
         id: "SAMPLE-FINDING-001",
