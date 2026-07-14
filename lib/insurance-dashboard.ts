@@ -4,6 +4,10 @@ export type InsuranceCoverageSignal = "related_contract" | "not_found"
 
 export type InsuranceChangeRiskSeverity = "high" | "medium" | "low" | "unknown"
 
+export type InsuranceDataSource = "codef" | "certificate" | "terms" | "proposal" | "manual" | "unknown"
+
+export type InsuranceReviewStatus = "confirmed" | "reviewed" | "needs_review" | "missing"
+
 export interface InsuranceDashboardContract {
   id: string
   name: string
@@ -18,6 +22,19 @@ export interface InsuranceDashboardContract {
   paidCount: number | null
   totalPaymentCount: number | null
   categoryIds: string[]
+  coverageItems: InsuranceCoverageItem[]
+}
+
+export interface InsuranceCoverageItem {
+  id: string
+  contractId: string
+  rawName: string
+  standardCategoryId: string | null
+  standardCategoryLabel: string
+  amount: number | null
+  source: InsuranceDataSource
+  confidence: number | null
+  reviewStatus: InsuranceReviewStatus
 }
 
 export interface InsuranceDashboardCategory {
@@ -29,6 +46,10 @@ export interface InsuranceDashboardCategory {
   relatedContractIds: string[]
   signal: InsuranceCoverageSignal
   requiresDetailCheck: true
+  evidenceKind: "coverage" | "contract_name" | "none"
+  knownAmount: number
+  knownAmountCount: number
+  unknownAmountCount: number
 }
 
 export interface InsuranceDashboardGroup {
@@ -63,9 +84,61 @@ export interface InsuranceChangeRisk {
   sourcePage: number | null
 }
 
+export interface InsuranceDocumentRecord {
+  id: string
+  contractId: string
+  type: "codef" | "certificate" | "terms" | "proposal" | "other"
+  name: string
+  status: "connected" | "needs_review" | "missing"
+  source: InsuranceDataSource
+  note: string
+}
+
+export interface InsuranceDecisionScenario {
+  id: string
+  question: string
+  diagnosis: string
+  treatment: string
+  resultStatus: "candidate" | "needs_review" | "not_applicable"
+  summary: string
+  candidateAmount: number | null
+  checks: string[]
+  sourceFindingIds: string[]
+}
+
+export interface InsuranceProposalCoverage {
+  categoryId: string
+  label: string
+  amount: number | null
+}
+
+export interface InsuranceProposal {
+  id: string
+  insurer: string
+  productName: string
+  monthlyPremium: number | null
+  planType: string
+  source: InsuranceDataSource
+  coverages: InsuranceProposalCoverage[]
+}
+
+export interface InsuranceDataQuality {
+  contractCount: number
+  coreCompleteCount: number
+  coverageCount: number
+  coverageAmountKnownCount: number
+  coverageAmountMissingCount: number
+  termsEvidenceCount: number
+  unresolvedCount: number
+  overallScore: number
+}
+
 export interface InsuranceDashboardEnrichment {
   policyFindings: InsurancePolicyFinding[]
   changeRisks: InsuranceChangeRisk[]
+  documents: InsuranceDocumentRecord[]
+  decisionScenarios: InsuranceDecisionScenario[]
+  proposals: InsuranceProposal[]
 }
 
 export interface InsuranceDashboardModel {
@@ -85,6 +158,8 @@ export interface InsuranceDashboardModel {
   relatedCategoryCount: number
   notFoundCategoryCount: number
   detailCheckCategoryCount: number
+  coverageItems: InsuranceCoverageItem[]
+  dataQuality: InsuranceDataQuality
   enrichment: InsuranceDashboardEnrichment
 }
 
@@ -204,6 +279,44 @@ const CONTRACT_LIST_KEYS = new Set(
     "resPolicyList",
   ].map(normalizeKey),
 )
+
+const COVERAGE_LIST_KEYS = new Set(
+  [
+    "resCoverageList",
+    "resGuaranteeList",
+    "resRiderList",
+    "resSpecialContractList",
+    "coverageList",
+    "guaranteeList",
+    "riderList",
+    "specialContractList",
+    "benefitList",
+  ].map(normalizeKey),
+)
+
+const COVERAGE_NAME_KEYS = [
+  "resCoverageName",
+  "resGuaranteeName",
+  "resRiderName",
+  "resSpecialContractName",
+  "coverageName",
+  "guaranteeName",
+  "riderName",
+  "specialContractName",
+  "benefitName",
+] as const
+
+const COVERAGE_AMOUNT_KEYS = [
+  "resCoverageAmount",
+  "resGuaranteeAmount",
+  "resInsuredAmount",
+  "resSubscriptionAmount",
+  "coverageAmount",
+  "guaranteeAmount",
+  "insuredAmount",
+  "subscriptionAmount",
+  "benefitAmount",
+] as const
 
 const NAME_KEYS = [
   "resInsuranceName",
@@ -366,6 +479,46 @@ function changeRiskSeverity(value: unknown): InsuranceChangeRiskSeverity {
   return "unknown"
 }
 
+function dataSource(value: unknown, fallback: InsuranceDataSource = "unknown"): InsuranceDataSource {
+  const normalized = normalizeKey(textValue(value))
+  if (["codef", "certificate", "terms", "proposal", "manual"].includes(normalized)) {
+    return normalized as InsuranceDataSource
+  }
+  return fallback
+}
+
+function reviewStatus(value: unknown, hasAmount = false): InsuranceReviewStatus {
+  const normalized = normalizeKey(textValue(value))
+  if (["confirmed", "reviewed", "needsreview", "missing"].includes(normalized)) {
+    if (normalized === "needsreview") return "needs_review"
+    return normalized as InsuranceReviewStatus
+  }
+  return hasAmount ? "needs_review" : "missing"
+}
+
+function documentType(value: unknown): InsuranceDocumentRecord["type"] {
+  const normalized = normalizeKey(textValue(value))
+  if (["codef", "certificate", "terms", "proposal"].includes(normalized)) {
+    return normalized as InsuranceDocumentRecord["type"]
+  }
+  return "other"
+}
+
+function documentStatus(value: unknown): InsuranceDocumentRecord["status"] {
+  const normalized = normalizeKey(textValue(value))
+  if (normalized === "connected") return "connected"
+  if (normalized === "needsreview") return "needs_review"
+  return "missing"
+}
+
+function scenarioStatus(value: unknown): InsuranceDecisionScenario["resultStatus"] {
+  const normalized = normalizeKey(textValue(value))
+  if (normalized === "candidate" || normalized === "notapplicable") {
+    return normalized === "notapplicable" ? "not_applicable" : "candidate"
+  }
+  return "needs_review"
+}
+
 function findDashboardEnrichment(data: unknown): UnknownRecord | null {
   const visited = new Set<object>()
 
@@ -436,9 +589,70 @@ function normalizeChangeRisk(value: unknown, index: number): InsuranceChangeRisk
   }
 }
 
+function normalizeDocument(value: unknown, index: number): InsuranceDocumentRecord | null {
+  if (!isRecord(value)) return null
+  const name = textValue(value.name)
+  if (!name) return null
+  return {
+    id: textValue(value.id) || `document-${index + 1}`,
+    contractId: textValue(value.contractId),
+    type: documentType(value.type),
+    name,
+    status: documentStatus(value.status),
+    source: dataSource(value.source),
+    note: textValue(value.note),
+  }
+}
+
+function normalizeDecisionScenario(value: unknown, index: number): InsuranceDecisionScenario | null {
+  if (!isRecord(value)) return null
+  const question = textValue(value.question)
+  if (!question) return null
+  return {
+    id: textValue(value.id) || `scenario-${index + 1}`,
+    question,
+    diagnosis: textValue(value.diagnosis),
+    treatment: textValue(value.treatment),
+    resultStatus: scenarioStatus(value.resultStatus),
+    summary: textValue(value.summary),
+    candidateAmount: numberValue(value.candidateAmount),
+    checks: stringListValue(value.checks),
+    sourceFindingIds: stringListValue(value.sourceFindingIds),
+  }
+}
+
+function normalizeProposalCoverage(value: unknown): InsuranceProposalCoverage | null {
+  if (!isRecord(value)) return null
+  const label = textValue(value.label)
+  const categoryId = textValue(value.categoryId)
+  if (!label && !categoryId) return null
+  return {
+    categoryId,
+    label: label || categoryId,
+    amount: numberValue(value.amount),
+  }
+}
+
+function normalizeProposal(value: unknown, index: number): InsuranceProposal | null {
+  if (!isRecord(value)) return null
+  const productName = textValue(value.productName)
+  if (!productName) return null
+  return {
+    id: textValue(value.id) || `proposal-${index + 1}`,
+    insurer: textValue(value.insurer) || "보험사 확인 필요",
+    productName,
+    monthlyPremium: numberValue(value.monthlyPremium),
+    planType: textValue(value.planType),
+    source: dataSource(value.source, "proposal"),
+    coverages: Array.isArray(value.coverages)
+      ? value.coverages.map(normalizeProposalCoverage).filter((item): item is InsuranceProposalCoverage => item !== null)
+      : [],
+  }
+}
+
 function normalizeDashboardEnrichment(data: unknown): InsuranceDashboardEnrichment {
   const enrichment = findDashboardEnrichment(data)
-  if (!enrichment) return { policyFindings: [], changeRisks: [] }
+  if (!enrichment) return { policyFindings: [], changeRisks: [], documents: [], decisionScenarios: [], proposals: [] }
 
   const policyFindings = Array.isArray(enrichment.policyFindings)
     ? enrichment.policyFindings
@@ -451,7 +665,19 @@ function normalizeDashboardEnrichment(data: unknown): InsuranceDashboardEnrichme
         .filter((risk): risk is InsuranceChangeRisk => risk !== null)
     : []
 
-  return { policyFindings, changeRisks }
+  const documents = Array.isArray(enrichment.documents)
+    ? enrichment.documents.map(normalizeDocument).filter((item): item is InsuranceDocumentRecord => item !== null)
+    : []
+  const decisionScenarios = Array.isArray(enrichment.decisionScenarios)
+    ? enrichment.decisionScenarios
+        .map(normalizeDecisionScenario)
+        .filter((item): item is InsuranceDecisionScenario => item !== null)
+    : []
+  const proposals = Array.isArray(enrichment.proposals)
+    ? enrichment.proposals.map(normalizeProposal).filter((item): item is InsuranceProposal => item !== null)
+    : []
+
+  return { policyFindings, changeRisks, documents, decisionScenarios, proposals }
 }
 
 function classifyStatus(status: string): InsuranceContractStatusKind {
@@ -528,11 +754,71 @@ function collectContractRecords(data: unknown): UnknownRecord[] {
   return records
 }
 
-function contractCategoryIds(name: string): string[] {
-  const normalizedName = name.toLocaleLowerCase("ko-KR")
+function categoryIdsForText(value: string): string[] {
+  const normalizedName = value.toLocaleLowerCase("ko-KR")
   return INSURANCE_DASHBOARD_CATEGORIES.filter((category) =>
     category.keywords.some((keyword) => normalizedName.includes(keyword.toLocaleLowerCase("ko-KR"))),
   ).map((category) => category.id)
+}
+
+const COVERAGE_CATEGORY_PRIORITY = [
+  "actual_loss",
+  "liability",
+  "surgery",
+  "hospitalization",
+  "treatment",
+  "cerebrovascular",
+  "heart",
+  "dementia",
+  "driver",
+  "dental_injury",
+  "disability",
+  "death",
+  "cancer",
+] as const
+
+function primaryCategoryIdForCoverage(value: string): string | null {
+  const matched = new Set(categoryIdsForText(value))
+  return COVERAGE_CATEGORY_PRIORITY.find((categoryId) => matched.has(categoryId)) ?? null
+}
+
+function collectCoverageRecords(record: UnknownRecord): UnknownRecord[] {
+  const records: UnknownRecord[] = []
+  for (const [key, value] of Object.entries(record)) {
+    if (!Array.isArray(value) || !COVERAGE_LIST_KEYS.has(normalizeKey(key))) continue
+    for (const item of value) {
+      if (isRecord(item)) records.push(item)
+    }
+  }
+  return records
+}
+
+function normalizeCoverageItem(record: UnknownRecord, index: number, contractId: string): InsuranceCoverageItem | null {
+  const rawName = textValue(findValue(record, COVERAGE_NAME_KEYS))
+  if (!rawName) return null
+  const categoryId = primaryCategoryIdForCoverage(rawName)
+  const category = INSURANCE_DASHBOARD_CATEGORIES.find((item) => item.id === categoryId)
+  const amount = numberValue(findValue(record, COVERAGE_AMOUNT_KEYS))
+  return {
+    id: textValue(record.id) || `${contractId}-coverage-${index + 1}`,
+    contractId,
+    rawName,
+    standardCategoryId: categoryId,
+    standardCategoryLabel: category?.label || "미분류",
+    amount,
+    source: dataSource(record.source, "codef"),
+    confidence: boundedPercentage(record.confidence),
+    reviewStatus: reviewStatus(record.reviewStatus, amount !== null),
+  }
+}
+
+function contractCategoryIds(name: string, coverageItems: InsuranceCoverageItem[]): string[] {
+  return Array.from(
+    new Set([
+      ...categoryIdsForText(name),
+      ...coverageItems.map((item) => item.standardCategoryId).filter((id): id is string => Boolean(id)),
+    ]),
+  )
 }
 
 function normalizeContract(record: UnknownRecord, index: number): InsuranceDashboardContract {
@@ -543,9 +829,13 @@ function normalizeContract(record: UnknownRecord, index: number): InsuranceDashb
   const rawId = textValue(findValue(record, ID_KEYS))
   const startDate = textValue(findValue(record, START_DATE_KEYS))
   const endDate = textValue(findValue(record, END_DATE_KEYS))
+  const contractId = rawId || `contract-${index + 1}`
+  const coverageItems = collectCoverageRecords(record)
+    .map((item, coverageIndex) => normalizeCoverageItem(item, coverageIndex, contractId))
+    .filter((item): item is InsuranceCoverageItem => item !== null)
 
   return {
-    id: rawId || `contract-${index + 1}`,
+    id: contractId,
     name,
     company,
     status: rawStatus || "상태 확인 필요",
@@ -557,7 +847,8 @@ function normalizeContract(record: UnknownRecord, index: number): InsuranceDashb
     paymentPeriod: textValue(findValue(record, PAYMENT_PERIOD_KEYS)),
     paidCount: numberValue(findValue(record, PAID_COUNT_KEYS)),
     totalPaymentCount: numberValue(findValue(record, TOTAL_PAYMENT_COUNT_KEYS)),
-    categoryIds: contractCategoryIds(name),
+    categoryIds: contractCategoryIds(name, coverageItems),
+    coverageItems,
   }
 }
 
@@ -599,8 +890,12 @@ export function buildInsuranceDashboardModel(data: unknown): InsuranceDashboardM
     for (const categoryId of contract.categoryIds) categoryCounts[categoryId] += 1
   }
 
+  const coverageItems = activeContracts.flatMap((contract) => contract.coverageItems)
+
   const categories: InsuranceDashboardCategory[] = INSURANCE_DASHBOARD_CATEGORIES.map((category) => {
     const relatedContracts = activeContracts.filter((contract) => contract.categoryIds.includes(category.id))
+    const categoryCoverageItems = coverageItems.filter((item) => item.standardCategoryId === category.id)
+    const amountKnownItems = categoryCoverageItems.filter((item) => item.amount !== null)
     return {
       id: category.id,
       label: category.label,
@@ -610,6 +905,10 @@ export function buildInsuranceDashboardModel(data: unknown): InsuranceDashboardM
       relatedContractIds: relatedContracts.map((contract) => contract.id),
       signal: relatedContracts.length > 0 ? "related_contract" : "not_found",
       requiresDetailCheck: true,
+      evidenceKind: categoryCoverageItems.length > 0 ? "coverage" : relatedContracts.length > 0 ? "contract_name" : "none",
+      knownAmount: amountKnownItems.reduce((sum, item) => sum + (item.amount ?? 0), 0),
+      knownAmountCount: amountKnownItems.length,
+      unknownAmountCount: categoryCoverageItems.length - amountKnownItems.length,
     }
   })
 
@@ -641,6 +940,34 @@ export function buildInsuranceDashboardModel(data: unknown): InsuranceDashboardM
       .filter((company) => company && company !== "보험사 정보 확인 필요"),
   )
 
+  const coreCompleteCount = contracts.filter((contract) =>
+    !contract.name.startsWith("보험 계약") &&
+    contract.company !== "보험사 정보 확인 필요" &&
+    contract.statusKind !== "unknown" &&
+    Boolean(contract.startDate) &&
+    Boolean(contract.endDate) &&
+    contract.premium !== null,
+  ).length
+  const coverageAmountKnownCount = coverageItems.filter((item) => item.amount !== null).length
+  const coverageAmountMissingCount = coverageItems.length - coverageAmountKnownCount
+  const coreRatio = contracts.length ? coreCompleteCount / contracts.length : 0
+  const coverageRatio = activeContracts.length ? Math.min(1, coverageItems.length / activeContracts.length) : 0
+  const amountRatio = coverageItems.length ? coverageAmountKnownCount / coverageItems.length : 0
+  const termsRatio = coverageItems.length
+    ? Math.min(1, enrichment.policyFindings.length / coverageItems.length)
+    : enrichment.policyFindings.length > 0 ? 1 : 0
+  const overallScore = Math.round(coreRatio * 40 + coverageRatio * 20 + amountRatio * 25 + termsRatio * 15)
+  const dataQuality: InsuranceDataQuality = {
+    contractCount: contracts.length,
+    coreCompleteCount,
+    coverageCount: coverageItems.length,
+    coverageAmountKnownCount,
+    coverageAmountMissingCount,
+    termsEvidenceCount: enrichment.policyFindings.length,
+    unresolvedCount: (contracts.length - coreCompleteCount) + coverageAmountMissingCount + Math.max(0, coverageItems.length - enrichment.policyFindings.length),
+    overallScore,
+  }
+
   return {
     contracts,
     activeContracts,
@@ -658,6 +985,8 @@ export function buildInsuranceDashboardModel(data: unknown): InsuranceDashboardM
     relatedCategoryCount: categories.filter((category) => category.signal === "related_contract").length,
     notFoundCategoryCount: categories.filter((category) => category.signal === "not_found").length,
     detailCheckCategoryCount: categories.filter((category) => category.requiresDetailCheck).length,
+    coverageItems,
+    dataQuality,
     enrichment,
   }
 }
