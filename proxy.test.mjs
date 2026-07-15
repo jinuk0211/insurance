@@ -66,6 +66,16 @@ test("passes the public insurance UI without auth while preserving security head
   assert.equal(response.headers.get("x-frame-options"), "DENY")
 })
 
+test("shows the live demo-first UI without a browser login", () => {
+  configurePreview()
+
+  const response = proxy(uiRequest())
+
+  assert.equal(response.status, 200)
+  assert.equal(response.headers.get("x-middleware-next"), "1")
+  assert.equal(response.headers.get("www-authenticate"), null)
+})
+
 test("challenges the browser once before exposing the live insurance UI", () => {
   configurePreview()
 
