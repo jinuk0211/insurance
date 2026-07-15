@@ -138,6 +138,7 @@ export default function InsurancePage() {
           data={INSURANCE_DEMO_DATA}
           demoMode
           onReset={() => setDemoRevision((current) => current + 1)}
+          onConnect={() => setStep("welcome")}
           userName={INSURANCE_DEMO_CUSTOMER.name}
         />
       </div>

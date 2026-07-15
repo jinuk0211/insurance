@@ -600,65 +600,61 @@ export function StepResult({ data, onReset, onLogout, userName, demoMode = false
   }
 
   return (
-    <div className="insurance-dashboard min-h-screen p-2 sm:p-4 lg:p-5 print:p-0">
-      <div className="dashboard-frame mx-auto w-full max-w-[1520px] overflow-hidden rounded-[30px] bg-white/35 p-2 shadow-[0_30px_100px_rgba(45,39,31,0.14)] ring-1 ring-black/[0.05] backdrop-blur-sm sm:rounded-[38px] print:max-w-none print:rounded-none print:bg-white print:p-0 print:shadow-none print:ring-0">
-        <div className="dashboard-layout flex min-h-[calc(100dvh-3rem)] gap-2 sm:gap-3">
-          <aside className="dashboard-rail result-sidebar relative hidden w-[252px] shrink-0 flex-col overflow-hidden rounded-[30px_18px_30px_30px] bg-[#17211f] text-white xl:flex print:hidden">
-            <Link href="/" className="dashboard-brand relative z-10 flex min-h-20 items-center gap-3 px-5 font-black">
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#ff674d] text-white shadow-[0_10px_28px_rgba(223,36,68,0.28)]">
+    <div className="insurance-dashboard min-h-screen px-0 py-0 sm:px-4 sm:py-3 print:p-0">
+      <div className="dashboard-frame mx-auto w-full max-w-[1280px] overflow-hidden bg-white shadow-[0_20px_70px_rgba(24,24,27,0.08)] ring-1 ring-black/[0.07] print:max-w-none print:rounded-none print:shadow-none print:ring-0">
+        <div className="dashboard-layout flex min-h-[calc(100dvh-1.5rem)]">
+          <aside className="dashboard-rail result-sidebar hidden w-[208px] shrink-0 flex-col border-r border-black/10 bg-[#fbfbfa] text-neutral-950 lg:flex print:hidden">
+            <Link href="/" className="dashboard-brand flex min-h-[52px] items-center gap-3 border-b border-black/10 px-3 font-black">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full border border-black/10 bg-white text-neutral-700">
                 <Home className="h-4 w-4" aria-hidden="true" />
               </span>
               <span>
-                <span className="block font-serif text-lg tracking-[-0.03em]">KFin Legal</span>
-                <span className="mt-0.5 block text-[9px] font-bold uppercase tracking-[0.18em] text-white/55">Insurance desk</span>
+                <span className="block text-xs tracking-[-0.02em]">KFin Legal</span>
+                <span className="mt-0.5 block text-[9px] font-medium text-neutral-500">보험 분석 데스크</span>
               </span>
             </Link>
 
-            <div className="dashboard-rail-art relative z-10 mx-4 mb-3 flex min-h-36 items-end overflow-hidden p-4" aria-hidden="true">
-              <p className="max-w-[140px] font-serif text-xl font-semibold leading-tight text-white">보험을 읽는<br />새로운 시선</p>
-            </div>
-
-            <div className="relative z-10 px-4">
-              <div className="dashboard-rail-card rounded-[24px_24px_8px_24px] bg-white/[0.08] p-4 ring-1 ring-white/10 backdrop-blur">
+            <div className="mx-3 mt-3">
+              <div className="dashboard-rail-card rounded-2xl border border-black/10 bg-white p-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#df2444] text-lg font-black shadow-[0_10px_24px_rgba(223,36,68,0.24)]">{initial}</div>
-                  <div className="min-w-0"><p className="truncate font-black">{displayName} 고객</p><p className="text-[10px] text-white/65">{demoMode ? "합성 샘플 고객" : "CODEF 조회 고객"}</p></div>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-100 text-sm font-black text-neutral-700">{initial}</div>
+                  <div className="min-w-0"><p className="truncate text-sm font-black">{displayName} 고객</p><p className="text-[10px] text-neutral-500">{demoMode ? "합성 샘플 고객" : "CODEF 조회 고객"}</p></div>
                 </div>
-                <div className="mt-4 grid grid-cols-2 divide-x divide-white/10 text-xs">
-                  <div className="pr-3"><span className="block text-white/65">계약</span><strong className="mt-1 block text-base">{model.contracts.length}건</strong></div>
-                  <div className="pl-3"><span className="block text-white/65">보험사</span><strong className="mt-1 block text-base">{model.insurerCount}곳</strong></div>
+                <div className="mt-3 grid grid-cols-2 divide-x divide-black/10 border-t border-black/10 pt-2 text-[10px]">
+                  <div className="pr-3"><span className="block text-neutral-500">계약</span><strong className="mt-0.5 block text-sm">{model.contracts.length}건</strong></div>
+                  <div className="pl-3"><span className="block text-neutral-500">보험사</span><strong className="mt-0.5 block text-sm">{model.insurerCount}곳</strong></div>
                 </div>
               </div>
             </div>
 
-            <div className="relative z-10 mt-3 px-4">
-              <div className={`rounded-[18px] p-3 ${demoMode ? "bg-amber-300/10" : "bg-emerald-300/10"}`}>
-                <div className={`flex items-center gap-2 text-xs font-bold ${demoMode ? "text-amber-200" : "text-emerald-200"}`}><ShieldCheck className="h-4 w-4" aria-hidden="true" />{demoMode ? "시연용 합성 데이터" : "암호화 조회 이력"}</div>
-                <p className="mt-1 text-[10px] leading-4 text-white/65">{demoMode ? "고객·보험사·상품·약관이 모두 가상입니다." : "현재 결과는 CODEF 응답 기반입니다."}</p>
+            <nav className="mt-2 px-3" aria-label="보험 대시보드 섹션">
+              {TABS.map((item) => {
+                const Icon = item.icon
+                const selected = tab === item.id
+                return (
+                  <button key={item.id} aria-pressed={selected} onClick={() => setTab(item.id)} className={`mb-0.5 flex min-h-10 w-full items-center gap-3 rounded-xl px-3 text-left text-xs font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 ${selected ? "bg-neutral-200 text-neutral-950" : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950"}`}>
+                    <Icon className="h-4 w-4" aria-hidden="true" />{item.label}
+                  </button>
+                )
+              })}
+            </nav>
+
+            <div className="mt-3 border-t border-black/10 px-3 pt-3">
+              <div className={`rounded-2xl border p-3 ${demoMode ? "border-amber-300 bg-amber-50" : "border-emerald-200 bg-emerald-50"}`}>
+                <div className={`flex items-center gap-2 text-xs font-bold ${demoMode ? "text-amber-900" : "text-emerald-800"}`}><ShieldCheck className="h-4 w-4" aria-hidden="true" />{demoMode ? "시연용 합성 데이터" : "암호화 조회 이력"}</div>
+                <p className="mt-1 text-[10px] leading-4 text-neutral-600">{demoMode ? "고객·보험사·상품·약관이 모두 가상입니다." : "현재 결과는 CODEF 응답 기반입니다."}</p>
               </div>
               {demoMode && onConnect && (
-                <button onClick={onConnect} className="mt-3 flex min-h-12 w-full items-center justify-between rounded-[18px] bg-[#df2444] px-4 text-left text-xs font-black text-white transition-transform hover:-translate-y-0.5 hover:bg-[#c71935] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-                  실데이터 CODEF 연결 <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                <button onClick={onConnect} className="mt-2 flex min-h-11 w-full items-center justify-between rounded-2xl bg-neutral-950 px-3 text-left text-[11px] font-black text-white transition-colors hover:bg-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2">
+                  본인인증 후 내 보험 조회 <ChevronRight className="h-4 w-4" aria-hidden="true" />
                 </button>
               )}
             </div>
-            <div className="relative z-10 mt-auto flex flex-wrap gap-2 p-4"><ActionButton onClick={onReset} title={resetLabel} tone="dark"><RefreshCw className="h-4 w-4" />{resetLabel}</ActionButton>{onLogout && <ActionButton onClick={onLogout} title="고객 정보 로그아웃" tone="dark"><LogOut className="h-4 w-4" />로그아웃</ActionButton>}</div>
+            <div className="mt-auto flex flex-wrap gap-2 p-3"><ActionButton onClick={onReset} title={resetLabel}><RefreshCw className="h-4 w-4" />{resetLabel}</ActionButton>{onLogout && <ActionButton onClick={onLogout} title="고객 정보 로그아웃"><LogOut className="h-4 w-4" />로그아웃</ActionButton>}</div>
           </aside>
 
-          <nav className="dashboard-side-nav hidden w-[84px] shrink-0 flex-col self-start rounded-full bg-[#fbfaf6]/90 p-2 shadow-[0_18px_45px_rgba(45,39,31,0.09)] ring-1 ring-black/[0.05] backdrop-blur md:flex print:hidden" aria-label="보험 대시보드 섹션">
-            {TABS.map((item) => {
-              const Icon = item.icon
-              const selected = tab === item.id
-              return (
-                <button key={item.id} aria-pressed={selected} onClick={() => setTab(item.id)} className={`mb-1 flex min-h-[70px] flex-col items-center justify-center gap-1 rounded-[22px] px-1 text-[10px] font-bold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 ${selected ? "bg-[#17211f] text-white shadow-[0_10px_24px_rgba(23,33,31,0.18)]" : "text-neutral-500 hover:bg-white hover:text-neutral-950"}`}>
-                  <Icon className="h-5 w-5" aria-hidden="true" />{item.shortLabel}
-                </button>
-              )
-            })}
-          </nav>
-
-          <section className="dashboard-content min-w-0 flex-1 overflow-y-auto rounded-[26px] bg-[#f4f1e9]/80 print:overflow-visible">
-            <header className="dashboard-header sticky top-0 z-20 bg-[#fbfaf6]/92 backdrop-blur-xl print:static">
+          <section className="dashboard-content min-w-0 flex-1 overflow-y-auto bg-white print:overflow-visible">
+            <header className="dashboard-header sticky top-0 z-20 border-b border-black/10 bg-white/95 backdrop-blur-xl print:static">
               {demoMode && (
                 <div className="demo-banner mx-3 mt-3 flex flex-col gap-2 rounded-[18px] bg-[#fff1bd] px-4 py-2.5 text-[11px] text-amber-950 sm:flex-row sm:items-center sm:justify-between lg:mx-5">
                   <p><strong className="font-black">합성 샘플 데모</strong> · 표시된 고객, 보험사, 상품, 금액, 약관 근거는 실제 데이터가 아닙니다.</p>
@@ -678,7 +674,7 @@ export function StepResult({ data, onReset, onLogout, userName, demoMode = false
                 </div>
                 <div className="flex gap-2 print:hidden"><ActionButton onClick={() => window.print()} title="현재 대시보드 인쇄"><Printer className="h-4 w-4" /></ActionButton><ActionButton onClick={onReset} title={resetLabel}><RefreshCw className="h-4 w-4" /></ActionButton>{onLogout && <ActionButton onClick={onLogout} title="로그아웃"><LogOut className="h-4 w-4" /></ActionButton>}</div>
               </div>
-              <nav className="dashboard-mobile-nav mx-3 flex snap-x gap-2 overflow-x-auto pb-3 md:hidden print:hidden" aria-label="보험 대시보드 섹션">
+              <nav className="dashboard-mobile-nav mx-3 flex snap-x gap-2 overflow-x-auto pb-3 lg:hidden print:hidden" aria-label="보험 대시보드 섹션">
                 {TABS.map((item) => <button key={item.id} aria-pressed={tab === item.id} onClick={() => setTab(item.id)} className={`min-h-10 shrink-0 snap-start rounded-full px-4 text-xs font-bold transition-colors ${tab === item.id ? "bg-[#17211f] text-white" : "bg-white text-neutral-500 ring-1 ring-black/[0.06]"}`}>{item.shortLabel}</button>)}
               </nav>
             </header>
