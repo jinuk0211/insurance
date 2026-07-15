@@ -1,5 +1,7 @@
 .agents/
 .claude/
+.next/
+node_modules/
 ECC_harness_v3_txt/
 FSS/
 analysis_results/
