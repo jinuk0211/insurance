@@ -1,0 +1,18 @@
+.agents/
+.claude/
+ECC_harness_v3_txt/
+FSS/
+analysis_results/
+configs/
+data/
+eval_KR/
+eval_KR_ins/
+eval_US_card/
+eval_US_loan/
+runs/
+scripts_evolve/
+workspace/
+이전 데이터/
+*.log
+*.pdf
+__pycache__/
