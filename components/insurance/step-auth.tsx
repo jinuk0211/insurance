@@ -2,6 +2,10 @@
 
 import { useState, useEffect, useRef } from "react"
 import type { InsuranceState } from "@/app/insurance/page"
+import {
+  canAttemptCodefConfirmation,
+  MAX_CODEF_CONFIRM_ATTEMPTS,
+} from "@/components/insurance/codef-flow"
 
 const TOTAL_SEC = 170
 
@@ -19,9 +23,9 @@ export function StepAuth({ state, onRegistered, onCancel }: Props) {
   const [status, setStatus] = useState("인증 대기 중...")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const countRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const verifyingRef = useRef(false)
+  const verifyAttemptsRef = useRef(0)
   const isPass = state.authMethod === "pass"
   const isEmail = stage === "email"
 
@@ -39,43 +43,37 @@ export function StepAuth({ state, onRegistered, onCancel }: Props) {
       })
     }, 1000)
 
-    // PASS only: auto-poll every 3s
-    if (isPass) {
-      pollRef.current = setInterval(() => verify(false), 3000)
-    }
-
     return () => stopAll()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  function stopPolling() {
-    if (pollRef.current) clearInterval(pollRef.current)
-    pollRef.current = null
-  }
-
   function stopAll() {
-    stopPolling()
     if (countRef.current) clearInterval(countRef.current)
     countRef.current = null
   }
 
-  async function verify(manual: boolean) {
+  async function verify() {
     if (verifyingRef.current) return
+    if (!canAttemptCodefConfirmation(verifyAttemptsRef.current)) {
+      setError(`인증 확인은 최대 ${MAX_CODEF_CONFIRM_ATTEMPTS}회까지 가능합니다. 처음부터 다시 시도해주세요.`)
+      return
+    }
     verifyingRef.current = true
+    verifyAttemptsRef.current += 1
     try {
       const res = await fetch("/api/insurance/register/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId: state.sessionId, smsAuthNo: manual ? smsCode : "" }),
+        body: JSON.stringify({ sessionId: state.sessionId, smsAuthNo: isPass ? "" : smsCode }),
       })
       const data = await res.json()
 
       if (data.status === "pending") {
-        setStatus(`승인 대기 중...`)
+        const remaining = MAX_CODEF_CONFIRM_ATTEMPTS - verifyAttemptsRef.current
+        setStatus(`아직 인증되지 않았습니다. 승인 후 다시 눌러주세요. 남은 확인 ${remaining}회`)
         return
       }
       if (data.status === "need_email_auth") {
-        stopPolling()
         setStage("email")
         setStatus("이메일로 발송된 인증번호를 입력해주세요.")
         setError("")
@@ -96,7 +94,6 @@ export function StepAuth({ state, onRegistered, onCancel }: Props) {
       setError(data.error || "인증 실패")
       setTimeout(() => onCancel(), 2000)
     } catch {
-      if (!manual) return
       setError("네트워크 오류가 발생했습니다.")
     } finally {
       verifyingRef.current = false
@@ -107,7 +104,14 @@ export function StepAuth({ state, onRegistered, onCancel }: Props) {
     setError("")
     if (!smsCode || smsCode.length < 4) return setError("인증번호를 입력해주세요.")
     setLoading(true)
-    await verify(true)
+    await verify()
+    setLoading(false)
+  }
+
+  async function handlePassVerify() {
+    setError("")
+    setLoading(true)
+    await verify()
     setLoading(false)
   }
 
@@ -201,7 +205,14 @@ export function StepAuth({ state, onRegistered, onCancel }: Props) {
               {loading ? <><span className="h-4 w-4 animate-spin-slow rounded-full border-2 border-background/30 border-t-background" />처리 중...</> : "인증번호 확인"}
             </button>
           </div>
-        ) : null}
+        ) : (
+          <div className="mb-4 w-full">
+            <button onClick={handlePassVerify} disabled={loading}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-foreground bg-foreground py-3 text-sm font-semibold text-background hover:border-primary hover:bg-primary disabled:opacity-50">
+              {loading ? "확인 중..." : "PASS 승인 완료 후 확인"}
+            </button>
+          </div>
+        )}
 
         <p className="text-xs text-muted-foreground">{status}</p>
         {error && <p className="mt-2 text-xs text-red-600">{error}</p>}

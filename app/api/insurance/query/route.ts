@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { codefPost, rsaEncrypt } from "@/lib/codef-client"
 import { getSession, saveSession } from "@/lib/session-store"
-import { saveQueryHistory } from "@/lib/db/history"
+import { getRecentQueryResult, saveQueryHistory } from "@/lib/db/history"
 import { saveRegisteredUser } from "@/lib/db/registered-user"
 import { z } from "zod"
 
@@ -16,6 +16,16 @@ export async function POST(req: NextRequest) {
     const { sessionId } = parsed.data
     const session = await getSession(sessionId)
     if (!session) return NextResponse.json({ status: "error", error: "인증이 만료됐습니다. 처음부터 다시 시도해주세요." }, { status: 400 })
+
+    const cached = await getRecentQueryResult(session.baseParams)
+    if (cached) {
+      return NextResponse.json({
+        status: "success",
+        data: cached.data,
+        cached: true,
+        cachedAt: cached.queriedAt,
+      })
+    }
 
     const params = {
       organization: "0001",

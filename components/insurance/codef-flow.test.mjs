@@ -1,7 +1,11 @@
 import test from "node:test"
 import assert from "node:assert/strict"
 
-import { resolveCodefAuthMethod, toCaptchaImageSrc } from "./codef-flow.ts"
+import {
+  canAttemptCodefConfirmation,
+  resolveCodefAuthMethod,
+  toCaptchaImageSrc,
+} from "./codef-flow.ts"
 
 test("normalizes a raw CODEF captcha payload to an image data URL", () => {
   assert.equal(toCaptchaImageSrc("YWJjZA=="), "data:image/png;base64,YWJjZA==")
@@ -19,4 +23,10 @@ test("maps CODEF auth method values to PASS or SMS", () => {
   assert.equal(resolveCodefAuthMethod("sms"), "sms")
   assert.equal(resolveCodefAuthMethod("1"), "pass")
   assert.equal(resolveCodefAuthMethod("pass"), "pass")
+})
+
+test("requires manual confirmation and caps it at three CODEF calls", () => {
+  assert.equal(canAttemptCodefConfirmation(0), true)
+  assert.equal(canAttemptCodefConfirmation(2), true)
+  assert.equal(canAttemptCodefConfirmation(3), false)
 })

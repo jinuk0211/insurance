@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "vercel-build": "pnpm db:migrate && pnpm build",
     "start": "next start",
     "test": "node --experimental-strip-types --test \"**/*.test.mjs\"",
     "test:coverage": "node --experimental-strip-types --experimental-test-coverage --test \"**/*.test.mjs\"",

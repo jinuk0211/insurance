@@ -66,6 +66,28 @@ test("passes the public insurance UI without auth while preserving security head
   assert.equal(response.headers.get("x-frame-options"), "DENY")
 })
 
+test("challenges the browser once before exposing the live insurance UI", () => {
+  configurePreview()
+
+  const response = proxy(uiRequest())
+
+  assert.equal(response.status, 401)
+  assert.match(response.headers.get("www-authenticate") || "", /^Basic /)
+  assert.equal(response.headers.get("cache-control"), "private, no-store")
+})
+
+test("passes the live insurance UI with exact preview credentials", () => {
+  configurePreview()
+  const authorization = `Basic ${Buffer.from("reviewer:a-long-preview-password").toString("base64")}`
+  const response = proxy(new NextRequest("https://insurance.example/insurance", {
+    headers: { authorization },
+  }))
+
+  assert.equal(response.status, 200)
+  assert.equal(response.headers.get("x-middleware-next"), "1")
+  assert.equal(response.headers.get("cache-control"), "private, no-store")
+})
+
 test("returns JSON without a browser login challenge before an insurance handler runs", async () => {
   configurePreview()
   const response = proxy(request())

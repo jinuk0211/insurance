@@ -17,12 +17,9 @@ function applySecurityHeaders(response: NextResponse): NextResponse {
 }
 
 export function proxy(request: NextRequest): NextResponse {
-  if (
+  const isInsuranceUi =
     request.nextUrl.pathname === "/insurance" ||
     request.nextUrl.pathname.startsWith("/insurance/")
-  ) {
-    return applySecurityHeaders(NextResponse.next())
-  }
 
   const isDemoOnly =
     process.env.INSURANCE_DEMO_ONLY === "true" ||
@@ -31,6 +28,9 @@ export function proxy(request: NextRequest): NextResponse {
     !process.env.CODEF_PUBLIC_KEY
 
   if (isDemoOnly) {
+    if (isInsuranceUi) {
+      return applySecurityHeaders(NextResponse.next())
+    }
     return applySecurityHeaders(
       NextResponse.json(
         { error: "실데이터 조회는 현재 비활성화되어 있습니다. 데모 모드를 이용해 주세요." },
@@ -46,6 +46,13 @@ export function proxy(request: NextRequest): NextResponse {
   })
 
   if (!decision.allowed) {
+    if (isInsuranceUi && decision.status === 401) {
+      const response = new NextResponse("Live insurance access requires authorization.", {
+        status: 401,
+        headers: { "WWW-Authenticate": 'Basic realm="KFin Insurance", charset="UTF-8"' },
+      })
+      return applySecurityHeaders(response)
+    }
     const response = NextResponse.json(
       {
         error:

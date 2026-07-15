@@ -1,16 +1,56 @@
 import { randomUUID } from "node:crypto"
-import { eq, and, desc } from "drizzle-orm"
+import { eq, and, desc, gte } from "drizzle-orm"
 import { getDb } from "./client"
 import { insuranceDashboardSnapshot, insuranceQueryHistory } from "./schema"
 import { encryptJson, decryptJson } from "@/lib/crypto"
 import { deriveUserKey, maskName } from "@/lib/user-key"
 import { getCodefEnv } from "@/lib/codef-client"
 import { buildInsuranceDashboardModel } from "@/lib/insurance-dashboard"
+import { getInsuranceCacheTtlMs } from "@/lib/insurance-cache-policy"
 
 interface BaseParams {
   userName?: unknown
   birthDate?: unknown
   phoneNo?: unknown
+}
+
+export interface RecentQueryResult {
+  data: unknown
+  queriedAt: string
+}
+
+/** 최근 성공 조회가 있으면 복호화해 반환한다. 없거나 만료됐을 때만 CODEF를 호출한다. */
+export async function getRecentQueryResult(
+  baseParams: BaseParams,
+  now = new Date(),
+): Promise<RecentQueryResult | null> {
+  if (!process.env.DATABASE_URL) return null
+
+  const userKey = deriveUserKey(
+    String(baseParams.phoneNo ?? ""),
+    String(baseParams.birthDate ?? ""),
+  )
+  const ttlMs = getInsuranceCacheTtlMs(process.env.INSURANCE_CACHE_TTL_HOURS)
+  const cutoff = new Date(now.getTime() - ttlMs)
+  const rows = await getDb()
+    .select({
+      payloadCipher: insuranceQueryHistory.payloadCipher,
+      queriedAt: insuranceQueryHistory.queriedAt,
+    })
+    .from(insuranceQueryHistory)
+    .where(and(
+      eq(insuranceQueryHistory.userKey, userKey),
+      eq(insuranceQueryHistory.env, getCodefEnv()),
+      gte(insuranceQueryHistory.queriedAt, cutoff),
+    ))
+    .orderBy(desc(insuranceQueryHistory.queriedAt))
+    .limit(1)
+
+  if (!rows.length) return null
+  return {
+    data: decryptJson(rows[0].payloadCipher),
+    queriedAt: rows[0].queriedAt.toISOString(),
+  }
 }
 
 /** 조회 성공 시 호출. 전체 결과를 암호화해 저장한다. */

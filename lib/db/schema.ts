@@ -49,3 +49,19 @@ export const registeredUser = pgTable("registered_user", {
   credCipher: text("cred_cipher").notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 })
+
+/** 서버에서 CODEF 호출 총량을 원자적으로 제한하고 실제 시도를 감사하기 위한 로그. */
+export const codefApiUsage = pgTable(
+  "codef_api_usage",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    env: text("env").notNull(),
+    endpoint: text("endpoint").notNull(),
+    status: text("status").notNull().default("reserved"),
+    requestedAt: timestamp("requested_at", { withTimezone: true }).defaultNow().notNull(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+  },
+  (t) => ({
+    envRequestedAtIdx: index("cau_env_requested_at_idx").on(t.env, t.requestedAt),
+  }),
+)

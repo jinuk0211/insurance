@@ -9,6 +9,7 @@
  */
 
 import NodeRSA from "node-rsa"
+import { completeCodefApiCall, reserveCodefApiCall } from "@/lib/db/codef-usage"
 
 const ENV = {
   BASE:
@@ -67,28 +68,41 @@ export function rsaEncrypt(plain: string): string {
 }
 
 // ── CODEF POST ────────────────────────────────────────────────────────────────
-export async function codefPost(endpoint: string, params: Record<string, unknown>) {
+// CODEF 응답은 단계별로 data 형상이 달라 각 라우트에서 필요한 필드를 판별한다.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function codefPost(endpoint: string, params: Record<string, unknown>): Promise<any> {
   const token = await getCodefToken()
-  const resp = await fetch(`${ENV.BASE}${endpoint}`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: encodeURIComponent(JSON.stringify(params)),
-  })
-
-  const text = await resp.text()
-  // CODEF returns URL-encoded JSON
+  const reservationId = await reserveCodefApiCall(getCodefEnv(), endpoint)
   try {
-    const decoded = decodeURIComponent(text)
-    return JSON.parse(decoded)
-  } catch {
+    const resp = await fetch(`${ENV.BASE}${endpoint}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: encodeURIComponent(JSON.stringify(params)),
+    })
+
+    const text = await resp.text()
+    let parsed: unknown
     try {
-      return JSON.parse(text)
+      parsed = JSON.parse(decodeURIComponent(text))
     } catch {
-      throw new Error(`CODEF 응답 파싱 실패: ${text.slice(0, 200)}`)
+      try {
+        parsed = JSON.parse(text)
+      } catch {
+        throw new Error(`CODEF 응답 파싱 실패: ${text.slice(0, 200)}`)
+      }
     }
+    await completeCodefApiCall(reservationId, "completed")
+    return parsed
+  } catch (error) {
+    try {
+      await completeCodefApiCall(reservationId, "failed")
+    } catch (usageError) {
+      console.error("CODEF 호출 로그 완료 처리 실패:", usageError)
+    }
+    throw error
   }
 }
 

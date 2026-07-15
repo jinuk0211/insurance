@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { codefPost } from "@/lib/codef-client"
 import { getSession } from "@/lib/session-store"
-import { saveQueryHistory } from "@/lib/db/history"
+import { getRecentQueryResult, saveQueryHistory } from "@/lib/db/history"
 import { saveRegisteredUser } from "@/lib/db/registered-user"
 import { z } from "zod"
 
@@ -19,6 +19,16 @@ export async function POST(req: NextRequest) {
     const { sessionId, smsAuthNo } = parsed.data
     const session = await getSession(sessionId)
     if (!session) return NextResponse.json({ error: "세션 만료." }, { status: 404 })
+
+    const cached = await getRecentQueryResult(session.baseParams)
+    if (cached) {
+      return NextResponse.json({
+        status: "success",
+        data: cached.data,
+        cached: true,
+        cachedAt: cached.queriedAt,
+      })
+    }
 
     const authMethod = String(session.queryParams?.authMethod ?? session.baseParams.authMethod ?? "1")
     const isPass = authMethod === "1"

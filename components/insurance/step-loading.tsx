@@ -2,7 +2,11 @@
 
 import { useEffect, useRef, useState } from "react"
 import type { InsuranceState } from "@/app/insurance/page"
-import { resolveCodefAuthMethod } from "@/components/insurance/codef-flow"
+import {
+  canAttemptCodefConfirmation,
+  MAX_CODEF_CONFIRM_ATTEMPTS,
+  resolveCodefAuthMethod,
+} from "@/components/insurance/codef-flow"
 
 interface Props {
   state: InsuranceState
@@ -20,29 +24,21 @@ export function StepLoading({ state, onSuccess, onError }: Props) {
   const [status, setStatus] = useState("가입된 보험 계약 정보를 불러오고 있어요.")
   const [submitting, setSubmitting] = useState(false)
   const sessionIdRef = useRef<string | null>(state.sessionId)
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const returnRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const confirmInFlightRef = useRef(false)
-  const pollCountRef = useRef(0)
+  const confirmAttemptsRef = useRef(0)
 
   useEffect(() => {
     if (called.current) return
     called.current = true
     doQuery()
     return () => {
-      stopPolling()
       if (returnRef.current) clearTimeout(returnRef.current)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  function stopPolling() {
-    if (pollRef.current) clearInterval(pollRef.current)
-    pollRef.current = null
-  }
-
   function fail(message: string) {
-    stopPolling()
     setErrorMsg(message)
     returnRef.current = setTimeout(() => onError(), 2000)
   }
@@ -99,7 +95,7 @@ export function StepLoading({ state, onSuccess, onError }: Props) {
       if (data.status === "need_auth") {
         const mode = resolveCodefAuthMethod(data.authMethod ?? state.authMethod)
         setAuthMode(mode)
-        if (mode === "pass") startPassPolling()
+        if (mode === "pass") setStatus("PASS 앱에서 승인한 뒤 아래 확인 버튼을 눌러주세요.")
         else setStatus("문자로 받은 인증번호를 입력해주세요.")
         return
       }
@@ -111,24 +107,18 @@ export function StepLoading({ state, onSuccess, onError }: Props) {
     }
   }
 
-  function startPassPolling() {
-    setStatus("PASS 앱에서 인증 요청을 승인해주세요.")
-    pollCountRef.current = 0
-    pollRef.current = setInterval(() => {
-      pollCountRef.current += 1
-      if (pollCountRef.current > 85) {
-        fail("PASS 인증 시간이 만료됐습니다.")
-        return
-      }
-      void confirmQuery("")
-    }, 2000)
-  }
-
   async function confirmQuery(smsAuthNo: string) {
     const sessionId = sessionIdRef.current
     if (!sessionId || confirmInFlightRef.current) return
+    if (!canAttemptCodefConfirmation(confirmAttemptsRef.current)) {
+      const message = `인증 확인은 최대 ${MAX_CODEF_CONFIRM_ATTEMPTS}회까지 가능합니다. 처음부터 다시 시도해주세요.`
+      if (authMode === "sms") setInputError(message)
+      else fail(message)
+      return
+    }
 
     confirmInFlightRef.current = true
+    confirmAttemptsRef.current += 1
     try {
       const res = await fetch("/api/insurance/query-confirm", {
         method: "POST",
@@ -138,12 +128,16 @@ export function StepLoading({ state, onSuccess, onError }: Props) {
       const data = await res.json()
 
       if (data.status === "success") {
-        stopPolling()
         onSuccess(data.data)
         return
       }
       if (data.status === "pending") {
-        setStatus(authMode === "sms" ? "인증번호 확인을 기다리고 있습니다." : "PASS 승인을 기다리고 있습니다.")
+        const remaining = MAX_CODEF_CONFIRM_ATTEMPTS - confirmAttemptsRef.current
+        setStatus(
+          authMode === "sms"
+            ? `아직 인증되지 않았습니다. 남은 확인 ${remaining}회`
+            : `PASS 승인 후 다시 눌러주세요. 남은 확인 ${remaining}회`,
+        )
         return
       }
       if (!res.ok || data.status === "error") {
@@ -170,6 +164,12 @@ export function StepLoading({ state, onSuccess, onError }: Props) {
     }
     setSubmitting(true)
     await confirmQuery(smsCode)
+    setSubmitting(false)
+  }
+
+  async function handlePassConfirm() {
+    setSubmitting(true)
+    await confirmQuery("")
     setSubmitting(false)
   }
 
@@ -209,6 +209,22 @@ export function StepLoading({ state, onSuccess, onError }: Props) {
               </button>
               {inputError && <p className="mt-2 text-center text-xs text-red-600">{inputError}</p>}
               <p className="mt-3 text-center text-xs text-muted-foreground">{status}</p>
+            </div>
+          ) : authMode === "pass" ? (
+            <div className="mx-auto max-w-sm">
+              <div className="mb-5 flex justify-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                  PASS
+                </div>
+              </div>
+              <p className="mb-4 text-sm text-muted-foreground">{status}</p>
+              <button
+                onClick={handlePassConfirm}
+                disabled={submitting}
+                className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-foreground bg-foreground py-3 text-sm font-semibold text-background transition-colors hover:border-primary hover:bg-primary disabled:opacity-50"
+              >
+                {submitting ? "확인 중..." : "PASS 승인 완료 후 확인"}
+              </button>
             </div>
           ) : (
             <>
