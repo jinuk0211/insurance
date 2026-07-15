@@ -76,13 +76,13 @@ test("shows the live demo-first UI without a browser login", () => {
   assert.equal(response.headers.get("www-authenticate"), null)
 })
 
-test("challenges the browser once before exposing the live insurance UI", () => {
+test("never challenges the browser before exposing the live insurance UI", () => {
   configurePreview()
 
   const response = proxy(uiRequest())
 
-  assert.equal(response.status, 401)
-  assert.match(response.headers.get("www-authenticate") || "", /^Basic /)
+  assert.equal(response.status, 200)
+  assert.equal(response.headers.get("www-authenticate"), null)
   assert.equal(response.headers.get("cache-control"), "private, no-store")
 })
 
@@ -98,13 +98,13 @@ test("passes the live insurance UI with exact preview credentials", () => {
   assert.equal(response.headers.get("cache-control"), "private, no-store")
 })
 
-test("returns JSON without a browser login challenge before an insurance handler runs", async () => {
+test("passes the live API without a browser login challenge", async () => {
   configurePreview()
   const response = proxy(request())
 
-  assert.equal(response.status, 401)
+  assert.equal(response.status, 200)
   assert.equal(response.headers.get("www-authenticate"), null)
-  assert.match((await response.json()).error, /authorization/i)
+  assert.equal(response.headers.get("x-middleware-next"), "1")
   assert.equal(response.headers.get("cache-control"), "private, no-store")
   assert.equal(response.headers.get("x-frame-options"), "DENY")
 })
@@ -135,7 +135,7 @@ test("passes exact credentials without forwarding the Authorization header", () 
   assert.equal(response.headers.get("cache-control"), "private, no-store")
 })
 
-test("returns 503 when deployed without configured preview credentials", () => {
+test("does not require preview credentials in a deployment", () => {
   process.env.VERCEL = "1"
   process.env.CODEF_CLIENT_ID = "sandbox-client"
   process.env.CODEF_CLIENT_SECRET = "sandbox-secret"
@@ -145,11 +145,11 @@ test("returns 503 when deployed without configured preview credentials", () => {
 
   const response = proxy(request())
 
-  assert.equal(response.status, 503)
+  assert.equal(response.status, 200)
   assert.equal(response.headers.get("cache-control"), "private, no-store")
 })
 
-test("fails closed outside Vercel when a production live API lacks access credentials", () => {
+test("allows a production live API outside Vercel without Basic Auth", () => {
   process.env.NODE_ENV = "production"
   delete process.env.VERCEL
   process.env.CODEF_CLIENT_ID = "sandbox-client"
@@ -161,6 +161,6 @@ test("fails closed outside Vercel when a production live API lacks access creden
 
   const response = proxy(request())
 
-  assert.equal(response.status, 503)
+  assert.equal(response.status, 200)
   assert.equal(response.headers.get("www-authenticate"), null)
 })
