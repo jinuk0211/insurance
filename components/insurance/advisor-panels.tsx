@@ -31,6 +31,12 @@ import type {
   InsuranceDocumentRecord,
   InsuranceProposal,
 } from "@/lib/insurance-dashboard"
+import {
+  CANCER_DIAGNOSIS_LABELS,
+  evaluateCancerScenario,
+  type CancerDiagnosisType,
+  type CancerRuleAssessment,
+} from "@/lib/insurance-rule-engine"
 
 type QualityView = "collection" | "coverages" | "documents"
 
@@ -297,6 +303,94 @@ function ScenarioResult({ scenario, model }: { scenario: InsuranceDecisionScenar
   )
 }
 
+const CANCER_SCENARIO_OPTIONS = Object.entries(CANCER_DIAGNOSIS_LABELS) as [CancerDiagnosisType, string][]
+
+function assessmentStatus(assessment: CancerRuleAssessment): { label: string; tone: string } {
+  if (assessment.resultStatus === "candidate") return { label: "지급 후보", tone: "bg-emerald-100 text-emerald-900" }
+  if (assessment.resultStatus === "waiting_period") return { label: "면책기간", tone: "bg-rose-100 text-rose-900" }
+  return { label: "추가 확인 필요", tone: "bg-amber-100 text-amber-950" }
+}
+
+function waiverLabel(status: CancerRuleAssessment["premiumWaiverStatus"]): string {
+  if (status === "candidate") return "납입면제 후보"
+  if (status === "excluded") return "납입면제 제외"
+  return "납입면제 조건 확인"
+}
+
+function CancerScenarioCalculator({ model }: { model: InsuranceDashboardModel }) {
+  const [diagnosisType, setDiagnosisType] = useState<CancerDiagnosisType>("general_cancer")
+  const [diagnosisDate, setDiagnosisDate] = useState("")
+  const [submitted, setSubmitted] = useState(false)
+  const cancerContracts = useMemo(() => model.activeContracts.filter((contract) =>
+    contract.categoryIds.includes("cancer") || contract.coverageItems.some((coverage) => coverage.rawName.includes("암")),
+  ), [model.activeContracts])
+  const assessments = useMemo(() => submitted ? cancerContracts.map((contract) => evaluateCancerScenario(contract, {
+    diagnosisType,
+    diagnosisDate,
+  })) : [], [cancerContracts, diagnosisDate, diagnosisType, submitted])
+
+  return (
+    <section className="result-surface overflow-hidden" aria-labelledby="cancer-scenario-title">
+      <div className="grid gap-5 border-b border-black/10 p-5 xl:grid-cols-[1fr_420px] xl:items-end">
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-700">Deterministic cancer rule</p>
+          <h2 id="cancer-scenario-title" className="mt-1 text-xl font-black">암종·진단일 약관 계산</h2>
+          <p className="mt-2 max-w-2xl text-xs leading-5 text-neutral-500">CODEF 계약일과 담보 가입금액을 현재 검증된 5개 상품 규칙에 대입합니다. 상품·담보·약관 버전이 정확히 맞지 않으면 금액을 추정하지 않습니다.</p>
+        </div>
+        <form onSubmit={(event) => { event.preventDefault(); setSubmitted(true) }} className="grid gap-2 sm:grid-cols-[1fr_150px_auto] xl:grid-cols-[1fr_150px]">
+          <label className="text-[10px] font-black text-neutral-600">진단 암종
+            <select value={diagnosisType} onChange={(event) => { setDiagnosisType(event.target.value as CancerDiagnosisType); setSubmitted(false) }} className="mt-1 min-h-11 w-full rounded-xl border border-black/15 bg-white px-3 text-sm font-bold outline-none focus:border-emerald-600">
+              {CANCER_SCENARIO_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+            </select>
+          </label>
+          <label className="text-[10px] font-black text-neutral-600">진단일
+            <input required type="date" value={diagnosisDate} onChange={(event) => { setDiagnosisDate(event.target.value); setSubmitted(false) }} className="mt-1 min-h-11 w-full rounded-xl border border-black/15 bg-white px-3 text-sm font-bold outline-none focus:border-emerald-600" />
+          </label>
+          <button className="min-h-11 rounded-xl bg-emerald-700 px-5 text-xs font-black text-white sm:self-end xl:col-span-2">계약별 계산</button>
+        </form>
+      </div>
+
+      {!submitted && <div className="p-6 text-center text-xs text-neutral-500">암종과 진단일을 선택하면 정상 상태의 암 관련 계약 {cancerContracts.length}건을 계산합니다.</div>}
+      {submitted && cancerContracts.length === 0 && <div className="p-8 text-center text-sm font-bold text-amber-900">CODEF 응답에서 암 관련 계약이나 담보를 찾지 못했습니다.</div>}
+      {submitted && assessments.length > 0 && <div className="divide-y divide-black/10">
+        {assessments.map((assessment) => {
+          const status = assessmentStatus(assessment)
+          return (
+            <article key={assessment.contractId} className="grid gap-4 p-5 xl:grid-cols-[1.1fr_0.9fr]">
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className={`rounded-full px-2.5 py-1 text-[10px] font-black ${status.tone}`}>{status.label}</span>
+                  <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-[10px] font-black text-neutral-700">{assessment.classificationLabel}</span>
+                  <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-black text-blue-800">{waiverLabel(assessment.premiumWaiverStatus)}</span>
+                </div>
+                <p className="mt-3 text-[10px] font-bold text-neutral-500">{assessment.company}</p>
+                <h3 className="mt-1 text-base font-black">{assessment.contractName}</h3>
+                <dl className="mt-4 grid gap-3 rounded-[16px] bg-[#f3f0e8] p-4 text-xs sm:grid-cols-2">
+                  <div><dt className="text-[10px] text-neutral-500">적용 담보</dt><dd className="mt-1 font-black">{assessment.coverageName || "담보 확인 필요"}</dd></div>
+                  <div><dt className="text-[10px] text-neutral-500">가입금액</dt><dd className="mt-1 font-black">{formatWon(assessment.coverageAmount)}</dd></div>
+                  <div><dt className="text-[10px] text-neutral-500">암 보장개시일</dt><dd className="mt-1 font-black">{assessment.waitingPeriodEnd || "별도 조건 확인"}</dd></div>
+                  <div><dt className="text-[10px] text-neutral-500">감액 종료일·지급률</dt><dd className="mt-1 font-black">{assessment.reductionEndDate ? `${assessment.reductionEndDate} · ${assessment.payoutRate === null ? "확인 필요" : `${Math.round(assessment.payoutRate * 100)}%`}` : "별도 조건 확인"}</dd></div>
+                </dl>
+              </div>
+              <div className="rounded-[18px] border border-black/10 bg-white p-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-neutral-500">Estimated candidate</p>
+                <p className="mt-2 text-2xl font-black tabular-nums">{assessment.candidateAmount === null ? "금액 계산 불가" : formatWon(assessment.candidateAmount)}</p>
+                <p className="mt-2 text-[10px] leading-4 text-neutral-500">{assessment.clauseSummary}</p>
+                <div className="mt-4 rounded-[14px] bg-amber-50 p-3 text-[10px] leading-4 text-amber-950">
+                  <strong className="block">근거</strong>
+                  <span className="mt-1 block">{assessment.sourceDocument || "정확한 약관 미연결"}</span>
+                  <span className="mt-1 block font-bold">{assessment.sourcePage === null ? "원문 페이지 매핑 필요" : `${assessment.sourcePage}쪽`}</span>
+                </div>
+                {assessment.checks.length > 0 && <ul className="mt-3 space-y-1 text-[10px] font-bold text-rose-800">{assessment.checks.map((check) => <li key={check}>· {check}</li>)}</ul>}
+              </div>
+            </article>
+          )
+        })}
+      </div>}
+    </section>
+  )
+}
+
 export function DecisionPanel({ model }: { model: InsuranceDashboardModel }) {
   const scenarios = model.enrichment.decisionScenarios
   const [selectedId, setSelectedId] = useState(scenarios[0]?.id ?? "")
@@ -305,6 +399,7 @@ export function DecisionPanel({ model }: { model: InsuranceDashboardModel }) {
   const [customSubmitted, setCustomSubmitted] = useState(false)
   return (
     <div className="space-y-6">
+      <CancerScenarioCalculator model={model} />
       <section className="result-surface p-5">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#c71935]">Disease & treatment reasoning</p><h2 className="mt-1 text-xl font-black">질병·치료 기준 조회</h2><p className="mt-1 text-xs text-neutral-500">진단명·치료행위·시점을 약관 규칙에 대입하되 보험금 지급을 확정하지 않습니다.</p></div>

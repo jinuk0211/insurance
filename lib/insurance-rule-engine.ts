@@ -257,9 +257,12 @@ function coverageKeywords(diagnosisType: CancerDiagnosisType): readonly string[]
 }
 
 function candidateCancerCoverages(contract: InsuranceDashboardContract): InsuranceCoverageItem[] {
-  return contract.coverageItems.filter((coverage) =>
-    coverage.standardCategoryId === "cancer" || normalizeMatchText(coverage.rawName).includes("암"),
-  )
+  return contract.coverageItems.filter((coverage) => {
+    if (coverage.standardCategoryId === "cancer") return true
+    if (coverage.standardCategoryId !== null) return false
+    const name = normalizeMatchText(coverage.rawName)
+    return name.includes("암") && !["치료", "수술", "입원", "사망"].some((keyword) => name.includes(keyword))
+  })
 }
 
 function findCoverage(contract: InsuranceDashboardContract, diagnosisType: CancerDiagnosisType, classification: CancerClassification): InsuranceCoverageItem | null {
@@ -321,6 +324,7 @@ export function evaluateCancerScenario(
   const classification: CancerClassification = includesType(rule.generalCancerExclusions, input.diagnosisType)
     ? "separate_benefit"
     : "general_cancer"
+  checks.add("실제 가입 약관 버전·특약 대조")
   const startDate = parseDate(contract.startDate)
   const diagnosisDate = parseDate(input.diagnosisDate)
   const waitingApplies = includesType(rule.waitingAppliesTo, input.diagnosisType)
@@ -332,6 +336,7 @@ export function evaluateCancerScenario(
   if (!diagnosisDate) checks.add("정확한 진단일 확인")
 
   const coverage = findCoverage(contract, input.diagnosisType, classification)
+  const coverageAmount = coverage?.amount ?? null
   if (!coverage) {
     checks.add(classification === "separate_benefit" ? "해당 암종의 별도 담보 가입 여부 확인" : "암 진단 담보 확인")
   } else if (coverage.amount === null) {
@@ -356,9 +361,9 @@ export function evaluateCancerScenario(
     reductionEndDate: reductionEnd ? formatDate(reductionEnd) : null,
     payoutRate,
     coverageName: coverage?.rawName ?? null,
-    coverageAmount: coverage?.amount ?? null,
-    candidateAmount: canCalculate && coverage?.amount !== null && payoutRate !== null
-      ? Math.round(coverage.amount * payoutRate)
+    coverageAmount,
+    candidateAmount: canCalculate && coverageAmount !== null && payoutRate !== null
+      ? Math.round(coverageAmount * payoutRate)
       : null,
     premiumWaiverStatus: premiumWaiverStatus(rule, input.diagnosisType),
     sourceDocument: rule.sourceDocument,
