@@ -1,3 +1,5 @@
+import { buildInsuranceTermsEnrichment } from "./insurance-terms.ts"
+
 export type InsuranceContractStatusKind = "active" | "inactive" | "unknown"
 
 export type InsuranceCoverageSignal = "related_contract" | "not_found"
@@ -32,6 +34,9 @@ export interface InsuranceCoverageItem {
   standardCategoryId: string | null
   standardCategoryLabel: string
   amount: number | null
+  code: string
+  status: string
+  agreementType: string
   source: InsuranceDataSource
   confidence: number | null
   reviewStatus: InsuranceReviewStatus
@@ -271,6 +276,9 @@ const CONTRACT_LIST_KEYS = new Set(
   [
     "resFlatRateContractList",
     "resActualLossContractList",
+    "resSavingsContractList",
+    "resCarContractList",
+    "resPropertyContractList",
     "resContractList",
     "contractList",
     "insuranceList",
@@ -283,6 +291,7 @@ const CONTRACT_LIST_KEYS = new Set(
 const COVERAGE_LIST_KEYS = new Set(
   [
     "resCoverageList",
+    "resCoverageLists",
     "resGuaranteeList",
     "resRiderList",
     "resSpecialContractList",
@@ -317,6 +326,10 @@ const COVERAGE_AMOUNT_KEYS = [
   "subscriptionAmount",
   "benefitAmount",
 ] as const
+
+const COVERAGE_CODE_KEYS = ["resCoverageCode", "coverageCode", "resGuaranteeCode", "guaranteeCode"] as const
+const COVERAGE_STATUS_KEYS = ["resCoverageStatus", "coverageStatus", "resGuaranteeStatus", "guaranteeStatus"] as const
+const COVERAGE_AGREEMENT_KEYS = ["resAgreementType", "agreementType", "resCoverageType", "coverageType"] as const
 
 const NAME_KEYS = [
   "resInsuranceName",
@@ -806,6 +819,9 @@ function normalizeCoverageItem(record: UnknownRecord, index: number, contractId:
     standardCategoryId: categoryId,
     standardCategoryLabel: category?.label || "미분류",
     amount,
+    code: textValue(findValue(record, COVERAGE_CODE_KEYS)),
+    status: textValue(findValue(record, COVERAGE_STATUS_KEYS)),
+    agreementType: textValue(findValue(record, COVERAGE_AGREEMENT_KEYS)),
     source: dataSource(record.source, "codef"),
     confidence: boundedPercentage(record.confidence),
     reviewStatus: reviewStatus(record.reviewStatus, amount !== null),
@@ -827,10 +843,15 @@ function normalizeContract(record: UnknownRecord, index: number): InsuranceDashb
   const rawStatus = textValue(findValue(record, STATUS_KEYS))
   const statusKind = classifyStatus(rawStatus)
   const rawId = textValue(findValue(record, ID_KEYS))
-  const startDate = textValue(findValue(record, START_DATE_KEYS))
-  const endDate = textValue(findValue(record, END_DATE_KEYS))
   const contractId = rawId || `contract-${index + 1}`
-  const coverageItems = collectCoverageRecords(record)
+  const coverageRecords = collectCoverageRecords(record)
+  const startDate = textValue(findValue(record, START_DATE_KEYS)) || textValue(
+    coverageRecords.map((coverage) => findValue(coverage, START_DATE_KEYS)).find((value) => value !== undefined),
+  )
+  const endDate = textValue(findValue(record, END_DATE_KEYS)) || textValue(
+    coverageRecords.map((coverage) => findValue(coverage, END_DATE_KEYS)).find((value) => value !== undefined),
+  )
+  const coverageItems = coverageRecords
     .map((item, coverageIndex) => normalizeCoverageItem(item, coverageIndex, contractId))
     .filter((item): item is InsuranceCoverageItem => item !== null)
 
@@ -878,7 +899,15 @@ function deduplicateContracts(contracts: InsuranceDashboardContract[]): Insuranc
  */
 export function buildInsuranceDashboardModel(data: unknown): InsuranceDashboardModel {
   const contracts = deduplicateContracts(collectContractRecords(data).map(normalizeContract))
-  const enrichment = normalizeDashboardEnrichment(data)
+  const responseEnrichment = normalizeDashboardEnrichment(data)
+  const termsEnrichment = buildInsuranceTermsEnrichment(contracts)
+  const enrichment: InsuranceDashboardEnrichment = {
+    policyFindings: [...responseEnrichment.policyFindings, ...termsEnrichment.policyFindings],
+    changeRisks: [...responseEnrichment.changeRisks, ...termsEnrichment.changeRisks],
+    documents: [...responseEnrichment.documents, ...termsEnrichment.documents],
+    decisionScenarios: responseEnrichment.decisionScenarios,
+    proposals: responseEnrichment.proposals,
+  }
   const activeContracts = contracts.filter((contract) => contract.statusKind === "active")
   const inactiveContracts = contracts.filter((contract) => contract.statusKind === "inactive")
   const unknownContracts = contracts.filter((contract) => contract.statusKind === "unknown")

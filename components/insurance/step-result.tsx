@@ -524,7 +524,7 @@ function TermsRiskPanel({ model, demoMode }: { model: InsuranceDashboardModel; d
           <p className="mt-3 text-sm leading-6 text-neutral-600">
             CODEF 계약 조회 결과만으로 지급 조건·면책기간·감액기간을 추정하지 않습니다. 정확한 약관 PDF 또는 구조화된 분석 결과가 연결되면 이 탭에 근거 페이지와 함께 표시됩니다.
           </p>
-          <p className="mt-6 text-xs font-semibold text-neutral-500">약관 분석 기능은 이 보험 전용 제출본에 포함하지 않았습니다.</p>
+          <p className="mt-6 text-xs font-semibold text-neutral-500">보유 문서와 상품명이 일치하지 않거나 판매시기 확인이 필요한 계약입니다.</p>
         </div>
       </section>
     )

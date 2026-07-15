@@ -1,4 +1,8 @@
 import type { InsuranceCoverageItem, InsuranceDashboardContract } from "./insurance-dashboard.ts"
+import {
+  findInsuranceTermsMatch,
+  type InsuranceTermsMatch,
+} from "./insurance-terms.ts"
 
 export type CancerDiagnosisType =
   | "general_cancer"
@@ -44,7 +48,7 @@ export interface CancerRuleAssessment {
   contractName: string
   company: string
   ruleId: string | null
-  ruleStatus: "matched" | "unmatched"
+  ruleStatus: "matched" | "provisional" | "unmatched"
   resultStatus: CancerRuleResultStatus
   classification: CancerClassification | null
   classificationLabel: string
@@ -208,6 +212,65 @@ export function findCancerProductRule(company: string, productName: string): Can
   ) ?? null
 }
 
+const CATALOG_CANCER_TYPE_MAP: Readonly<Record<string, CancerDiagnosisType>> = {
+  기타피부암: "other_skin_cancer",
+  갑상선암: "thyroid_cancer",
+  제자리암: "in_situ_carcinoma",
+  경계성종양: "borderline_tumor",
+  대장점막내암: "colorectal_mucosal_cancer",
+  비침습방광암: "noninvasive_bladder_cancer",
+  전립선암: "prostate_cancer",
+  유방암: "early_breast_cancer",
+}
+
+function catalogCancerRule(match: InsuranceTermsMatch): CancerProductRule | null {
+  const { document } = match
+  const waitingDays = document.clauses.waiting?.days ?? null
+  const reductionYears = document.clauses.reduction?.years ?? null
+  const reductionRatePercent = document.clauses.reduction?.ratePercent ?? null
+  const classification = document.clauses.classification
+  if (!waitingDays && !(reductionYears && reductionRatePercent) && !classification) return null
+
+  const classificationText = classification?.excerpt ?? ""
+  const generalCancerExclusions = classificationText.includes("제외")
+    ? Array.from(new Set(
+        (classification?.mentionedCancerTypes ?? [])
+          .map((term) => CATALOG_CANCER_TYPE_MAP[term])
+          .filter((type): type is CancerDiagnosisType => Boolean(type)),
+      ))
+    : []
+
+  return {
+    id: `catalog-${document.id}`,
+    insurerMatchers: [document.insurer],
+    productMatchers: [document.productName],
+    sourceDocument: document.sourceDocument,
+    waitingPeriodDays: waitingDays ?? 0,
+    waitingAppliesTo: waitingDays ? ["general_cancer", "severe_thyroid_cancer"] : [],
+    reductionYears: reductionYears ?? 0,
+    reductionRate: reductionRatePercent ? reductionRatePercent / 100 : 1,
+    reductionAppliesTo: reductionYears && reductionRatePercent ? ALL_CANCER_TYPES : [],
+    generalCancerExclusions,
+    premiumWaiverEligible: [],
+    premiumWaiverExcluded: [],
+    clauseSummary: [
+      waitingDays ? `보장개시 ${waitingDays}일` : null,
+      reductionYears && reductionRatePercent ? `${reductionYears}년 내 ${reductionRatePercent}% 지급` : null,
+      generalCancerExclusions.length ? "암종별 일반암 제외·별도지급" : null,
+      document.clauses.premiumWaiver ? "납입면제 조항 존재" : null,
+    ].filter(Boolean).join(", ") + "가 원문에서 자동 추출되었습니다.",
+  }
+}
+
+function termsSourcePage(match: InsuranceTermsMatch | null): number | null {
+  if (!match) return null
+  return match.document.clauses.waiting?.page
+    ?? match.document.clauses.reduction?.page
+    ?? match.document.clauses.classification?.page
+    ?? match.document.clauses.premiumWaiver?.page
+    ?? null
+}
+
 function parseDate(value: string): Date | null {
   const digits = value.replace(/\D/g, "")
   if (digits.length !== 8) return null
@@ -292,7 +355,15 @@ export function evaluateCancerScenario(
   contract: InsuranceDashboardContract,
   input: CancerScenarioInput,
 ): CancerRuleAssessment {
-  const rule = findCancerProductRule(contract.company, contract.name)
+  const curatedRule = findCancerProductRule(contract.company, contract.name)
+  const termsMatch = findInsuranceTermsMatch(contract.company, contract.name, contract.startDate)
+  const extractedRule = curatedRule ? null : termsMatch ? catalogCancerRule(termsMatch) : null
+  const rule = curatedRule ?? extractedRule
+  const ruleStatus: CancerRuleAssessment["ruleStatus"] = curatedRule
+    ? "matched"
+    : extractedRule
+      ? "provisional"
+      : "unmatched"
   const checks = new Set<string>()
   const diagnosisLabel = CANCER_DIAGNOSIS_LABELS[input.diagnosisType]
 
@@ -302,7 +373,7 @@ export function evaluateCancerScenario(
       contractName: contract.name,
       company: contract.company,
       ruleId: null,
-      ruleStatus: "unmatched",
+      ruleStatus,
       resultStatus: "needs_review",
       classification: null,
       classificationLabel: "분류 규칙 확인 필요",
@@ -314,8 +385,8 @@ export function evaluateCancerScenario(
       coverageAmount: null,
       candidateAmount: null,
       premiumWaiverStatus: "needs_review",
-      sourceDocument: null,
-      sourcePage: null,
+      sourceDocument: termsMatch?.document.sourceDocument ?? null,
+      sourcePage: termsSourcePage(termsMatch),
       clauseSummary: "현재 검증된 상품 규칙과 정확히 매칭되지 않았습니다.",
       checks: ["정확한 상품·약관 버전 연결"],
     }
@@ -324,7 +395,9 @@ export function evaluateCancerScenario(
   const classification: CancerClassification = includesType(rule.generalCancerExclusions, input.diagnosisType)
     ? "separate_benefit"
     : "general_cancer"
-  checks.add("실제 가입 약관 버전·특약 대조")
+  if (ruleStatus === "provisional") checks.add("자동 추출 규칙 원문 검토")
+  else checks.add("실제 가입 약관 버전·특약 대조")
+  if (termsMatch && termsMatch.versionStatus !== "exact") checks.add("정확한 판매시기·약관 버전 확인")
   const startDate = parseDate(contract.startDate)
   const diagnosisDate = parseDate(input.diagnosisDate)
   const waitingApplies = includesType(rule.waitingAppliesTo, input.diagnosisType)
@@ -345,14 +418,16 @@ export function evaluateCancerScenario(
 
   const isWaiting = Boolean(waitingEnd && diagnosisDate && diagnosisDate < waitingEnd)
   const payoutRate = diagnosisDate && reductionEnd && diagnosisDate < reductionEnd ? rule.reductionRate : diagnosisDate ? 1 : null
-  const canCalculate = Boolean(startDate && diagnosisDate && !isWaiting && coverage && coverage.amount !== null)
+  const canCalculate = Boolean(
+    ruleStatus === "matched" && startDate && diagnosisDate && !isWaiting && coverage && coverage.amount !== null,
+  )
 
   return {
     contractId: contract.id,
     contractName: contract.name,
     company: contract.company,
     ruleId: rule.id,
-    ruleStatus: "matched",
+    ruleStatus,
     resultStatus: isWaiting ? "waiting_period" : canCalculate ? "candidate" : "needs_review",
     classification,
     classificationLabel: classification === "general_cancer" ? "일반암 담보 검토" : "일반암 제외 · 별도 담보 검토",
@@ -366,8 +441,8 @@ export function evaluateCancerScenario(
       ? Math.round(coverageAmount * payoutRate)
       : null,
     premiumWaiverStatus: premiumWaiverStatus(rule, input.diagnosisType),
-    sourceDocument: rule.sourceDocument,
-    sourcePage: null,
+    sourceDocument: termsMatch?.document.sourceDocument ?? rule.sourceDocument,
+    sourcePage: termsSourcePage(termsMatch),
     clauseSummary: rule.clauseSummary,
     checks: Array.from(checks),
   }

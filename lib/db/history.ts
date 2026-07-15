@@ -32,17 +32,19 @@ export async function getRecentQueryResult(
   )
   const ttlMs = getInsuranceCacheTtlMs(process.env.INSURANCE_CACHE_TTL_HOURS)
   const cutoff = new Date(now.getTime() - ttlMs)
+  const userEnvironment = and(
+    eq(insuranceQueryHistory.userKey, userKey),
+    eq(insuranceQueryHistory.env, getCodefEnv()),
+  )
   const rows = await getDb()
     .select({
       payloadCipher: insuranceQueryHistory.payloadCipher,
       queriedAt: insuranceQueryHistory.queriedAt,
     })
     .from(insuranceQueryHistory)
-    .where(and(
-      eq(insuranceQueryHistory.userKey, userKey),
-      eq(insuranceQueryHistory.env, getCodefEnv()),
-      gte(insuranceQueryHistory.queriedAt, cutoff),
-    ))
+    .where(ttlMs > 0
+      ? and(userEnvironment, gte(insuranceQueryHistory.queriedAt, cutoff))
+      : userEnvironment)
     .orderBy(desc(insuranceQueryHistory.queriedAt))
     .limit(1)
 

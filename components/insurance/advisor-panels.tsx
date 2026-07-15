@@ -37,6 +37,7 @@ import {
   type CancerDiagnosisType,
   type CancerRuleAssessment,
 } from "@/lib/insurance-rule-engine"
+import { INSURANCE_TERMS_DOCUMENT_COUNT } from "@/lib/insurance-terms"
 
 type QualityView = "collection" | "coverages" | "documents"
 
@@ -170,7 +171,7 @@ function CoverageReviewView({ model }: { model: InsuranceDashboardModel }) {
               const status = reviewLabel(item, reviewed)
               return (
                 <tr key={item.id}>
-                  <td className="p-3"><strong>{item.rawName}</strong><span className="mt-1 block text-[10px] text-neutral-500">{model.contracts.find((contract) => contract.id === item.contractId)?.name}</span></td>
+                  <td className="p-3"><strong>{item.rawName}</strong><span className="mt-1 block text-[10px] text-neutral-500">{model.contracts.find((contract) => contract.id === item.contractId)?.name}</span>{(item.code || item.agreementType || item.status) && <span className="mt-1 block text-[10px] text-neutral-400">{[item.code && `보장코드 ${item.code}`, item.agreementType, item.status].filter(Boolean).join(" · ")}</span>}</td>
                   <td className="p-3"><span className={`font-bold ${item.standardCategoryId ? "text-blue-700" : "text-amber-800"}`}>{item.standardCategoryLabel}</span>{item.confidence !== null && <span className="ml-2 text-[10px] text-neutral-400">{item.confidence}%</span>}</td>
                   <td className="p-3">
                     {item.amount === null ? <label className="flex max-w-[180px] items-center rounded-lg border border-rose-200 bg-white"><input inputMode="numeric" value={amountEdits[item.id] ?? ""} onChange={(event) => setAmountEdits((current) => ({ ...current, [item.id]: event.target.value.replace(/\D/g, "") }))} placeholder="확인 금액" className="min-h-9 min-w-0 flex-1 rounded-lg px-2 text-right outline-none" /><span className="px-2 text-[10px] text-neutral-500">만원</span></label> : <strong className="tabular-nums">{formatWon(item.amount)}</strong>}
@@ -335,7 +336,7 @@ function CancerScenarioCalculator({ model }: { model: InsuranceDashboardModel })
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-700">Deterministic cancer rule</p>
           <h2 id="cancer-scenario-title" className="mt-1 text-xl font-black">암종·진단일 약관 계산</h2>
-          <p className="mt-2 max-w-2xl text-xs leading-5 text-neutral-500">CODEF 계약일과 담보 가입금액을 현재 검증된 5개 상품 규칙에 대입합니다. 상품·담보·약관 버전이 정확히 맞지 않으면 금액을 추정하지 않습니다.</p>
+          <p className="mt-2 max-w-2xl text-xs leading-5 text-neutral-500">CODEF 계약일·특약명·가입금액을 검증 규칙 5개와 보유 문서 {INSURANCE_TERMS_DOCUMENT_COUNT}개에 대입합니다. 자동 추출 문서는 원문 검토 전에는 후보금액을 확정하지 않습니다.</p>
         </div>
         <form onSubmit={(event) => { event.preventDefault(); setSubmitted(true) }} className="grid gap-2 sm:grid-cols-[1fr_150px_auto] xl:grid-cols-[1fr_150px]">
           <label className="text-[10px] font-black text-neutral-600">진단 암종
@@ -362,6 +363,7 @@ function CancerScenarioCalculator({ model }: { model: InsuranceDashboardModel })
                   <span className={`rounded-full px-2.5 py-1 text-[10px] font-black ${status.tone}`}>{status.label}</span>
                   <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-[10px] font-black text-neutral-700">{assessment.classificationLabel}</span>
                   <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-black text-blue-800">{waiverLabel(assessment.premiumWaiverStatus)}</span>
+                  {assessment.ruleStatus === "provisional" && <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-black text-amber-900">자동 추출 · 원문 검토</span>}
                 </div>
                 <p className="mt-3 text-[10px] font-bold text-neutral-500">{assessment.company}</p>
                 <h3 className="mt-1 text-base font-black">{assessment.contractName}</h3>
