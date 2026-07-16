@@ -3,6 +3,8 @@ import assert from "node:assert/strict"
 
 import {
   canAttemptCodefConfirmation,
+  classifyCodefRegistrationStart,
+  resolveRegistrationStartUiAction,
   resolveCodefAuthMethod,
   toCaptchaImageSrc,
 } from "./codef-flow.ts"
@@ -29,4 +31,46 @@ test("requires manual confirmation and caps it at three CODEF calls", () => {
   assert.equal(canAttemptCodefConfirmation(0), true)
   assert.equal(canAttemptCodefConfirmation(2), true)
   assert.equal(canAttemptCodefConfirmation(3), false)
+})
+
+test("skips PASS or SMS waiting when CODEF says the account already exists", () => {
+  const outcome = classifyCodefRegistrationStart({
+    result: { code: "CF-12069", message: "already registered" },
+    data: {},
+  })
+
+  assert.equal(outcome.step, "already_registered")
+  assert.equal(resolveRegistrationStartUiAction(outcome.step), "query")
+})
+
+test("shows authentication only for a valid CODEF two-way response", () => {
+  const outcome = classifyCodefRegistrationStart({
+    result: { code: "CF-03002", message: "additional authentication required" },
+    data: {
+      jobIndex: 1,
+      threadIndex: 2,
+      jti: "two-way-token",
+      twoWayTimestamp: 123456789,
+      extraInfo: {},
+    },
+  })
+
+  assert.equal(outcome.step, "sms_or_pass")
+  assert.equal(resolveRegistrationStartUiAction(outcome.step), "auth")
+})
+
+test("does not claim authentication was sent for an error or incomplete response", () => {
+  const errorOutcome = classifyCodefRegistrationStart({
+    result: { code: "CF-99999", message: "request rejected" },
+    data: {},
+  })
+  const missingSessionOutcome = classifyCodefRegistrationStart({
+    result: { code: "CF-03002", message: "additional authentication required" },
+    data: { extraInfo: {} },
+  })
+
+  assert.equal(errorOutcome.step, "error")
+  assert.equal(errorOutcome.message, "request rejected")
+  assert.equal(missingSessionOutcome.step, "error")
+  assert.equal(resolveRegistrationStartUiAction("unknown"), "error")
 })
