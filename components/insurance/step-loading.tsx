@@ -7,15 +7,17 @@ import {
   MAX_CODEF_CONFIRM_ATTEMPTS,
   resolveCodefAuthMethod,
 } from "@/components/insurance/codef-flow"
+import { resolveReturningUserCheck } from "@/components/insurance/returning-user-flow"
 
 interface Props {
   state: InsuranceState
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSuccess: (data: any) => void
   onError: () => void
+  onRegistrationRequired: () => void
 }
 
-export function StepLoading({ state, onSuccess, onError }: Props) {
+export function StepLoading({ state, onSuccess, onError, onRegistrationRequired }: Props) {
   const called = useRef(false)
   const [errorMsg, setErrorMsg] = useState("")
   const [authMode, setAuthMode] = useState<"pass" | "sms" | null>(null)
@@ -64,12 +66,12 @@ export function StepLoading({ state, onSuccess, onError }: Props) {
           throw new Error(checkData.error || "저장된 등록 정보를 확인하지 못했습니다.")
         }
 
-        if (checkData.found && checkData.sessionId) {
-          sid = checkData.sessionId
-        } else {
-          fail("저장된 등록 정보가 없습니다. 다시 본인인증을 진행해주세요.")
+        const outcome = resolveReturningUserCheck(checkData)
+        if (outcome.action === "reconnect") {
+          onRegistrationRequired()
           return
         }
+        sid = outcome.sessionId
       }
 
       sessionIdRef.current = sid

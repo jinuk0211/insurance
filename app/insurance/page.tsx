@@ -42,6 +42,7 @@ export default function InsurancePage() {
   const [showExtra, setShowExtra] = useState(false)
   const [savedUser, setSavedUser] = useState<SavedUser | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [registrationReconnectRequired, setRegistrationReconnectRequired] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [resultData, setResultData] = useState<any>(null)
 
@@ -84,6 +85,16 @@ export default function InsurancePage() {
     clearSavedUser()
     setSavedUser(null)
     setState(INITIAL_STATE)
+    setRegistrationReconnectRequired(false)
+    setStep(1)
+  }
+
+  function handleRegistrationRequired() {
+    clearSavedUser()
+    setSavedUser(null)
+    setState(prev => ({ ...prev, sessionId: null, regId: "", regPw: "" }))
+    setShowExtra(true)
+    setRegistrationReconnectRequired(true)
     setStep(1)
   }
 
@@ -100,6 +111,7 @@ export default function InsurancePage() {
       phone: state.phone,
       savedAt: Date.now(),
     })
+    setRegistrationReconnectRequired(false)
     setStep(6)
   }
 
@@ -299,6 +311,11 @@ export default function InsurancePage() {
 
         {step === 1 && (
           <>
+            {registrationReconnectRequired && (
+              <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-900">
+                서버 저장정보가 갱신되어 한 번만 다시 연결해야 합니다. 기본정보는 그대로 두었으니 아래에서 본인인증을 완료해주세요.
+              </div>
+            )}
             <StepUserInfo
               state={state}
               updateState={updateState}
@@ -343,6 +360,7 @@ export default function InsurancePage() {
               setStep(7)
             }}
             onError={() => setStep("welcome")}
+            onRegistrationRequired={handleRegistrationRequired}
           />
         )}
 
