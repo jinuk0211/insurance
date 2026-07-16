@@ -40,6 +40,14 @@ function uiRequest() {
   return new NextRequest("https://insurance.example/insurance")
 }
 
+function pensionUiRequest() {
+  return new NextRequest("https://insurance.example/pension")
+}
+
+function datasetRequest() {
+  return new NextRequest("https://insurance.example/api/codef-datasets/start")
+}
+
 function configurePreview() {
   process.env.VERCEL = "1"
   process.env.INSURANCE_PREVIEW_USER = "reviewer"
@@ -51,7 +59,12 @@ function configurePreview() {
 }
 
 test("applies the proxy security boundary to both the public UI and live API", () => {
-  assert.deepEqual(config.matcher, ["/insurance/:path*", "/api/insurance/:path*"])
+  assert.deepEqual(config.matcher, [
+    "/insurance/:path*",
+    "/pension/:path*",
+    "/api/insurance/:path*",
+    "/api/codef-datasets/:path*",
+  ])
 })
 
 test("passes the public insurance UI without auth while preserving security headers", () => {
@@ -74,6 +87,17 @@ test("shows the live demo-first UI without a browser login", () => {
   assert.equal(response.status, 200)
   assert.equal(response.headers.get("x-middleware-next"), "1")
   assert.equal(response.headers.get("www-authenticate"), null)
+})
+
+test("passes the public pension UI without auth while preserving security headers", () => {
+  process.env.INSURANCE_DEMO_ONLY = "true"
+
+  const response = proxy(pensionUiRequest())
+
+  assert.equal(response.status, 200)
+  assert.equal(response.headers.get("x-middleware-next"), "1")
+  assert.equal(response.headers.get("www-authenticate"), null)
+  assert.equal(response.headers.get("cache-control"), "private, no-store")
 })
 
 test("never challenges the browser before exposing the live insurance UI", () => {
@@ -109,6 +133,16 @@ test("passes the live API without a browser login challenge", async () => {
   assert.equal(response.headers.get("x-frame-options"), "DENY")
 })
 
+test("passes the selected CODEF dataset API only when live credentials are configured", () => {
+  configurePreview()
+
+  const response = proxy(datasetRequest())
+
+  assert.equal(response.status, 200)
+  assert.equal(response.headers.get("x-middleware-next"), "1")
+  assert.equal(response.headers.get("cache-control"), "private, no-store")
+})
+
 test("fails closed in public demo mode without opening a browser login prompt", async () => {
   process.env.VERCEL = "1"
   process.env.INSURANCE_DEMO_ONLY = "true"
@@ -121,6 +155,19 @@ test("fails closed in public demo mode without opening a browser login prompt", 
   assert.equal(response.status, 503)
   assert.equal(response.headers.get("www-authenticate"), null)
   assert.match((await response.json()).error, /데모 모드/)
+  assert.equal(response.headers.get("cache-control"), "private, no-store")
+})
+
+test("fails the selected CODEF dataset API closed in demo-only mode", async () => {
+  process.env.INSURANCE_DEMO_ONLY = "true"
+  delete process.env.CODEF_CLIENT_ID
+  delete process.env.CODEF_CLIENT_SECRET
+  delete process.env.CODEF_PUBLIC_KEY
+
+  const response = proxy(datasetRequest())
+
+  assert.equal(response.status, 503)
+  assert.match((await response.json()).error, /실데이터 조회/)
   assert.equal(response.headers.get("cache-control"), "private, no-store")
 })
 

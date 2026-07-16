@@ -65,3 +65,38 @@ export const codefApiUsage = pgTable(
     envRequestedAtIdx: index("cau_env_requested_at_idx").on(t.env, t.requestedAt),
   }),
 )
+
+/** 의료·연금 CODEF 결과의 최소 정규화본. PHI이므로 payload는 항상 AES-256-GCM 암호화한다. */
+export const codefDatasetSnapshot = pgTable(
+  "codef_dataset_snapshot",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userKey: text("user_key").notNull(),
+    datasetKey: text("dataset_key").notNull(),
+    env: text("env").notNull(),
+    payloadCipher: text("payload_cipher").notNull(),
+    queriedAt: timestamp("queried_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => ({
+    subjectDatasetUniqueIdx: uniqueIndex("cds_subject_dataset_env_unique")
+      .on(t.userKey, t.datasetKey, t.env),
+    subjectUpdatedIdx: index("cds_subject_updated_idx").on(t.userKey, t.updatedAt),
+  }),
+)
+
+/** PHI 접근 감사기록. 원문·이름·전화번호는 기록하지 않고 불투명 userKey만 저장한다. */
+export const phiAccessAudit = pgTable(
+  "phi_access_audit",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userKey: text("user_key").notNull(),
+    datasetKey: text("dataset_key").notNull(),
+    action: text("action").notNull(),
+    resourceId: uuid("resource_id"),
+    occurredAt: timestamp("occurred_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => ({
+    subjectOccurredIdx: index("paa_subject_occurred_idx").on(t.userKey, t.occurredAt),
+  }),
+)

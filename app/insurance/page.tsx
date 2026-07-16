@@ -153,6 +153,11 @@ export default function InsurancePage() {
           onReset={reset}
           onLogout={fullLogout}
           userName={savedUser?.name || state.name}
+          connectionProfile={{
+            userName: savedUser?.name || state.name,
+            phoneNo: savedUser?.phone || state.phone,
+            telecom: state.telecom,
+          }}
         />
       </div>
     )

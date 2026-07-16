@@ -16,9 +16,11 @@ function applySecurityHeaders(response: NextResponse): NextResponse {
 }
 
 export function proxy(request: NextRequest): NextResponse {
-  const isInsuranceUi =
+  const isPublicUi =
     request.nextUrl.pathname === "/insurance" ||
-    request.nextUrl.pathname.startsWith("/insurance/")
+    request.nextUrl.pathname.startsWith("/insurance/") ||
+    request.nextUrl.pathname === "/pension" ||
+    request.nextUrl.pathname.startsWith("/pension/")
 
   const isDemoOnly =
     process.env.INSURANCE_DEMO_ONLY === "true" ||
@@ -26,7 +28,7 @@ export function proxy(request: NextRequest): NextResponse {
     !process.env.CODEF_CLIENT_SECRET ||
     !process.env.CODEF_PUBLIC_KEY
 
-  if (isInsuranceUi) {
+  if (isPublicUi) {
     return applySecurityHeaders(NextResponse.next())
   }
 
@@ -47,5 +49,10 @@ export function proxy(request: NextRequest): NextResponse {
 }
 
 export const config = {
-  matcher: ["/insurance/:path*", "/api/insurance/:path*"],
+  matcher: [
+    "/insurance/:path*",
+    "/pension/:path*",
+    "/api/insurance/:path*",
+    "/api/codef-datasets/:path*",
+  ],
 }

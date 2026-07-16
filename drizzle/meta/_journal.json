@@ -15,6 +15,13 @@
       "when": 1784128453305,
       "tag": "0001_eminent_proemial_gods",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1784167734768,
+      "tag": "0002_melodic_wasp",
+      "breakpoints": true
     }
   ]
 }

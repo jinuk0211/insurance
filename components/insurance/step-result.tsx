@@ -15,6 +15,7 @@ import {
   FileText,
   Home,
   LayoutDashboard,
+  Landmark,
   LogOut,
   Plus,
   Printer,
@@ -62,8 +63,10 @@ import {
   ProposalInputDialog,
   ReportApproval,
 } from "@/components/insurance/advisor-panels"
+import { MedicalDataPanel } from "@/components/insurance/medical-data-panel"
+import type { DatasetConnectionProfile } from "@/components/codef/dataset-connect-form"
 
-type DashboardTab = "overview" | "contracts" | "quality" | "diagnosis" | "decision" | "charts" | "consulting" | "terms"
+type DashboardTab = "overview" | "contracts" | "quality" | "diagnosis" | "medical" | "decision" | "charts" | "consulting" | "terms"
 type ContractFilter = "all" | "active" | "inactive" | "unknown"
 
 interface Props {
@@ -73,6 +76,7 @@ interface Props {
   userName?: string
   demoMode?: boolean
   onConnect?: () => void
+  connectionProfile?: DatasetConnectionProfile
 }
 
 interface TabDefinition {
@@ -88,6 +92,7 @@ const TABS: readonly TabDefinition[] = [
   { id: "contracts", label: "가입현황", shortLabel: "계약", description: "보험 계약 목록", icon: FileText },
   { id: "quality", label: "수집·검증", shortLabel: "검증", description: "데이터 품질과 담보 검토", icon: Database },
   { id: "diagnosis", label: "진단·상세", shortLabel: "진단", description: "상품명 연관 신호", icon: FileSearch },
+  { id: "medical", label: "진료·투약", shortLabel: "의료", description: "건강보험공단 실조회", icon: Stethoscope },
   { id: "decision", label: "질병·치료", shortLabel: "판정", description: "약관 기준 질문 검토", icon: Stethoscope },
   { id: "charts", label: "그래프·니즈", shortLabel: "그래프", description: "검토 우선순위", icon: BarChart3 },
   { id: "consulting", label: "컨설팅", shortLabel: "비교", description: "계약 비교 워크시트", icon: ClipboardCheck },
@@ -580,7 +585,7 @@ function ActionButton({ children, onClick, title, tone = "light" }: { children: 
   return <button onClick={onClick} title={title} aria-label={title} className={`inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-xl border px-3 text-xs font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 ${tone === "dark" ? "border-white/20 text-white hover:bg-white hover:text-neutral-950" : "border-black/15 bg-white/70 text-neutral-700 hover:bg-neutral-950 hover:text-white"}`}>{children}</button>
 }
 
-export function StepResult({ data, onReset, onLogout, userName, demoMode = false, onConnect }: Props) {
+export function StepResult({ data, onReset, onLogout, userName, demoMode = false, onConnect, connectionProfile }: Props) {
   const model = useMemo(() => buildInsuranceDashboardModel(data), [data])
   const [tab, setTab] = useState<DashboardTab>("overview")
   const [targetsOpen, setTargetsOpen] = useState(false)
@@ -639,6 +644,12 @@ export function StepResult({ data, onReset, onLogout, userName, demoMode = false
               })}
             </nav>
 
+            <div className="mx-3 mt-2">
+              <Link href="/pension" className="flex min-h-11 w-full items-center justify-between rounded-xl border border-black/10 bg-[#17211f] px-3 text-xs font-black text-white transition-colors hover:bg-[#c71935]">
+                <span className="flex items-center gap-3"><Landmark className="h-4 w-4" />연금 공백 분석</span><ChevronRight className="h-4 w-4" />
+              </Link>
+            </div>
+
             <div className="mt-3 border-t border-black/10 px-3 pt-3">
               <div className={`rounded-2xl border p-3 ${demoMode ? "border-amber-300 bg-amber-50" : "border-emerald-200 bg-emerald-50"}`}>
                 <div className={`flex items-center gap-2 text-xs font-bold ${demoMode ? "text-amber-900" : "text-emerald-800"}`}><ShieldCheck className="h-4 w-4" aria-hidden="true" />{demoMode ? "시연용 합성 데이터" : "암호화 조회 이력"}</div>
@@ -684,6 +695,7 @@ export function StepResult({ data, onReset, onLogout, userName, demoMode = false
             {tab === "contracts" && <ContractsPanel model={model} onOpenAdditional={() => setAdditionalOpen(true)} />}
             {tab === "quality" && <DataQualityPanel model={model} />}
             {tab === "diagnosis" && <DiagnosisPanel model={model} onOpenTargets={() => setTargetsOpen(true)} />}
+            {tab === "medical" && <MedicalDataPanel initialProfile={connectionProfile} />}
             {tab === "decision" && <DecisionPanel model={model} />}
             {tab === "charts" && <ChartsNeedsPanel model={model} configuredTargets={Object.values(targetValues).filter(Boolean).length} onOpenTargets={() => setTargetsOpen(true)} />}
             {tab === "consulting" && <ConsultingPanel model={model} selectedIds={selectedIds} onToggle={toggleSelected} onOpenAdditional={() => setAdditionalOpen(true)} proposals={proposals} onOpenProposal={() => setProposalOpen(true)} reportStatus={reportStatus} onReportStatusChange={setReportStatus} />}

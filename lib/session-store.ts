@@ -19,7 +19,10 @@ export interface CodefSession {
   twoWayInfo?: Record<string, unknown>
   queryTwoWayInfo?: Record<string, unknown>
   queryParams?: Record<string, unknown>
-  step: "start" | "captcha" | "sms_or_pass" | "reg_info" | "email_auth" | "done"
+  step: "start" | "captcha" | "sms_or_pass" | "reg_info" | "email_auth" | "dataset_auth" | "done"
+  datasetKey?: string
+  datasetUserKey?: string
+  datasetConfirmAttempts?: number
   regId?: string
   regPw?: string
   regEmail?: string
