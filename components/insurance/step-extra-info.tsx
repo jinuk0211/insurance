@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import type { InsuranceState } from "@/app/insurance/page"
+import { resolveRegistrationStartUiAction } from "@/components/insurance/codef-flow"
 
 const TELECOMS = [
   { value: "0", label: "SKT" }, { value: "1", label: "KT" }, { value: "2", label: "LG U+" },
@@ -13,9 +14,10 @@ interface Props {
   updateState: (patch: Partial<InsuranceState>) => void
   onCaptcha: () => void
   onAuthWait: () => void
+  onRegistered: () => void
 }
 
-export function StepExtraInfo({ state, updateState, onCaptcha, onAuthWait }: Props) {
+export function StepExtraInfo({ state, updateState, onCaptcha, onAuthWait, onRegistered }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
@@ -45,9 +47,11 @@ export function StepExtraInfo({ state, updateState, onCaptcha, onAuthWait }: Pro
         captchaImage: typeof data.captchaImage === "string" ? data.captchaImage : null,
       })
 
-      if (data.step === "already_registered") { onAuthWait(); return }
-      if (data.step === "sms_or_pass") { onAuthWait(); return }
-      if (data.step === "captcha") { onCaptcha(); return }
+      const action = resolveRegistrationStartUiAction(data.step)
+      if (action === "query") { onRegistered(); return }
+      if (action === "auth") { onAuthWait(); return }
+      if (action === "captcha") { onCaptcha(); return }
+      throw new Error(data.error || "CODEF 인증 단계를 확인하지 못했습니다.")
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "오류가 발생했습니다.")
     } finally {

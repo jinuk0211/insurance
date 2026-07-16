@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { codefPost, rsaEncrypt } from "@/lib/codef-client"
 import { saveSession } from "@/lib/session-store"
 import { findRegisteredUser } from "@/lib/db/registered-user"
+import { classifyCodefRegistrationStart } from "@/components/insurance/codef-flow"
 import { randomUUID } from "crypto"
 
 export async function POST(req: NextRequest) {
@@ -48,6 +49,24 @@ export async function POST(req: NextRequest) {
     await saveSession(sessionId, { baseParams, regId, regPw, regEmail, step: "start" })
 
     const result = await codefPost("/v1/kr/insurance/0001/credit4u/register", baseParams)
+    const outcome = classifyCodefRegistrationStart(result)
+
+    if (outcome.step === "already_registered") {
+      await saveSession(sessionId, {
+        loginId: regId,
+        loginPw: regPw,
+        step: "done",
+      })
+      return NextResponse.json({ sessionId, step: "already_registered" })
+    }
+
+    if (outcome.step === "error") {
+      return NextResponse.json(
+        { error: outcome.message, code: outcome.code },
+        { status: 400 }
+      )
+    }
+
     const extraInfo = result?.data?.extraInfo || {}
     const twoWayInfo = {
       jobIndex: result?.data?.jobIndex ?? 0,
@@ -56,12 +75,12 @@ export async function POST(req: NextRequest) {
       twoWayTimestamp: result?.data?.twoWayTimestamp ?? Date.now(),
     }
 
-    const hasCaptcha = extraInfo.reqSecureNo && extraInfo.reqSecureNo.length > 10
-    await saveSession(sessionId, { twoWayInfo, step: hasCaptcha ? "captcha" : "sms_or_pass" })
+    const hasCaptcha = outcome.step === "captcha"
+    await saveSession(sessionId, { twoWayInfo, step: outcome.step })
 
     return NextResponse.json({
       sessionId,
-      step: hasCaptcha ? "captcha" : "sms_or_pass",
+      step: outcome.step,
       captchaImage: hasCaptcha ? extraInfo.reqSecureNo : null,
       authMethod,
     })

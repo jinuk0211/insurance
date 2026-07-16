@@ -331,6 +331,7 @@ export default function InsurancePage() {
                 updateState={updateState}
                 onCaptcha={() => setStep(2)}
                 onAuthWait={() => setStep(3)}
+                onRegistered={handleSuccessfulRegistration}
               />
             )}
           </>
