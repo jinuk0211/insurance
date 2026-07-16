@@ -11,6 +11,8 @@
     "test:coverage": "node --experimental-strip-types --experimental-test-coverage --test \"**/*.test.mjs\"",
     "typecheck": "tsc --noEmit",
     "env:setup": "node scripts/setup-local-env.mjs",
+    "catalog:probe": "node --experimental-strip-types scripts/probe-kb-catalog.mjs",
+    "catalog:collect": "node --experimental-strip-types scripts/collect-insurance-catalog.mjs",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node scripts/migrate.mjs"
   },
@@ -18,6 +20,7 @@
     "@radix-ui/react-dialog": "1.1.15",
     "@vercel/analytics": "1.6.1",
     "@vercel/functions": "^3.7.5",
+    "cheerio": "1.1.2",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^0.564.0",
