@@ -149,14 +149,17 @@ export function TermsLibrary() {
             <select value={saleFilter} onChange={(event) => setSaleFilter(event.target.value as SaleFilter)} className="min-h-11 rounded-xl border border-black/10 bg-[#f8f6ef] px-3 text-xs font-bold" aria-label="판매 상태 필터"><option value="all">전체 판매 상태</option><option value="on_sale">현재 판매</option><option value="off_sale">과거 판매</option></select>
           </div>
 
-          <div className="mt-4 flex items-center justify-between text-xs"><span className="font-black">검색 결과 {filteredDocuments.length}건</span><span className="text-neutral-500">PDF는 새 창에서 열립니다</span></div>
+          <div className="mt-4 flex items-center justify-between text-xs"><span className="font-black">검색 결과 {filteredDocuments.length}건</span><span className="text-neutral-500">화면 보기와 원본 다운로드를 분리했습니다</span></div>
           <div className="mt-3 overflow-hidden rounded-2xl border border-black/10 bg-white">
             {filteredDocuments.map((document, index) => (
               <article key={document.id} className={`grid gap-4 p-4 sm:p-5 lg:grid-cols-[90px_minmax(0,1fr)_160px_auto] lg:items-center ${index ? "border-t border-black/10" : ""}`}>
                 <div className="flex items-center gap-2 lg:block"><span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-black ${document.saleStatus === "on_sale" ? "bg-emerald-100 text-emerald-800" : "bg-neutral-100 text-neutral-600"}`}>{document.saleStatus === "on_sale" ? "현재 판매" : "과거 판매"}</span><span className="text-[10px] font-bold text-neutral-500 lg:mt-2 lg:block">{policyCategory(document.productName)}</span></div>
                 <div className="min-w-0"><p className="text-[10px] font-black text-[#c71935]">{document.insurer}</p><h3 className="mt-1 text-sm font-black leading-6">{document.productName}</h3><p className="mt-1 text-[10px] text-neutral-500">파일 {document.sourceFileName || "파일명 미표시"}</p></div>
                 <dl className="grid grid-cols-2 gap-2 text-[10px] lg:block"><div><dt className="text-neutral-500">적용 시작</dt><dd className="mt-0.5 font-black tabular-nums">{formatDate(document.effectiveFrom)}</dd></div><div className="lg:mt-2"><dt className="text-neutral-500">PDF 크기</dt><dd className="mt-0.5 font-black tabular-nums">{formatBytes(document.byteLength)}</dd></div></dl>
-                <a href={document.pdfUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#17211f] px-4 text-xs font-black text-white hover:bg-[#c71935]">PDF 열기 <ArrowUpRight className="h-4 w-4" /></a>
+                <div className="grid gap-2">
+                  <Link href={`/insurance/terms/viewer/${document.id}`} target="_blank" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#17211f] px-4 text-xs font-black text-white hover:bg-[#c71935]">화면에서 보기 <BookOpen className="h-4 w-4" /></Link>
+                  <a href={document.pdfUrl} className="inline-flex min-h-9 items-center justify-center gap-1 rounded-xl border border-black/10 bg-white px-3 text-[10px] font-bold text-neutral-600 hover:border-black/25">원본 다운로드 <ArrowUpRight className="h-3.5 w-3.5" /></a>
+                </div>
               </article>
             ))}
             {filteredDocuments.length === 0 && <div className="p-12 text-center"><FileSearch className="mx-auto h-7 w-7 text-neutral-400" /><p className="mt-3 text-sm font-black">조건에 맞는 약관이 없습니다</p><button onClick={() => { setQuery(""); setCategory("all"); setSaleFilter("all") }} className="mt-3 text-xs font-bold text-[#c71935] underline">필터 초기화</button></div>}
