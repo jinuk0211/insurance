@@ -15,6 +15,9 @@ export function InsuranceHeader() {
           </span>
         </Link>
         <div className="flex items-center gap-2 text-[11px] font-semibold text-[#5e5a53]">
+          <Link href="/insurance/terms" className="inline-flex min-h-9 items-center rounded-full border border-[#d8d3c8] bg-white px-3 font-bold text-[#17211f] hover:border-[#17211f]">
+            약관 자료실
+          </Link>
           <span className="hidden items-center gap-1.5 rounded-full border border-[#d8d3c8] bg-white px-3 py-1.5 sm:flex">
             <ShieldCheck className="h-3.5 w-3.5 text-[#126b57]" aria-hidden="true" />
             암호화 저장

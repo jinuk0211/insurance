@@ -645,6 +645,9 @@ export function StepResult({ data, onReset, onLogout, userName, demoMode = false
             </nav>
 
             <div className="mx-3 mt-2">
+              <Link href="/insurance/terms" className="mb-2 flex min-h-11 w-full items-center justify-between rounded-xl border border-black/10 bg-white px-3 text-xs font-black text-neutral-800 transition-colors hover:border-black/25">
+                <span className="flex items-center gap-3"><FileSearch className="h-4 w-4" />약관 PDF 자료실</span><ChevronRight className="h-4 w-4" />
+              </Link>
               <Link href="/pension" className="flex min-h-11 w-full items-center justify-between rounded-xl border border-black/10 bg-[#17211f] px-3 text-xs font-black text-white transition-colors hover:bg-[#c71935]">
                 <span className="flex items-center gap-3"><Landmark className="h-4 w-4" />연금 공백 분석</span><ChevronRight className="h-4 w-4" />
               </Link>
@@ -683,7 +686,7 @@ export function StepResult({ data, onReset, onLogout, userName, demoMode = false
                   <Kpi label="표시 보험료 합계" value={model.premiumKnownCount ? formatWon(model.totalPremium) : "미표시"} />
                   <Kpi label="확인 필요" value={metricValue(model.dataQuality.unresolvedCount, "개")} accent="text-[#3155d9]" />
                 </div>
-                <div className="flex gap-2 print:hidden"><ActionButton onClick={() => window.print()} title="현재 대시보드 인쇄"><Printer className="h-4 w-4" /></ActionButton><ActionButton onClick={onReset} title={resetLabel}><RefreshCw className="h-4 w-4" /></ActionButton>{onLogout && <ActionButton onClick={onLogout} title="로그아웃"><LogOut className="h-4 w-4" /></ActionButton>}</div>
+                <div className="flex gap-2 print:hidden"><Link href="/insurance/terms" title="약관 PDF 자료실" aria-label="약관 PDF 자료실" className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-black/15 bg-white/70 px-3 text-neutral-700 transition-colors hover:bg-neutral-950 hover:text-white"><FileSearch className="h-4 w-4" /></Link><ActionButton onClick={() => window.print()} title="현재 대시보드 인쇄"><Printer className="h-4 w-4" /></ActionButton><ActionButton onClick={onReset} title={resetLabel}><RefreshCw className="h-4 w-4" /></ActionButton>{onLogout && <ActionButton onClick={onLogout} title="로그아웃"><LogOut className="h-4 w-4" /></ActionButton>}</div>
               </div>
               <nav className="dashboard-mobile-nav mx-3 flex snap-x gap-2 overflow-x-auto pb-3 lg:hidden print:hidden" aria-label="보험 대시보드 섹션">
                 {TABS.map((item) => <button key={item.id} aria-pressed={tab === item.id} onClick={() => setTab(item.id)} className={`min-h-10 shrink-0 snap-start rounded-full px-4 text-xs font-bold transition-colors ${tab === item.id ? "bg-[#17211f] text-white" : "bg-white text-neutral-500 ring-1 ring-black/[0.06]"}`}>{item.shortLabel}</button>)}

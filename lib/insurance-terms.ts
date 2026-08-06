@@ -47,6 +47,7 @@ export interface InsuranceTermsMatch {
 const catalog = rawCatalog as unknown as InsuranceTermsCatalog
 
 export const INSURANCE_TERMS_DOCUMENT_COUNT = catalog.documents.length
+export const INSURANCE_TERMS_DOCUMENTS = catalog.documents
 
 function normalizeText(value: string): string {
   return value.normalize("NFKC").toLocaleLowerCase("ko-KR").replace(/[^0-9a-z가-힣]/g, "")
