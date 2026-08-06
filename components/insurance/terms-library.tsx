@@ -73,10 +73,6 @@ function formatCharacters(value: number): string {
   return value >= 10_000 ? `${(value / 10_000).toFixed(1)}만 자` : `${formatNumber(value)}자`
 }
 
-function shortExcerpt(value: string, length = 150): string {
-  return value.length > length ? `${value.slice(0, length).trim()}…` : value
-}
-
 function sectionStatus(section: PolicyAnalysisSection): string {
   return section.evidence.length ? `근거 ${section.evidence.length}건` : "자동 미탐지"
 }
@@ -126,14 +122,25 @@ function Metric({ label, value, attention = false }: { label: string; value: str
   )
 }
 
-function EvidenceSummary({ section }: { section: PolicyAnalysisSection }) {
+function EvidenceSummary({ section, tone }: {
+  section: PolicyAnalysisSection
+  tone: "red" | "amber" | "blue"
+}) {
   const evidence = section.evidence[0]
-  if (!evidence) return <span className="font-bold text-amber-800">자동 미탐지 · 원문 확인 필요</span>
+  if (!evidence) return <div className="rounded-xl border border-dashed border-amber-300 bg-amber-50 p-4 font-bold text-amber-900">자동 미탐지<br /><span className="text-[11px] font-medium">조항 없음이 아니므로 원문 확인 필요</span></div>
+  const toneClass = {
+    red: "border-red-200 bg-red-50",
+    amber: "border-amber-200 bg-amber-50",
+    blue: "border-blue-200 bg-blue-50",
+  }[tone]
   return (
-    <span>
-      <strong className="mr-1 text-[#3155d9]">{evidence.page}쪽</strong>
-      {shortExcerpt(evidence.excerpt)}
-    </span>
+    <div className={`rounded-xl border p-4 ${toneClass}`}>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <strong className="rounded-full bg-white px-2.5 py-1 text-[11px] text-[#17211f] shadow-sm">PDF {evidence.page}쪽</strong>
+        <span className="text-[10px] font-black text-neutral-500">근거 {section.evidence.length}건 중 대표 문구</span>
+      </div>
+      <p className="mt-3 break-words text-[12px] leading-6 text-neutral-700">{evidence.excerpt}</p>
+    </div>
   )
 }
 
@@ -325,19 +332,22 @@ export function TermsLibrary() {
               <div className="flex items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-blue-950"><Sparkles className="mt-0.5 h-5 w-5 shrink-0" /><p className="text-[11px] leading-5"><strong className="block text-xs">같은 기준, 같은 원문 구조로 비교합니다.</strong>각 칸은 해당 약관에서 탐지한 주제 또는 첫 페이지 근거입니다. ‘자동 미탐지’는 보장·면책·감액이 없다는 판정이 아닙니다.</p></div>
 
               {selectedRecords.length ? (
-                <div className="overflow-x-auto rounded-2xl border border-black/10 bg-white">
-                  <table className="w-full min-w-[840px] table-fixed border-collapse text-left text-xs">
-                    <thead><tr className="bg-[#17211f] text-white"><th className="w-36 p-4 text-[10px] uppercase tracking-[0.12em]">비교 항목</th>{selectedRecords.map(({ document }) => <th key={document.id} className="border-l border-white/10 p-4 align-top"><span className="block text-[10px] text-[#f1b94c]">{document.insurer} · {formatDate(document.effectiveFrom)}</span><span className="mt-1 block text-sm leading-6">{document.productName}</span></th>)}</tr></thead>
+                <div>
+                  <div className="mb-2 flex items-center justify-between gap-3 px-1 text-[11px] font-bold text-neutral-500"><span>상품별 칸을 넓게 표시했습니다.</span><span className="shrink-0 text-[#3155d9]">← 좌우로 밀어서 비교 →</span></div>
+                  <div className="overflow-x-auto overscroll-x-contain rounded-2xl border border-black/10 bg-white">
+                  <table className={`w-full table-fixed border-collapse text-left text-[13px] leading-6 ${selectedRecords.length === 1 ? "min-w-[620px]" : selectedRecords.length === 2 ? "min-w-[1020px]" : "min-w-[1400px]"}`}>
+                    <thead><tr className="bg-[#17211f] text-white"><th className="sticky left-0 z-20 w-44 bg-[#17211f] p-5 text-[11px] uppercase tracking-[0.12em]">비교 항목</th>{selectedRecords.map(({ document }, index) => <th key={document.id} className="break-words border-l border-white/10 p-5 align-top"><span className="mb-3 inline-flex rounded-full bg-[#3155d9] px-2.5 py-1 text-[10px] font-black">비교 {index + 1}</span><span className="block text-[11px] text-[#f1b94c]">{document.insurer} · {formatDate(document.effectiveFrom)}</span><span className="mt-2 block text-base font-black leading-7">{document.productName}</span></th>)}</tr></thead>
                     <tbody className="divide-y divide-black/10">
-                      <tr><th className="bg-[#f8f6ef] p-4 align-top font-black">문서 분량</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-4 align-top leading-5">{formatNumber(analysis.pageCount)}쪽<br />{formatCharacters(analysis.characterCount)}</td>)}</tr>
-                      <tr><th className="bg-[#f8f6ef] p-4 align-top font-black">감지 보장 범위</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-4 align-top leading-5">{analysis.coverage.topics.length ? analysis.coverage.topics.join(" · ") : "자동 미탐지 · 원문 확인 필요"}</td>)}</tr>
-                      <tr><th className="bg-[#f8f6ef] p-4 align-top font-black">특약 후보</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-4 align-top leading-5"><strong className="block text-[#3155d9]">{analysis.riders.detectedCount}개 감지</strong>{analysis.riders.names.slice(0, 5).join(" / ") || "자동 미탐지 · 원문 확인 필요"}</td>)}</tr>
-                      <tr><th className="bg-[#f8f6ef] p-4 align-top font-black">면책 · 보상 제외</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-4 align-top leading-5"><EvidenceSummary section={analysis.exclusions} /></td>)}</tr>
-                      <tr><th className="bg-[#f8f6ef] p-4 align-top font-black">초기 감액</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-4 align-top leading-5"><EvidenceSummary section={analysis.reduction} /></td>)}</tr>
-                      <tr><th className="bg-[#f8f6ef] p-4 align-top font-black">면책기간 · 보장개시</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-4 align-top leading-5"><EvidenceSummary section={analysis.waiting} /></td>)}</tr>
-                      <tr><th className="bg-[#f8f6ef] p-4 align-top font-black">원문 열기</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-4 align-top"><div className="flex flex-wrap gap-2"><Link href={`/insurance/terms/viewer/${document.id}`} target="_blank" className="rounded-lg bg-[#17211f] px-3 py-2 text-[10px] font-black text-white">PDF 보기</Link><a href={analysis.textPath} target="_blank" className="rounded-lg border border-black/10 px-3 py-2 text-[10px] font-black">TXT 보기</a></div></td>)}</tr>
+                      <tr><th className="sticky left-0 z-10 bg-[#f8f6ef] p-5 align-top font-black">문서 분량</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-5 align-top"><div className="grid grid-cols-2 gap-2"><span className="rounded-xl bg-[#f8f6ef] p-3"><strong className="block text-lg tabular-nums">{formatNumber(analysis.pageCount)}</strong><span className="text-[10px] text-neutral-500">전체 페이지</span></span><span className="rounded-xl bg-[#f8f6ef] p-3"><strong className="block text-lg tabular-nums">{formatCharacters(analysis.characterCount)}</strong><span className="text-[10px] text-neutral-500">추출 텍스트</span></span></div></td>)}</tr>
+                      <tr><th className="sticky left-0 z-10 border-l-4 border-blue-500 bg-blue-50 p-5 align-top font-black text-blue-950">감지 보장 범위</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-5 align-top"><div className="flex flex-wrap gap-2">{analysis.coverage.topics.length ? analysis.coverage.topics.map((topic) => <span key={topic} className="rounded-lg bg-blue-100 px-2.5 py-1.5 text-[11px] font-black text-blue-900">{topic}</span>) : <span className="font-bold text-amber-900">자동 미탐지 · 원문 확인 필요</span>}</div></td>)}</tr>
+                      <tr><th className="sticky left-0 z-10 border-l-4 border-violet-500 bg-violet-50 p-5 align-top font-black text-violet-950">특약 후보</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-5 align-top"><strong className="mb-3 inline-flex rounded-full bg-violet-100 px-3 py-1 text-violet-900">{analysis.riders.detectedCount}개 감지</strong>{analysis.riders.names.length ? <ul className="space-y-2 pl-4 text-[12px] leading-5 text-neutral-700">{analysis.riders.names.slice(0, 5).map((name) => <li key={name} className="list-disc break-words">{name}</li>)}</ul> : <p className="font-bold text-amber-900">자동 미탐지 · 원문 확인 필요</p>}</td>)}</tr>
+                      <tr><th className="sticky left-0 z-10 border-l-4 border-red-500 bg-red-50 p-5 align-top font-black text-red-950">면책 · 보상 제외</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-5 align-top"><EvidenceSummary section={analysis.exclusions} tone="red" /></td>)}</tr>
+                      <tr><th className="sticky left-0 z-10 border-l-4 border-amber-500 bg-amber-50 p-5 align-top font-black text-amber-950">초기 감액</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-5 align-top"><EvidenceSummary section={analysis.reduction} tone="amber" /></td>)}</tr>
+                      <tr><th className="sticky left-0 z-10 border-l-4 border-[#3155d9] bg-blue-50 p-5 align-top font-black text-blue-950">면책기간 · 보장개시</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-5 align-top"><EvidenceSummary section={analysis.waiting} tone="blue" /></td>)}</tr>
+                      <tr><th className="sticky left-0 z-10 bg-[#f8f6ef] p-5 align-top font-black">원문 열기</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-5 align-top"><div className="flex flex-wrap gap-2"><Link href={`/insurance/terms/viewer/${document.id}`} target="_blank" className="rounded-lg bg-[#17211f] px-3 py-2 text-[11px] font-black text-white">PDF 보기</Link><a href={analysis.textPath} target="_blank" className="rounded-lg border border-black/10 px-3 py-2 text-[11px] font-black">TXT 보기</a></div></td>)}</tr>
                     </tbody>
                   </table>
+                  </div>
                 </div>
               ) : <div className="rounded-2xl border border-dashed border-black/20 bg-white p-12 text-center"><GitCompareArrows className="mx-auto h-8 w-8 text-neutral-400" /><p className="mt-4 text-sm font-black">왼쪽 목록에서 비교할 약관을 선택하세요</p></div>}
             </div>
