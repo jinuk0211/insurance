@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import type { ReactNode } from "react"
 import { useMemo, useState } from "react"
 import {
   ArrowLeft,
@@ -141,6 +142,48 @@ function EvidenceSummary({ section, tone }: {
       </div>
       <p className="mt-3 break-words text-[12px] leading-6 text-neutral-700">{evidence.excerpt}</p>
     </div>
+  )
+}
+
+function comparisonGridClass(count: number): string {
+  if (count === 1) return "grid-cols-1"
+  if (count === 2) return "md:grid-cols-2"
+  return "md:grid-cols-2 xl:grid-cols-3"
+}
+
+function ComparisonSection({ title, description, tone, records, render }: {
+  title: string
+  description: string
+  tone: "neutral" | "blue" | "violet" | "red" | "amber"
+  records: PolicyRecord[]
+  render: (record: PolicyRecord) => ReactNode
+}) {
+  const toneClass = {
+    neutral: "border-neutral-300 bg-white text-[#17211f]",
+    blue: "border-blue-300 bg-blue-50 text-blue-950",
+    violet: "border-violet-300 bg-violet-50 text-violet-950",
+    red: "border-red-300 bg-red-50 text-red-950",
+    amber: "border-amber-300 bg-amber-50 text-amber-950",
+  }[tone]
+
+  return (
+    <section className="overflow-hidden rounded-3xl border border-black/10 bg-white">
+      <header className={`border-l-4 px-5 py-4 ${toneClass}`}>
+        <h3 className="text-base font-black">{title}</h3>
+        <p className="mt-1 text-[11px] leading-5 text-neutral-600">{description}</p>
+      </header>
+      <div className={`grid gap-3 border-t border-black/10 bg-[#f8f6ef] p-3 sm:p-4 ${comparisonGridClass(records.length)}`}>
+        {records.map((record, index) => (
+          <article key={record.document.id} className="min-w-0 rounded-2xl border border-black/10 bg-white p-4 sm:p-5">
+            <div className="mb-4 flex items-start justify-between gap-3 border-b border-black/10 pb-3">
+              <span className="shrink-0 rounded-full bg-[#3155d9] px-2.5 py-1 text-[10px] font-black text-white">비교 {index + 1}</span>
+              <p className="break-words text-right text-[10px] font-bold leading-4 text-neutral-500">{record.document.productName}</p>
+            </div>
+            {render(record)}
+          </article>
+        ))}
+      </div>
+    </section>
   )
 }
 
@@ -314,44 +357,48 @@ export function TermsLibrary() {
 
       {view === "compare" && (
         <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6" aria-labelledby="compare-title">
-          <div className="grid gap-6 xl:grid-cols-[330px_minmax(0,1fr)]">
-            <aside className="self-start rounded-2xl border border-black/10 bg-white p-4 xl:sticky xl:top-24">
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#3155d9]">Official 50 documents</p>
-              <h2 id="compare-title" className="mt-1 text-xl font-black">비교할 약관 선택</h2>
-              <p className="mt-2 text-[11px] leading-5 text-neutral-500">최대 3건. 네 번째 선택부터 가장 먼저 고른 약관이 교체됩니다.</p>
-              <label className="relative mt-4 block"><span className="sr-only">비교 문서 검색</span><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="상품명 검색" className="min-h-11 w-full rounded-xl border border-black/10 bg-[#f8f6ef] pl-10 pr-3 text-sm outline-none focus:border-[#3155d9]" /></label>
-              <div className="mt-3 max-h-[58vh] space-y-2 overflow-y-auto pr-1">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#3155d9]">Official 50 documents</p><h2 id="compare-title" className="mt-1 text-2xl font-black">선택 상품 한눈에 비교</h2><p className="mt-2 text-[11px] leading-5 text-neutral-500">가로 스크롤 없이 화면 폭에 맞춰 최대 3개 상품을 나란히 보여줍니다.</p></div>
+            <span className="self-start rounded-full bg-[#17211f] px-3 py-1.5 text-[11px] font-black text-white">선택 {selectedRecords.length}/3</span>
+          </div>
+
+          <details className="group mt-5 overflow-hidden rounded-2xl border border-black/10 bg-white">
+            <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-5 text-xs font-black">비교할 약관 바꾸기 <span className="flex items-center gap-2 text-[#3155d9]">50개 목록 열기 <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" /></span></summary>
+            <div className="border-t border-black/10 p-4 sm:p-5">
+              <label className="relative block"><span className="sr-only">비교 문서 검색</span><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="상품명 검색" className="min-h-11 w-full rounded-xl border border-black/10 bg-[#f8f6ef] pl-10 pr-3 text-sm outline-none focus:border-[#3155d9]" /></label>
+              <p className="mt-3 text-[10px] font-bold text-neutral-500">최대 3건 · 네 번째 선택부터 가장 먼저 고른 약관이 교체됩니다.</p>
+              <div className="mt-3 grid max-h-80 gap-2 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {POLICY_RECORDS.filter(({ document }) => !query.trim() || document.productName.includes(query.trim())).map(({ document }) => {
                   const selected = selectedIds.includes(document.id)
-                  return <button key={document.id} onClick={() => toggleComparison(document.id)} aria-pressed={selected} className={`w-full rounded-xl border p-3 text-left transition-colors ${selected ? "border-[#3155d9] bg-blue-50" : "border-black/10 bg-white hover:bg-[#f8f6ef]"}`}><span className="flex items-center justify-between gap-2"><span className="text-[10px] font-black text-[#3155d9]">{formatDate(document.effectiveFrom)}</span>{selected && <CheckCircle2 className="h-4 w-4 text-[#3155d9]" />}</span><span className="mt-1 block text-xs font-bold leading-5">{document.productName}</span></button>
+                  return <button key={document.id} onClick={() => toggleComparison(document.id)} aria-pressed={selected} className={`min-w-0 rounded-xl border p-3 text-left transition-colors ${selected ? "border-[#3155d9] bg-blue-50" : "border-black/10 bg-white hover:bg-[#f8f6ef]"}`}><span className="flex items-center justify-between gap-2"><span className="text-[10px] font-black text-[#3155d9]">{formatDate(document.effectiveFrom)}</span>{selected && <CheckCircle2 className="h-4 w-4 shrink-0 text-[#3155d9]" />}</span><span className="mt-1 block break-words text-xs font-bold leading-5">{document.productName}</span></button>
                 })}
               </div>
-            </aside>
-
-            <div className="min-w-0 space-y-5">
-              <div className="flex items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-blue-950"><Sparkles className="mt-0.5 h-5 w-5 shrink-0" /><p className="text-[11px] leading-5"><strong className="block text-xs">같은 기준, 같은 원문 구조로 비교합니다.</strong>각 칸은 해당 약관에서 탐지한 주제 또는 첫 페이지 근거입니다. ‘자동 미탐지’는 보장·면책·감액이 없다는 판정이 아닙니다.</p></div>
-
-              {selectedRecords.length ? (
-                <div>
-                  <div className="mb-2 flex items-center justify-between gap-3 px-1 text-[11px] font-bold text-neutral-500"><span>상품별 칸을 넓게 표시했습니다.</span><span className="shrink-0 text-[#3155d9]">← 좌우로 밀어서 비교 →</span></div>
-                  <div className="overflow-x-auto overscroll-x-contain rounded-2xl border border-black/10 bg-white">
-                  <table className={`w-full table-fixed border-collapse text-left text-[13px] leading-6 ${selectedRecords.length === 1 ? "min-w-[620px]" : selectedRecords.length === 2 ? "min-w-[1020px]" : "min-w-[1400px]"}`}>
-                    <thead><tr className="bg-[#17211f] text-white"><th className="sticky left-0 z-20 w-44 bg-[#17211f] p-5 text-[11px] uppercase tracking-[0.12em]">비교 항목</th>{selectedRecords.map(({ document }, index) => <th key={document.id} className="break-words border-l border-white/10 p-5 align-top"><span className="mb-3 inline-flex rounded-full bg-[#3155d9] px-2.5 py-1 text-[10px] font-black">비교 {index + 1}</span><span className="block text-[11px] text-[#f1b94c]">{document.insurer} · {formatDate(document.effectiveFrom)}</span><span className="mt-2 block text-base font-black leading-7">{document.productName}</span></th>)}</tr></thead>
-                    <tbody className="divide-y divide-black/10">
-                      <tr><th className="sticky left-0 z-10 bg-[#f8f6ef] p-5 align-top font-black">문서 분량</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-5 align-top"><div className="grid grid-cols-2 gap-2"><span className="rounded-xl bg-[#f8f6ef] p-3"><strong className="block text-lg tabular-nums">{formatNumber(analysis.pageCount)}</strong><span className="text-[10px] text-neutral-500">전체 페이지</span></span><span className="rounded-xl bg-[#f8f6ef] p-3"><strong className="block text-lg tabular-nums">{formatCharacters(analysis.characterCount)}</strong><span className="text-[10px] text-neutral-500">추출 텍스트</span></span></div></td>)}</tr>
-                      <tr><th className="sticky left-0 z-10 border-l-4 border-blue-500 bg-blue-50 p-5 align-top font-black text-blue-950">감지 보장 범위</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-5 align-top"><div className="flex flex-wrap gap-2">{analysis.coverage.topics.length ? analysis.coverage.topics.map((topic) => <span key={topic} className="rounded-lg bg-blue-100 px-2.5 py-1.5 text-[11px] font-black text-blue-900">{topic}</span>) : <span className="font-bold text-amber-900">자동 미탐지 · 원문 확인 필요</span>}</div></td>)}</tr>
-                      <tr><th className="sticky left-0 z-10 border-l-4 border-violet-500 bg-violet-50 p-5 align-top font-black text-violet-950">특약 후보</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-5 align-top"><strong className="mb-3 inline-flex rounded-full bg-violet-100 px-3 py-1 text-violet-900">{analysis.riders.detectedCount}개 감지</strong>{analysis.riders.names.length ? <ul className="space-y-2 pl-4 text-[12px] leading-5 text-neutral-700">{analysis.riders.names.slice(0, 5).map((name) => <li key={name} className="list-disc break-words">{name}</li>)}</ul> : <p className="font-bold text-amber-900">자동 미탐지 · 원문 확인 필요</p>}</td>)}</tr>
-                      <tr><th className="sticky left-0 z-10 border-l-4 border-red-500 bg-red-50 p-5 align-top font-black text-red-950">면책 · 보상 제외</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-5 align-top"><EvidenceSummary section={analysis.exclusions} tone="red" /></td>)}</tr>
-                      <tr><th className="sticky left-0 z-10 border-l-4 border-amber-500 bg-amber-50 p-5 align-top font-black text-amber-950">초기 감액</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-5 align-top"><EvidenceSummary section={analysis.reduction} tone="amber" /></td>)}</tr>
-                      <tr><th className="sticky left-0 z-10 border-l-4 border-[#3155d9] bg-blue-50 p-5 align-top font-black text-blue-950">면책기간 · 보장개시</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-5 align-top"><EvidenceSummary section={analysis.waiting} tone="blue" /></td>)}</tr>
-                      <tr><th className="sticky left-0 z-10 bg-[#f8f6ef] p-5 align-top font-black">원문 열기</th>{selectedRecords.map(({ document, analysis }) => <td key={document.id} className="border-l border-black/10 p-5 align-top"><div className="flex flex-wrap gap-2"><Link href={`/insurance/terms/viewer/${document.id}`} target="_blank" className="rounded-lg bg-[#17211f] px-3 py-2 text-[11px] font-black text-white">PDF 보기</Link><a href={analysis.textPath} target="_blank" className="rounded-lg border border-black/10 px-3 py-2 text-[11px] font-black">TXT 보기</a></div></td>)}</tr>
-                    </tbody>
-                  </table>
-                  </div>
-                </div>
-              ) : <div className="rounded-2xl border border-dashed border-black/20 bg-white p-12 text-center"><GitCompareArrows className="mx-auto h-8 w-8 text-neutral-400" /><p className="mt-4 text-sm font-black">왼쪽 목록에서 비교할 약관을 선택하세요</p></div>}
             </div>
-          </div>
+          </details>
+
+          <div className="mt-5 flex items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-blue-950"><Sparkles className="mt-0.5 h-5 w-5 shrink-0" /><p className="text-[11px] leading-5"><strong className="block text-xs">항목별 카드로 세로 비교합니다.</strong>같은 위치에서 보장 범위, 특약, 면책, 감액, 보장개시를 상품별로 확인할 수 있습니다. ‘자동 미탐지’는 해당 조항이 없다는 판정이 아닙니다.</p></div>
+
+          {selectedRecords.length ? (
+            <div className="mt-5 space-y-5">
+              <div className={`grid gap-3 ${comparisonGridClass(selectedRecords.length)}`}>
+                {selectedRecords.map(({ document }, index) => <article key={document.id} className="min-w-0 rounded-3xl bg-[#17211f] p-5 text-white"><div className="flex items-start justify-between gap-3"><span className="rounded-full bg-[#3155d9] px-2.5 py-1 text-[10px] font-black">비교 {index + 1}</span><button onClick={() => toggleComparison(document.id)} className="text-[10px] font-bold text-neutral-300 underline">선택 해제</button></div><p className="mt-4 text-[11px] font-black text-[#f1b94c]">{document.insurer} · {formatDate(document.effectiveFrom)}</p><h3 className="mt-2 break-words text-lg font-black leading-7">{document.productName}</h3></article>)}
+              </div>
+
+              <ComparisonSection title="문서 분량" description="PDF 전체 페이지와 추출된 텍스트 분량입니다." tone="neutral" records={selectedRecords} render={({ analysis }) => <div className="grid grid-cols-2 gap-2"><span className="rounded-xl bg-[#f8f6ef] p-3"><strong className="block text-lg tabular-nums">{formatNumber(analysis.pageCount)}</strong><span className="text-[10px] text-neutral-500">전체 페이지</span></span><span className="rounded-xl bg-[#f8f6ef] p-3"><strong className="block text-lg tabular-nums">{formatCharacters(analysis.characterCount)}</strong><span className="text-[10px] text-neutral-500">추출 텍스트</span></span></div>} />
+
+              <ComparisonSection title="감지 보장 범위" description="약관 전체에서 자동 감지한 보장 주제입니다. 실제 가입 담보와는 다를 수 있습니다." tone="blue" records={selectedRecords} render={({ analysis }) => <div className="flex flex-wrap gap-2">{analysis.coverage.topics.length ? analysis.coverage.topics.map((topic) => <span key={topic} className="rounded-lg bg-blue-100 px-2.5 py-1.5 text-[11px] font-black text-blue-900">{topic}</span>) : <span className="font-bold text-amber-900">자동 미탐지 · 원문 확인 필요</span>}</div>} />
+
+              <ComparisonSection title="특약 후보" description="약관에서 이름이 감지된 특별약관을 최대 5개까지 보여줍니다." tone="violet" records={selectedRecords} render={({ analysis }) => <div><strong className="mb-3 inline-flex rounded-full bg-violet-100 px-3 py-1 text-violet-900">{analysis.riders.detectedCount}개 감지</strong>{analysis.riders.names.length ? <ul className="space-y-2 pl-4 text-[12px] leading-5 text-neutral-700">{analysis.riders.names.slice(0, 5).map((name) => <li key={name} className="list-disc break-words">{name}</li>)}</ul> : <p className="font-bold text-amber-900">자동 미탐지 · 원문 확인 필요</p>}</div>} />
+
+              <ComparisonSection title="면책 · 보상 제외" description="보험금을 지급하지 않거나 보상에서 제외하는 대표 근거입니다." tone="red" records={selectedRecords} render={({ analysis }) => <EvidenceSummary section={analysis.exclusions} tone="red" />} />
+
+              <ComparisonSection title="초기 감액" description="가입 초기에 보험금이 줄어드는 조건의 대표 근거입니다." tone="amber" records={selectedRecords} render={({ analysis }) => <EvidenceSummary section={analysis.reduction} tone="amber" />} />
+
+              <ComparisonSection title="면책기간 · 보장개시" description="보장이 시작되는 시점 또는 대기기간의 대표 근거입니다." tone="blue" records={selectedRecords} render={({ analysis }) => <EvidenceSummary section={analysis.waiting} tone="blue" />} />
+
+              <ComparisonSection title="원문 확인" description="자동 분석 결과가 나온 PDF와 전체 TXT 원문을 직접 확인합니다." tone="neutral" records={selectedRecords} render={({ document, analysis }) => <div className="grid grid-cols-2 gap-2"><Link href={`/insurance/terms/viewer/${document.id}`} target="_blank" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#17211f] px-3 text-xs font-black text-white">PDF 보기</Link><a href={analysis.textPath} target="_blank" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-black/10 px-3 text-xs font-black">TXT 보기</a></div>} />
+            </div>
+          ) : <div className="mt-5 rounded-2xl border border-dashed border-black/20 bg-white p-12 text-center"><GitCompareArrows className="mx-auto h-8 w-8 text-neutral-400" /><p className="mt-4 text-sm font-black">위 목록에서 비교할 약관을 선택하세요</p></div>}
         </section>
       )}
 
