@@ -56,6 +56,11 @@ export function policyCategory(productName: string): string {
   return "건강"
 }
 
+export function officialPolicyProxyPath(document: OfficialPolicyDocument): string {
+  if (!document.sourceFileName) throw new Error("공식 약관 파일명이 없습니다.")
+  return `/policy-files/${encodeURIComponent(document.sourceFileName)}`
+}
+
 export function summarizeAnalyzedPolicy(document: InsuranceTermsDocument): ComparisonSummary {
   const classification = document.clauses.classification
   const mentionedTypes = classification?.mentionedCancerTypes ?? []

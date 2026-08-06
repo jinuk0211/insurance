@@ -3,7 +3,8 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ArrowLeft, ArrowUpRight, Download } from "lucide-react"
 
-import { OFFICIAL_POLICY_DOCUMENTS } from "@/lib/policy-library"
+import { PolicyPdfFrame } from "@/components/insurance/policy-pdf-frame"
+import { OFFICIAL_POLICY_DOCUMENTS, officialPolicyProxyPath } from "@/lib/policy-library"
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -28,7 +29,7 @@ export default async function PolicyViewerPage({ params }: PageProps) {
   const document = OFFICIAL_POLICY_DOCUMENTS.find((item) => item.id === id)
   if (!document) notFound()
 
-  const viewerUrl = `https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(document.pdfUrl)}`
+  const viewerUrl = officialPolicyProxyPath(document)
 
   return (
     <main className="flex min-h-screen flex-col bg-[#252525] text-white">
@@ -47,13 +48,8 @@ export default async function PolicyViewerPage({ params }: PageProps) {
         </div>
       </header>
       <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col p-2 sm:p-4">
-        <div className="mb-2 rounded-xl bg-amber-100 px-3 py-2 text-[10px] font-bold leading-4 text-amber-950 sm:text-xs">아래 문서는 화면 안에서 열립니다. 뷰어가 잠시 비어 있으면 몇 초 후 새로고침하거나 원본 다운로드를 이용해 주세요.</div>
-        <iframe
-          src={viewerUrl}
-          title={`${document.productName} 보험약관 PDF`}
-          className="min-h-[calc(100dvh-10.5rem)] w-full flex-1 rounded-xl border-0 bg-white"
-          referrerPolicy="no-referrer"
-        />
+        <div className="mb-2 rounded-xl bg-amber-100 px-3 py-2 text-[10px] font-bold leading-4 text-amber-950 sm:text-xs">공식 PDF를 사이트에서 불러온 뒤 브라우저의 PDF 뷰어로 표시합니다. 파일 크기에 따라 처음 열 때 몇 초 걸릴 수 있습니다.</div>
+        <PolicyPdfFrame source={viewerUrl} title={`${document.productName} 보험약관 PDF`} />
       </div>
     </main>
   )
