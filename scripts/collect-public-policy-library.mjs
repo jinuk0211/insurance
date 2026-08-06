@@ -1,4 +1,5 @@
 import { writeFile } from "node:fs/promises"
+import iconv from "iconv-lite"
 
 import { collectKbDisclosurePage } from "../lib/catalog/sources/kb-disclosure.ts"
 
@@ -23,7 +24,8 @@ for (const saleFilter of ["Y", "N"]) {
       const terms = latestVersion?.documents.find((document) => document.kind === "terms")
       if (!latestVersion || !terms || seenUrls.has(terms.url)) continue
 
-      const metadata = await verifyPdf(terms.url)
+      const pdfUrl = kbPdfUrl(terms.fileName)
+      const metadata = await verifyPdf(pdfUrl)
       documents.push({
         id: `kb-${product.listing.externalProductCode}-${latestVersion.versionKey}`,
         insurer: "KB손해보험",
@@ -33,7 +35,7 @@ for (const saleFilter of ["Y", "N"]) {
         versionKey: latestVersion.versionKey,
         effectiveFrom: latestVersion.effectiveFrom,
         effectiveTo: latestVersion.effectiveTo,
-        pdfUrl: terms.url,
+        pdfUrl,
         sourceFileName: terms.fileName,
         sourcePageUrl: SOURCE_PAGE_URL,
         byteLength: metadata.byteLength,
@@ -65,6 +67,15 @@ const result = {
 
 await writeFile(OUTPUT_PATH, `${JSON.stringify(result, null, 2)}\n`, "utf8")
 console.log(`공식 보험약관 ${documents.length}건 저장: ${OUTPUT_PATH.pathname}`)
+
+function kbPdfUrl(fileName) {
+  const encodedFileName = [...iconv.encode(fileName, "euc-kr")]
+    .map((byte) => /[A-Za-z0-9_.-]/.test(String.fromCharCode(byte))
+      ? String.fromCharCode(byte)
+      : `%${byte.toString(16).toUpperCase().padStart(2, "0")}`)
+    .join("")
+  return `https://www.kbinsure.co.kr/CG802030003.ec?fileNm=${encodedFileName}`
+}
 
 async function verifyPdf(url) {
   const response = await fetch(url, {

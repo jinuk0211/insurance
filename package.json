@@ -14,6 +14,7 @@
     "catalog:probe": "node --experimental-strip-types scripts/probe-kb-catalog.mjs",
     "catalog:collect": "node --experimental-strip-types scripts/collect-insurance-catalog.mjs",
     "catalog:library": "node --experimental-strip-types scripts/collect-public-policy-library.mjs",
+    "catalog:extract": "node scripts/extract-policy-corpus.mjs",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node scripts/migrate.mjs"
   },
@@ -42,6 +43,8 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "drizzle-kit": "^0.31.10",
+    "iconv-lite": "^0.7.3",
+    "pdfjs-dist": "^6.2.108",
     "postcss": "^8.5",
     "tailwindcss": "^4.2.0",
     "tw-animate-css": "1.3.3",

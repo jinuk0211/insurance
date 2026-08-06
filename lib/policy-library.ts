@@ -1,4 +1,5 @@
 import rawOfficialLibrary from "./generated/official-policy-library.json" with { type: "json" }
+import rawOfficialAnalysis from "./generated/official-policy-analysis.json" with { type: "json" }
 import {
   INSURANCE_TERMS_DOCUMENTS,
   type InsuranceTermsDocument,
@@ -30,6 +31,51 @@ interface OfficialPolicyLibrary {
   documents: OfficialPolicyDocument[]
 }
 
+export interface PolicyEvidence {
+  page: number
+  excerpt: string
+}
+
+export type PolicyAnalysisConfidence = "high" | "medium" | "needs_review"
+
+export interface PolicyAnalysisSection {
+  confidence: PolicyAnalysisConfidence
+  evidence: PolicyEvidence[]
+}
+
+export interface OfficialPolicyAnalysisDocument {
+  id: string
+  textPath: string
+  pageCount: number
+  characterCount: number
+  extractionQuality: "text" | "partial" | "scan_review"
+  charactersPerPage: number
+  sourceSha256: string
+  coverage: PolicyAnalysisSection & { topics: string[] }
+  riders: PolicyAnalysisSection & { detectedCount: number; names: string[] }
+  exclusions: PolicyAnalysisSection
+  reduction: PolicyAnalysisSection & {
+    ratesPercent: number[]
+    periodsMonths: number[]
+    periodsYears: number[]
+  }
+  waiting: PolicyAnalysisSection & { days: number[] }
+}
+
+interface OfficialPolicyAnalysis {
+  schemaVersion: number
+  generatedAt: string
+  method: string
+  notice: string
+  summary: {
+    documentCount: number
+    pageCount: number
+    characterCount: number
+    evidenceCount: number
+  }
+  documents: OfficialPolicyAnalysisDocument[]
+}
+
 export interface ComparisonSummary {
   coverage: string
   riders: string
@@ -40,11 +86,17 @@ export interface ComparisonSummary {
 }
 
 const officialLibrary = rawOfficialLibrary as OfficialPolicyLibrary
+const officialAnalysis = rawOfficialAnalysis as OfficialPolicyAnalysis
 
 export const OFFICIAL_POLICY_DOCUMENTS = officialLibrary.documents
 export const OFFICIAL_POLICY_DOCUMENT_COUNT = officialLibrary.documents.length
 export const OFFICIAL_POLICY_COLLECTED_AT = officialLibrary.collectedAt
 export const OFFICIAL_POLICY_SOURCE = officialLibrary.source
+export const OFFICIAL_POLICY_ANALYSES = officialAnalysis.documents
+export const OFFICIAL_POLICY_ANALYSIS_GENERATED_AT = officialAnalysis.generatedAt
+export const OFFICIAL_POLICY_ANALYSIS_METHOD = officialAnalysis.method
+export const OFFICIAL_POLICY_ANALYSIS_NOTICE = officialAnalysis.notice
+export const OFFICIAL_POLICY_ANALYSIS_SUMMARY = officialAnalysis.summary
 export const ANALYZED_POLICY_DOCUMENTS = INSURANCE_TERMS_DOCUMENTS
 
 export function policyCategory(productName: string): string {
@@ -57,8 +109,7 @@ export function policyCategory(productName: string): string {
 }
 
 export function officialPolicyProxyPath(document: OfficialPolicyDocument): string {
-  if (!document.sourceFileName) throw new Error("공식 약관 파일명이 없습니다.")
-  return `/policy-files/${encodeURIComponent(document.sourceFileName)}`
+  return `/policy-files/${document.id}`
 }
 
 export function summarizeAnalyzedPolicy(document: InsuranceTermsDocument): ComparisonSummary {
