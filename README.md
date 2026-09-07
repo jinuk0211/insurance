@@ -4,7 +4,8 @@
 
 [실험·코드 안내](research/PILOT_RELEASE_20260908.md) ·
 [검증된 결과](research/pilot_results_20260908.md) ·
-[논문 PDF (Drive, 소유자 전용)](https://drive.google.com/file/d/1jXLxbYZPrEGSxQ0fMcci2PCa3UtYTD_p/view?usp=drivesdk)
+[논문 PDF (Drive, 소유자 전용)](https://drive.google.com/file/d/1jXLxbYZPrEGSxQ0fMcci2PCa3UtYTD_p/view?usp=drivesdk) ·
+[코드·문서 ZIP (Drive, 소유자 전용)](https://drive.google.com/file/d/1xql50eofqCSyGpCfAaYlXHSEkLBOk_CN/view?usp=drivesdk)
 
 1,000개씩 총 3,000개 원본 식별 목록은 유지합니다. 12문서 모델 파일럿과
 1,000개 대출의 오프라인 구성요소 실험을 구분합니다. 준비형 검색은 동일

@@ -59,6 +59,13 @@ gate does not authorize automatic detector selection.
 
 The PDF is stored in the requested account's private Drive:
 [pilot V5 PDF](https://drive.google.com/file/d/1jXLxbYZPrEGSxQ0fMcci2PCa3UtYTD_p/view?usp=drivesdk).
+[Code and document ZIP](https://drive.google.com/file/d/1xql50eofqCSyGpCfAaYlXHSEkLBOk_CN/view?usp=drivesdk)
+contains the 328 tracked files at artifact commit
+19c83220e04268c2b6dfb6ff6100393c4089cab5, before this self-link was added.
+ZIP size: 11,200,855 bytes. SHA-256:
+9c3df812a5569ee30d156620d4c43a3191cafd4e08993a8be852d80ddda197f5.
+Its CRC and all eight pinned code hashes plus the final PDF hash were verified.
+Both Drive files were read back with matching sizes and owner-only permissions.
 The new Git branch is codex/fin-harness-pilot-20260908.
 The publication branch is based on the previous research branch d2a2fdb8;
 the original workspace's main branch, staged edits and older records are preserved.

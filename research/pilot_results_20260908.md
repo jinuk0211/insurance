@@ -131,9 +131,9 @@ A supported pilot conclusion is:
 
 Additional model calls for this checkpoint: zero. Recorded historic usage remains
 619 calls and 16,112,787 known tokens plus two unknown-usage calls; no dollar bill
-is inferred. Final manuscript integration and new-branch GitHub/Drive publication
-remain pending. Original figures, tables, model records and the full cohort are
-preserved.
+is inferred. The verified measurements are integrated in the V5 manuscript.
+Delivery links are recorded separately in PILOT_RELEASE_20260908.md.
+Original figures, tables, model records and the full cohort are preserved.
 
 The harness/eval/Python-testing skills shaped the prewritten comparisons,
 failure-inclusive denominators and separate Python review. The research evidence
