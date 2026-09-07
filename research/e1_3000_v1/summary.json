@@ -1,0 +1,1777 @@
+{
+  "input_documents": 3000,
+  "domains": {
+    "kr_insurance": {
+      "all": {
+        "native_kr_parser_payload": {
+          "input_documents": 1000,
+          "status_counts": {
+            "completed": 790,
+            "no_parser_clauses": 210
+          },
+          "extraction_status_counts": {
+            "success": 761,
+            "needs_review": 239
+          },
+          "character_ratio": {
+            "defined_documents": 998,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.4019983521232818
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 998,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.4048297016614818
+          },
+          "source_keyword_retention": {
+            "defined_documents": 887,
+            "undefined_or_failed_documents": 113,
+            "mean_defined": 0.7185770610193933
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 1000,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.27065625
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 790,
+            "undefined_or_failed_documents": 210,
+            "mean_defined": 0.8270671036259086
+          }
+        },
+        "original_rank_float64": {
+          "input_documents": 1000,
+          "status_counts": {
+            "completed": 1000
+          },
+          "extraction_status_counts": {
+            "success": 761,
+            "needs_review": 239
+          },
+          "character_ratio": {
+            "defined_documents": 998,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.6011639151337345
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 998,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.6155234523906526
+          },
+          "source_keyword_retention": {
+            "defined_documents": 887,
+            "undefined_or_failed_documents": 113,
+            "mean_defined": 0.6083007762441597
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 1000,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.19453125
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 998,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.890055597759883
+          }
+        },
+        "original_rule_filter": {
+          "input_documents": 1000,
+          "status_counts": {
+            "completed": 1000
+          },
+          "extraction_status_counts": {
+            "success": 761,
+            "needs_review": 239
+          },
+          "character_ratio": {
+            "defined_documents": 998,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.9742495495638539
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 998,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.9849194224887733
+          },
+          "source_keyword_retention": {
+            "defined_documents": 887,
+            "undefined_or_failed_documents": 113,
+            "mean_defined": 0.9995736475725202
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 1000,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.34525
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 998,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.997080004879332
+          }
+        },
+        "raw": {
+          "input_documents": 1000,
+          "status_counts": {
+            "completed": 1000
+          },
+          "extraction_status_counts": {
+            "success": 761,
+            "needs_review": 239
+          },
+          "character_ratio": {
+            "defined_documents": 998,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 1.0
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 998,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 1.0
+          },
+          "source_keyword_retention": {
+            "defined_documents": 887,
+            "undefined_or_failed_documents": 113,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 1000,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.34546875
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 998,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 1.0
+          }
+        }
+      },
+      "mechanical_success": {
+        "native_kr_parser_payload": {
+          "input_documents": 761,
+          "status_counts": {
+            "completed": 723,
+            "no_parser_clauses": 38
+          },
+          "extraction_status_counts": {
+            "success": 761
+          },
+          "character_ratio": {
+            "defined_documents": 761,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.4967336893162261
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 761,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.49981328438393524
+          },
+          "source_keyword_retention": {
+            "defined_documents": 754,
+            "undefined_or_failed_documents": 7,
+            "mean_defined": 0.7880084995752752
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 761,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.3363173455978975
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 723,
+            "undefined_or_failed_documents": 38,
+            "mean_defined": 0.8509573253737932
+          }
+        },
+        "original_rank_float64": {
+          "input_documents": 761,
+          "status_counts": {
+            "completed": 761
+          },
+          "extraction_status_counts": {
+            "success": 761
+          },
+          "character_ratio": {
+            "defined_documents": 761,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.5336553026031123
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 761,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.5513245330412365
+          },
+          "source_keyword_retention": {
+            "defined_documents": 754,
+            "undefined_or_failed_documents": 7,
+            "mean_defined": 0.5906806976722937
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 761,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.23324572930354795
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 761,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.8736277970434448
+          }
+        },
+        "original_rule_filter": {
+          "input_documents": 761,
+          "status_counts": {
+            "completed": 761
+          },
+          "extraction_status_counts": {
+            "success": 761
+          },
+          "character_ratio": {
+            "defined_documents": 761,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9718488918407483
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 761,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9817814286575075
+          },
+          "source_keyword_retention": {
+            "defined_documents": 754,
+            "undefined_or_failed_documents": 7,
+            "mean_defined": 0.999498442170856
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 761,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.417296320630749
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 761,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9967057983007226
+          }
+        },
+        "raw": {
+          "input_documents": 761,
+          "status_counts": {
+            "completed": 761
+          },
+          "extraction_status_counts": {
+            "success": 761
+          },
+          "character_ratio": {
+            "defined_documents": 761,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 761,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "source_keyword_retention": {
+            "defined_documents": 754,
+            "undefined_or_failed_documents": 7,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 761,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.41758377135348224
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 761,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          }
+        }
+      },
+      "mechanical_review": {
+        "native_kr_parser_payload": {
+          "input_documents": 239,
+          "status_counts": {
+            "completed": 67,
+            "no_parser_clauses": 172
+          },
+          "extraction_status_counts": {
+            "needs_review": 239
+          },
+          "character_ratio": {
+            "defined_documents": 237,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.09780598248686577
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 237,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.09984022296195814
+          },
+          "source_keyword_retention": {
+            "defined_documents": 133,
+            "undefined_or_failed_documents": 106,
+            "mean_defined": 0.3249582289055973
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 239,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.061584728033472806
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 67,
+            "undefined_or_failed_documents": 172,
+            "mean_defined": 0.5692666510330638
+          }
+        },
+        "original_rank_float64": {
+          "input_documents": 239,
+          "status_counts": {
+            "completed": 239
+          },
+          "extraction_status_counts": {
+            "needs_review": 239
+          },
+          "character_ratio": {
+            "defined_documents": 237,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.817932076044298
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 237,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.821664286251014
+          },
+          "source_keyword_retention": {
+            "defined_documents": 133,
+            "undefined_or_failed_documents": 106,
+            "mean_defined": 0.7081920487493243
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 239,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.07126046025104603
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 237,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.942804780651062
+          }
+        },
+        "original_rule_filter": {
+          "input_documents": 239,
+          "status_counts": {
+            "completed": 239
+          },
+          "extraction_status_counts": {
+            "needs_review": 239
+          },
+          "character_ratio": {
+            "defined_documents": 237,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.9819579906072441
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 237,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.994995427997606
+          },
+          "source_keyword_retention": {
+            "defined_documents": 133,
+            "undefined_or_failed_documents": 106,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 239,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.11584728033472803
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 237,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.9982815711507319
+          }
+        },
+        "raw": {
+          "input_documents": 239,
+          "status_counts": {
+            "completed": 239
+          },
+          "extraction_status_counts": {
+            "needs_review": 239
+          },
+          "character_ratio": {
+            "defined_documents": 237,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 1.0
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 237,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 1.0
+          },
+          "source_keyword_retention": {
+            "defined_documents": 133,
+            "undefined_or_failed_documents": 106,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 239,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.11584728033472803
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 237,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 1.0
+          }
+        }
+      },
+      "development_exposed_or_linked": {
+        "native_kr_parser_payload": {
+          "input_documents": 611,
+          "status_counts": {
+            "completed": 507,
+            "no_parser_clauses": 104
+          },
+          "extraction_status_counts": {
+            "success": 515,
+            "needs_review": 96
+          },
+          "character_ratio": {
+            "defined_documents": 609,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.45214691182939143
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 609,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.45397549312220326
+          },
+          "source_keyword_retention": {
+            "defined_documents": 568,
+            "undefined_or_failed_documents": 43,
+            "mean_defined": 0.7408794703288446
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 611,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.2935249590834697
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 507,
+            "undefined_or_failed_documents": 104,
+            "mean_defined": 0.87191324069697
+          }
+        },
+        "original_rank_float64": {
+          "input_documents": 611,
+          "status_counts": {
+            "completed": 611
+          },
+          "extraction_status_counts": {
+            "success": 515,
+            "needs_review": 96
+          },
+          "character_ratio": {
+            "defined_documents": 609,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.5686605300704143
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 609,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.5864951073346036
+          },
+          "source_keyword_retention": {
+            "defined_documents": 568,
+            "undefined_or_failed_documents": 43,
+            "mean_defined": 0.6095169536346007
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 611,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.21031096563011456
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 609,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.886702241299796
+          }
+        },
+        "original_rule_filter": {
+          "input_documents": 611,
+          "status_counts": {
+            "completed": 611
+          },
+          "extraction_status_counts": {
+            "success": 515,
+            "needs_review": 96
+          },
+          "character_ratio": {
+            "defined_documents": 609,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.9760241405660528
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 609,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.9863656903151752
+          },
+          "source_keyword_retention": {
+            "defined_documents": 568,
+            "undefined_or_failed_documents": 43,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 611,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.369373977086743
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 609,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 0.9973249844571148
+          }
+        },
+        "raw": {
+          "input_documents": 611,
+          "status_counts": {
+            "completed": 611
+          },
+          "extraction_status_counts": {
+            "success": 515,
+            "needs_review": 96
+          },
+          "character_ratio": {
+            "defined_documents": 609,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 1.0
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 609,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 1.0
+          },
+          "source_keyword_retention": {
+            "defined_documents": 568,
+            "undefined_or_failed_documents": 43,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 611,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.369373977086743
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 609,
+            "undefined_or_failed_documents": 2,
+            "mean_defined": 1.0
+          }
+        }
+      },
+      "evaluation_reserved": {
+        "native_kr_parser_payload": {
+          "input_documents": 389,
+          "status_counts": {
+            "completed": 283,
+            "no_parser_clauses": 106
+          },
+          "extraction_status_counts": {
+            "success": 246,
+            "needs_review": 143
+          },
+          "character_ratio": {
+            "defined_documents": 389,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.32348813911294566
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 389,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.3278893751844141
+          },
+          "source_keyword_retention": {
+            "defined_documents": 319,
+            "undefined_or_failed_documents": 70,
+            "mean_defined": 0.6788661880169848
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 389,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.23473650385604114
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 283,
+            "undefined_or_failed_documents": 106,
+            "mean_defined": 0.7467243774950671
+          }
+        },
+        "original_rank_float64": {
+          "input_documents": 389,
+          "status_counts": {
+            "completed": 389
+          },
+          "extraction_status_counts": {
+            "success": 246,
+            "needs_review": 143
+          },
+          "character_ratio": {
+            "defined_documents": 389,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.6520496773536884
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 389,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.6609688563472946
+          },
+          "source_keyword_retention": {
+            "defined_documents": 319,
+            "undefined_or_failed_documents": 70,
+            "mean_defined": 0.606135294244879
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 389,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.1697461439588689
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 389,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.8953054540174484
+          }
+        },
+        "original_rule_filter": {
+          "input_documents": 389,
+          "status_counts": {
+            "completed": 389
+          },
+          "extraction_status_counts": {
+            "success": 246,
+            "needs_review": 143
+          },
+          "character_ratio": {
+            "defined_documents": 389,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9714713338303346
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 389,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.982655213989342
+          },
+          "source_keyword_retention": {
+            "defined_documents": 319,
+            "undefined_or_failed_documents": 70,
+            "mean_defined": 0.9988144996765687
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 389,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.3073586118251928
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 389,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9966964764400784
+          }
+        },
+        "raw": {
+          "input_documents": 389,
+          "status_counts": {
+            "completed": 389
+          },
+          "extraction_status_counts": {
+            "success": 246,
+            "needs_review": 143
+          },
+          "character_ratio": {
+            "defined_documents": 389,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 389,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "source_keyword_retention": {
+            "defined_documents": 319,
+            "undefined_or_failed_documents": 70,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 389,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.30792095115681234
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 389,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          }
+        }
+      }
+    },
+    "us_card": {
+      "all": {
+        "original_rank_float64": {
+          "input_documents": 1000,
+          "status_counts": {
+            "completed": 1000
+          },
+          "extraction_status_counts": {
+            "success": 858,
+            "needs_review": 142
+          },
+          "character_ratio": {
+            "defined_documents": 980,
+            "undefined_or_failed_documents": 20,
+            "mean_defined": 0.7268424914157724
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 940,
+            "undefined_or_failed_documents": 60,
+            "mean_defined": 0.7304290687749985
+          },
+          "source_keyword_retention": {
+            "defined_documents": 921,
+            "undefined_or_failed_documents": 79,
+            "mean_defined": 0.8847354356648577
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 1000,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.4209142857142857
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 939,
+            "undefined_or_failed_documents": 61,
+            "mean_defined": 0.9776430977474804
+          }
+        },
+        "original_rule_filter": {
+          "input_documents": 1000,
+          "status_counts": {
+            "completed": 1000
+          },
+          "extraction_status_counts": {
+            "success": 858,
+            "needs_review": 142
+          },
+          "character_ratio": {
+            "defined_documents": 980,
+            "undefined_or_failed_documents": 20,
+            "mean_defined": 0.9185952139481176
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 940,
+            "undefined_or_failed_documents": 60,
+            "mean_defined": 0.9715124308336577
+          },
+          "source_keyword_retention": {
+            "defined_documents": 921,
+            "undefined_or_failed_documents": 79,
+            "mean_defined": 0.9959815377472017
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 1000,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.4702285714285714
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 938,
+            "undefined_or_failed_documents": 62,
+            "mean_defined": 0.9912181862170232
+          }
+        },
+        "raw": {
+          "input_documents": 1000,
+          "status_counts": {
+            "completed": 1000
+          },
+          "extraction_status_counts": {
+            "success": 858,
+            "needs_review": 142
+          },
+          "character_ratio": {
+            "defined_documents": 980,
+            "undefined_or_failed_documents": 20,
+            "mean_defined": 1.0
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 940,
+            "undefined_or_failed_documents": 60,
+            "mean_defined": 1.0
+          },
+          "source_keyword_retention": {
+            "defined_documents": 921,
+            "undefined_or_failed_documents": 79,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 1000,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.4709714285714286
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 939,
+            "undefined_or_failed_documents": 61,
+            "mean_defined": 1.0
+          }
+        }
+      },
+      "mechanical_success": {
+        "original_rank_float64": {
+          "input_documents": 858,
+          "status_counts": {
+            "completed": 858
+          },
+          "extraction_status_counts": {
+            "success": 858
+          },
+          "character_ratio": {
+            "defined_documents": 858,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.7106525282078116
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 858,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.7263963242916277
+          },
+          "source_keyword_retention": {
+            "defined_documents": 858,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.8858294163107224
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 858,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.4574425574425574
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 858,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9794396485817113
+          }
+        },
+        "original_rule_filter": {
+          "input_documents": 858,
+          "status_counts": {
+            "completed": 858
+          },
+          "extraction_status_counts": {
+            "success": 858
+          },
+          "character_ratio": {
+            "defined_documents": 858,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9665599421994867
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 858,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9818215630403311
+          },
+          "source_keyword_retention": {
+            "defined_documents": 858,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.998017478164537
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 858,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.5105894105894105
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 858,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9938296089622665
+          }
+        },
+        "raw": {
+          "input_documents": 858,
+          "status_counts": {
+            "completed": 858
+          },
+          "extraction_status_counts": {
+            "success": 858
+          },
+          "character_ratio": {
+            "defined_documents": 858,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 858,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "source_keyword_retention": {
+            "defined_documents": 858,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 858,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.5113886113886114
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 858,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          }
+        }
+      },
+      "mechanical_review": {
+        "original_rank_float64": {
+          "input_documents": 142,
+          "status_counts": {
+            "completed": 142
+          },
+          "extraction_status_counts": {
+            "needs_review": 142
+          },
+          "character_ratio": {
+            "defined_documents": 122,
+            "undefined_or_failed_documents": 20,
+            "mean_defined": 0.840703052337333
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 82,
+            "undefined_or_failed_documents": 60,
+            "mean_defined": 0.7726253464180738
+          },
+          "source_keyword_retention": {
+            "defined_documents": 63,
+            "undefined_or_failed_documents": 79,
+            "mean_defined": 0.8698364611545102
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 142,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.20020120724346074
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 81,
+            "undefined_or_failed_documents": 61,
+            "mean_defined": 0.9586129666885903
+          }
+        },
+        "original_rule_filter": {
+          "input_documents": 142,
+          "status_counts": {
+            "completed": 142
+          },
+          "extraction_status_counts": {
+            "needs_review": 142
+          },
+          "character_ratio": {
+            "defined_documents": 122,
+            "undefined_or_failed_documents": 20,
+            "mean_defined": 0.5812695021475057
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 82,
+            "undefined_or_failed_documents": 60,
+            "mean_defined": 0.8636437060370007
+          },
+          "source_keyword_retention": {
+            "defined_documents": 63,
+            "undefined_or_failed_documents": 79,
+            "mean_defined": 0.9682539682539683
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 142,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.22635814889336017
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 80,
+            "undefined_or_failed_documents": 62,
+            "mean_defined": 0.9632106772742894
+          }
+        },
+        "raw": {
+          "input_documents": 142,
+          "status_counts": {
+            "completed": 142
+          },
+          "extraction_status_counts": {
+            "needs_review": 142
+          },
+          "character_ratio": {
+            "defined_documents": 122,
+            "undefined_or_failed_documents": 20,
+            "mean_defined": 1.0
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 82,
+            "undefined_or_failed_documents": 60,
+            "mean_defined": 1.0
+          },
+          "source_keyword_retention": {
+            "defined_documents": 63,
+            "undefined_or_failed_documents": 79,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 142,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.22676056338028172
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 81,
+            "undefined_or_failed_documents": 61,
+            "mean_defined": 1.0
+          }
+        }
+      },
+      "development_exposed_or_linked": {
+        "original_rank_float64": {
+          "input_documents": 71,
+          "status_counts": {
+            "completed": 71
+          },
+          "extraction_status_counts": {
+            "success": 66,
+            "needs_review": 5
+          },
+          "character_ratio": {
+            "defined_documents": 67,
+            "undefined_or_failed_documents": 4,
+            "mean_defined": 0.6880649893317228
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 67,
+            "undefined_or_failed_documents": 4,
+            "mean_defined": 0.7023523681762766
+          },
+          "source_keyword_retention": {
+            "defined_documents": 67,
+            "undefined_or_failed_documents": 4,
+            "mean_defined": 0.8193696097542058
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 71,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.36579476861167004
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 67,
+            "undefined_or_failed_documents": 4,
+            "mean_defined": 0.9716471894043822
+          }
+        },
+        "original_rule_filter": {
+          "input_documents": 71,
+          "status_counts": {
+            "completed": 71
+          },
+          "extraction_status_counts": {
+            "success": 66,
+            "needs_review": 5
+          },
+          "character_ratio": {
+            "defined_documents": 67,
+            "undefined_or_failed_documents": 4,
+            "mean_defined": 0.9615739344132892
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 67,
+            "undefined_or_failed_documents": 4,
+            "mean_defined": 0.9732547152587621
+          },
+          "source_keyword_retention": {
+            "defined_documents": 67,
+            "undefined_or_failed_documents": 4,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 71,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.4386317907444668
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 67,
+            "undefined_or_failed_documents": 4,
+            "mean_defined": 0.9913045884819115
+          }
+        },
+        "raw": {
+          "input_documents": 71,
+          "status_counts": {
+            "completed": 71
+          },
+          "extraction_status_counts": {
+            "success": 66,
+            "needs_review": 5
+          },
+          "character_ratio": {
+            "defined_documents": 67,
+            "undefined_or_failed_documents": 4,
+            "mean_defined": 1.0
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 67,
+            "undefined_or_failed_documents": 4,
+            "mean_defined": 1.0
+          },
+          "source_keyword_retention": {
+            "defined_documents": 67,
+            "undefined_or_failed_documents": 4,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 71,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.4386317907444668
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 67,
+            "undefined_or_failed_documents": 4,
+            "mean_defined": 1.0
+          }
+        }
+      },
+      "evaluation_reserved": {
+        "original_rank_float64": {
+          "input_documents": 929,
+          "status_counts": {
+            "completed": 929
+          },
+          "extraction_status_counts": {
+            "success": 792,
+            "needs_review": 137
+          },
+          "character_ratio": {
+            "defined_documents": 913,
+            "undefined_or_failed_documents": 16,
+            "mean_defined": 0.7296881569575373
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 873,
+            "undefined_or_failed_documents": 56,
+            "mean_defined": 0.7325838671027354
+          },
+          "source_keyword_retention": {
+            "defined_documents": 854,
+            "undefined_or_failed_documents": 75,
+            "mean_defined": 0.8898636679084335
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 929,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.4251268645240658
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 872,
+            "undefined_or_failed_documents": 57,
+            "mean_defined": 0.9781037925398974
+          }
+        },
+        "original_rule_filter": {
+          "input_documents": 929,
+          "status_counts": {
+            "completed": 929
+          },
+          "extraction_status_counts": {
+            "success": 792,
+            "needs_review": 137
+          },
+          "character_ratio": {
+            "defined_documents": 913,
+            "undefined_or_failed_documents": 16,
+            "mean_defined": 0.9154412443192387
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 873,
+            "undefined_or_failed_documents": 56,
+            "mean_defined": 0.9713787159923265
+          },
+          "source_keyword_retention": {
+            "defined_documents": 854,
+            "undefined_or_failed_documents": 75,
+            "mean_defined": 0.9956662719732702
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 929,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.47264339535598954
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 871,
+            "undefined_or_failed_documents": 58,
+            "mean_defined": 0.9912115398889548
+          }
+        },
+        "raw": {
+          "input_documents": 929,
+          "status_counts": {
+            "completed": 929
+          },
+          "extraction_status_counts": {
+            "success": 792,
+            "needs_review": 137
+          },
+          "character_ratio": {
+            "defined_documents": 913,
+            "undefined_or_failed_documents": 16,
+            "mean_defined": 1.0
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 873,
+            "undefined_or_failed_documents": 56,
+            "mean_defined": 1.0
+          },
+          "source_keyword_retention": {
+            "defined_documents": 854,
+            "undefined_or_failed_documents": 75,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 929,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.4734430262955559
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 872,
+            "undefined_or_failed_documents": 57,
+            "mean_defined": 1.0
+          }
+        }
+      }
+    },
+    "us_loan": {
+      "all": {
+        "original_rank_float64": {
+          "input_documents": 1000,
+          "status_counts": {
+            "completed": 1000
+          },
+          "extraction_status_counts": {
+            "success": 999,
+            "needs_review": 1
+          },
+          "character_ratio": {
+            "defined_documents": 1000,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.8411307124844108
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 1000,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.8480747128791971
+          },
+          "source_keyword_retention": {
+            "defined_documents": 929,
+            "undefined_or_failed_documents": 71,
+            "mean_defined": 0.9286204081698921
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 1000,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.11058620689655173
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 1000,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9924687010233937
+          }
+        },
+        "original_rule_filter": {
+          "input_documents": 1000,
+          "status_counts": {
+            "completed": 1000
+          },
+          "extraction_status_counts": {
+            "success": 999,
+            "needs_review": 1
+          },
+          "character_ratio": {
+            "defined_documents": 1000,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9505909719370592
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 1000,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9531552968966647
+          },
+          "source_keyword_retention": {
+            "defined_documents": 929,
+            "undefined_or_failed_documents": 71,
+            "mean_defined": 0.9998462248193142
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 1000,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.13472413793103447
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 1000,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9956958621744467
+          }
+        },
+        "raw": {
+          "input_documents": 1000,
+          "status_counts": {
+            "completed": 1000
+          },
+          "extraction_status_counts": {
+            "success": 999,
+            "needs_review": 1
+          },
+          "character_ratio": {
+            "defined_documents": 1000,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 1000,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "source_keyword_retention": {
+            "defined_documents": 929,
+            "undefined_or_failed_documents": 71,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 1000,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.13475862068965516
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 1000,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          }
+        }
+      },
+      "mechanical_success": {
+        "original_rank_float64": {
+          "input_documents": 999,
+          "status_counts": {
+            "completed": 999
+          },
+          "extraction_status_counts": {
+            "success": 999
+          },
+          "character_ratio": {
+            "defined_documents": 999,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.8409716841685795
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 999,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.8479226355147118
+          },
+          "source_keyword_retention": {
+            "defined_documents": 928,
+            "undefined_or_failed_documents": 71,
+            "mean_defined": 0.928543490506282
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 999,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.11059335197266232
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 999,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9924611621855792
+          }
+        },
+        "original_rule_filter": {
+          "input_documents": 999,
+          "status_counts": {
+            "completed": 999
+          },
+          "extraction_status_counts": {
+            "success": 999
+          },
+          "character_ratio": {
+            "defined_documents": 999,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9505478912842211
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 999,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9531153709249782
+          },
+          "source_keyword_retention": {
+            "defined_documents": 928,
+            "undefined_or_failed_documents": 71,
+            "mean_defined": 0.9998460591133005
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 999,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.13475544510027268
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 999,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9956918175946716
+          }
+        },
+        "raw": {
+          "input_documents": 999,
+          "status_counts": {
+            "completed": 999
+          },
+          "extraction_status_counts": {
+            "success": 999
+          },
+          "character_ratio": {
+            "defined_documents": 999,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 999,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "source_keyword_retention": {
+            "defined_documents": 928,
+            "undefined_or_failed_documents": 71,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 999,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.13478996237616928
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 999,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          }
+        }
+      },
+      "mechanical_review": {
+        "original_rank_float64": {
+          "input_documents": 1,
+          "status_counts": {
+            "completed": 1
+          },
+          "extraction_status_counts": {
+            "needs_review": 1
+          },
+          "character_ratio": {
+            "defined_documents": 1,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 1,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "source_keyword_retention": {
+            "defined_documents": 1,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 1,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.10344827586206896
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 1,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          }
+        },
+        "original_rule_filter": {
+          "input_documents": 1,
+          "status_counts": {
+            "completed": 1
+          },
+          "extraction_status_counts": {
+            "needs_review": 1
+          },
+          "character_ratio": {
+            "defined_documents": 1,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9936285441223319
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 1,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9930413426115432
+          },
+          "source_keyword_retention": {
+            "defined_documents": 1,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 1,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.10344827586206896
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 1,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9997363973697155
+          }
+        },
+        "raw": {
+          "input_documents": 1,
+          "status_counts": {
+            "completed": 1
+          },
+          "extraction_status_counts": {
+            "needs_review": 1
+          },
+          "character_ratio": {
+            "defined_documents": 1,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 1,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "source_keyword_retention": {
+            "defined_documents": 1,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 1,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.10344827586206896
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 1,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          }
+        }
+      },
+      "development_exposed_or_linked": {
+        "original_rank_float64": {
+          "input_documents": 22,
+          "status_counts": {
+            "completed": 22
+          },
+          "extraction_status_counts": {
+            "success": 22
+          },
+          "character_ratio": {
+            "defined_documents": 22,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9632977213155314
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 22,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9651696190993327
+          },
+          "source_keyword_retention": {
+            "defined_documents": 22,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 22,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.09090909090909091
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 22,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9976033844322061
+          }
+        },
+        "original_rule_filter": {
+          "input_documents": 22,
+          "status_counts": {
+            "completed": 22
+          },
+          "extraction_status_counts": {
+            "success": 22
+          },
+          "character_ratio": {
+            "defined_documents": 22,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9362506613302692
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 22,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9377497479437342
+          },
+          "source_keyword_retention": {
+            "defined_documents": 22,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 22,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.09090909090909091
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 22,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9935534899320756
+          }
+        },
+        "raw": {
+          "input_documents": 22,
+          "status_counts": {
+            "completed": 22
+          },
+          "extraction_status_counts": {
+            "success": 22
+          },
+          "character_ratio": {
+            "defined_documents": 22,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 22,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "source_keyword_retention": {
+            "defined_documents": 22,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 22,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.09090909090909091
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 22,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          }
+        }
+      },
+      "evaluation_reserved": {
+        "original_rank_float64": {
+          "input_documents": 978,
+          "status_counts": {
+            "completed": 978
+          },
+          "extraction_status_counts": {
+            "success": 977,
+            "needs_review": 1
+          },
+          "character_ratio": {
+            "defined_documents": 978,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.8383825793614205
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 978,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.8454406761339589
+          },
+          "source_keyword_retention": {
+            "defined_documents": 907,
+            "undefined_or_failed_documents": 71,
+            "mean_defined": 0.926889039900584
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 978,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.1110288414075171
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 978,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.992353196897633
+          }
+        },
+        "original_rule_filter": {
+          "input_documents": 978,
+          "status_counts": {
+            "completed": 978
+          },
+          "extraction_status_counts": {
+            "success": 977,
+            "needs_review": 1
+          },
+          "character_ratio": {
+            "defined_documents": 978,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9509135556112405
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 978,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9535018429876304
+          },
+          "source_keyword_retention": {
+            "defined_documents": 907,
+            "undefined_or_failed_documents": 71,
+            "mean_defined": 0.9998424948810837
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 978,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.13570975248572031
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 978,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.9957440545970768
+          }
+        },
+        "raw": {
+          "input_documents": 978,
+          "status_counts": {
+            "completed": 978
+          },
+          "extraction_status_counts": {
+            "success": 977,
+            "needs_review": 1
+          },
+          "character_ratio": {
+            "defined_documents": 978,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "whitespace_unit_ratio": {
+            "defined_documents": 978,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          },
+          "source_keyword_retention": {
+            "defined_documents": 907,
+            "undefined_or_failed_documents": 71,
+            "mean_defined": 1.0
+          },
+          "legacy_inventory_hit_rate": {
+            "defined_documents": 978,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 0.13574501093011776
+          },
+          "tfidf_pairwise_lexical_cosine": {
+            "defined_documents": 978,
+            "undefined_or_failed_documents": 0,
+            "mean_defined": 1.0
+          }
+        }
+      }
+    }
+  },
+  "new_model_calls": 0,
+  "offline_preprocessing_measurement_complete": true,
+  "main_model_experiment_complete": false,
+  "cost_usd": null
+}

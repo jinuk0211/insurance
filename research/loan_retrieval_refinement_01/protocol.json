@@ -1,0 +1,54 @@
+{
+  "main_cohort_documents": 3000,
+  "loan_documents": 1000,
+  "development_documents": 22,
+  "methods": [
+    "original",
+    "full_windows",
+    "compact_cover"
+  ],
+  "repetitions": 3,
+  "query_limit_per_document": 3,
+  "queries_sha256": "3f760676c305e769e4cdc669dfe53416e2b0e44cacd280434a9d43cbd6ba8d00",
+  "query_count": 1508,
+  "model_calls": 0,
+  "parents_sha256": {
+    "research/loan_reference_refinement_01/original_pool.json": "45828c089188d10cc2208fb53ebca6ac674de062b267ae2a1ece6740cb738bf4",
+    "research/loan_reference_refinement_01/full_windows_pool.json": "669cf9671cc24e6278c73de693c86f4aa1c8a76fd3bbaed54e4633941f37314b",
+    "research/loan_reference_refinement_01/compact_cover_pool.json": "e47eefefe2acd80b4fe17868e996014491b14e516bbf37517bc8a030d25287d3",
+    "research/loan_reference_refinement_01/manifest.json": "3a5754b2a7f88f75463cc860840801d4348b929c40c24f5f90b8ef8e5efde5e0",
+    "research/loan_reference_refinement_01/selection.json": "6e98e35da0f954cc5cc806f706949fdfc2ccb67667cab133fbfc450cea7b02c0",
+    "research/harness_v3/main_3000_baseline_01/protocol.json": "6abf2703e3fc1bb09f614d1ec69cf3c43971f653ecaace146c42d58a76ef0bb5",
+    "research/harness_v3/main_3000_baseline_01/progress.json": "c56cc40f5ece2592dbd38b4335e2face1f17c3b19152d88b527e4f2870cf80e8",
+    "research/dataset_3000_v2/source_manifest.json": "a69c745bdc26014decff7155cc59b8d71ccf2ebbc26ff3bf2b98b176a70bf956",
+    "research/dataset_3000_v2/extraction_manifest.json": "902b32e3c29f2807277b3ce46d49c5fc90e99bf66f2b33da37be3949fb73475f",
+    "research/main_3000_groups_v1/allocation_manifest.json": "f1942df8980c2d6d65dc5ec765aac3a1d85e2de1821f69d5dd218a80e2f66655"
+  },
+  "code_sha256": {
+    "scripts_evolve/loan_retrieval.py": "f6296b3b1ca94658176afb26b64c95ebcda5b5789694ab633b293b90cbd280ec",
+    "scripts_evolve/loan_retrieval_benchmark.py": "fec556a2b6db97864e937fdeb2a4dbdf52032aa5b6536a14bbdb4a630049e315",
+    "scripts_evolve/loan_reference.py": "d0961a67e1f3eb24d1cb6f107d2e2433c1144a4799f3195d147c76ab53394f0e",
+    "scripts_evolve/loan_reference_refinement.py": "c505ff8c34560b35c9f5988cc2b6e13a3ef2a131c0b80480db29eff94c80aaed",
+    "scripts_evolve/main_execution.py": "01c85efd859314220182d78873e09a886a8bbf1251eaf0c1b82b7c783ce27005",
+    "scripts_evolve/main_preflight.py": "f6860ebb8c67c65e69fa79d73b29822c5419588c80569c85d75bd71e77684353",
+    "scripts_evolve/full_corpus_v2.py": "9c18922708910075cf53e127d91eb37bf0e35502e321b1d42b177def2d624f28",
+    "eval_US_loan/eval_loan.py": "2fed1d8a3249e19b1cbafdfb2ae87686c17692f509f02c3e844cfc89139c9b73"
+  },
+  "plan_sha256": "617f88041cf21aeb2897ad4528f9ed09942cf2d486c530e9ad1381abed166588",
+  "environment": {
+    "python": "3.14.2",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "python_hash_seed": "0",
+    "rank_bm25_version": "0.2.2",
+    "rank_bm25_source_sha256": "2f28cc795415c01e9f3db5a8ed019774f9cba747b272c9c304271589b8081ac6"
+  },
+  "admitted_chunks": {
+    "original": 68,
+    "full_windows": 82,
+    "compact_cover": 70
+  },
+  "reference_policy": "Successful development references only; exclude query and provisional component.",
+  "scope": "Keyword-generated query diagnostic; NOT human relevance, neural baseline or full model study.",
+  "runtime_default_changed": false,
+  "semantic_quality_verified": false
+}

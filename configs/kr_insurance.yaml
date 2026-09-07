@@ -1,0 +1,21 @@
+# Korean insurance product summaries.
+# Source: existing 2025_Q2_processed/ TXT files (already extracted by extract_pdf.py).
+domain: kr_insurance
+language: ko
+corpus: 2025_Q2_processed
+sample_size: 5
+seed: 42
+
+# Profile used by /report (Stage 4 personalisation).
+profile: data/profiles/default.json
+
+# Primary metric for outer-loop convergence test.
+primary_metric: composite
+
+# Stage-local metric targets. Outer loop converges when no proposal improves
+# the primary metric by more than --eps.
+targets:
+  stage1_kw_recall: 0.50
+  stage2_findings_per_doc: 3.0
+  stage3_mrr: 0.75
+  citation_gate_drops_max: 0

@@ -1,0 +1,19 @@
+{
+  "name": "kfinlegal-harness",
+  "version": "1.0.0",
+  "description": "KFinLegal Harness — 한국 금융상품 약관 취약점 탐지 하네스",
+  "type": "module",
+  "scripts": {
+    "setup": "node scripts/setup.js",
+    "index:precedents": "python pipeline/parse_precedents.py",
+    "index:disputes": "python pipeline/parse_disputes.py",
+    "index:contracts": "python pipeline/index_contracts.py",
+    "index:all": "python setup_pipeline.py",
+    "test:hooks": "node hooks/scripts/citation-gate.js --self-test && node hooks/scripts/ledger-validate.js --self-test",
+    "validate:plugin": "claude plugin validate .claude-plugin/plugin.json"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {}
+}

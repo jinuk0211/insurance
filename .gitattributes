@@ -1,0 +1,12 @@
+# Preserve exact frozen research bytes across Windows/Linux checkouts.
+scripts_evolve/** -text
+scripts/pilot/*.py -text
+tests/*.py -text
+ECC_harness_v3_txt/** -text
+eval_KR_ins/** -text
+eval_US_card/** -text
+eval_US_loan/** -text
+research/** -text
+EACL_industry/** -text
+configs/** -text
+evolve.py -text

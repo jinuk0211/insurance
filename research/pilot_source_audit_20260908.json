@@ -1,0 +1,200 @@
+{
+  "checked_date": "2026-09-08",
+  "documents": [
+    {
+      "doc_id": "kr_insurance-15d7ef2e21becc87b0ed",
+      "domain": "kr_insurance",
+      "latest_status": "success",
+      "draft_flags": 4,
+      "literal_source_grounded_drafts": 4,
+      "final_report_findings": 4,
+      "source_sha256": "15d7ef2e21becc87b0ed9d04f13ef5b3820b7e49b8b3e47cf2ab1d3b009d3f49",
+      "text_sha256": "a2bb2762667f01de97912d2a0e8d47995bd9c96e3bd148491599a301f9510b2c",
+      "artifact_sha256": {
+        "research/harness_v3/kr_main_input_pilot_03/documents/kr_insurance-15d7ef2e21becc87b0ed/result.json": "c90d9894ae33b70f842b30086d6a98352698176743cfb761b33482c789e57d1d",
+        "research/harness_v3/kr_main_input_pilot_03/documents/kr_insurance-15d7ef2e21becc87b0ed/workspace/findings_ledger.json": "cf880d6dd94eee5c849235a419d8fc1397007081da566f54339b005c399e5834",
+        "research/harness_v3/kr_main_input_pilot_03/documents/kr_insurance-15d7ef2e21becc87b0ed/workspace/validated_findings.json": "ad076bb6560c5e436b627dc427cf31541dfae67499933b7fcc383c28e8a603bd",
+        "research/harness_v3/kr_main_input_pilot_03/documents/kr_insurance-15d7ef2e21becc87b0ed/workspace/final_report.json": "cb7e22ba90e6fcf235e9c73a4d796caa2c3b364b71e86ec81bf988e7222e60ef"
+      }
+    },
+    {
+      "doc_id": "kr_insurance-85a84bb9774bf04a1140",
+      "domain": "kr_insurance",
+      "latest_status": "success",
+      "draft_flags": 2,
+      "literal_source_grounded_drafts": 2,
+      "final_report_findings": 2,
+      "source_sha256": "85a84bb9774bf04a114092dd4d4f19c0250e5c87ebd31f8bdd8da45411bae2fe",
+      "text_sha256": "2f314a793a57f1393456501571fa66808db7163e2eab46e8192475349f3b3cb7",
+      "artifact_sha256": {
+        "research/harness_v3/kr_main_input_pilot_03/documents/kr_insurance-85a84bb9774bf04a1140/result.json": "5985f68c4aaaaecf679d8b266075cd856022124665ec51321e289df1b3fc0584",
+        "research/harness_v3/kr_main_input_pilot_03/documents/kr_insurance-85a84bb9774bf04a1140/workspace/findings_ledger.json": "3a18acdcf4602eea2629f418091e78388db47d4442bd41ca91711321b1810c46",
+        "research/harness_v3/kr_main_input_pilot_03/documents/kr_insurance-85a84bb9774bf04a1140/workspace/validated_findings.json": "30d5341063056f2bb29dda81296ed55ce26a6737d8c209a3f1082d082564f5c6",
+        "research/harness_v3/kr_main_input_pilot_03/documents/kr_insurance-85a84bb9774bf04a1140/workspace/final_report.json": "f03c8191d231d40f08d449e8606a5c0a3d1457260b969bdcd35a4b34924ae8ab"
+      }
+    },
+    {
+      "doc_id": "kr_insurance-a480e39af0bb3df36636",
+      "domain": "kr_insurance",
+      "latest_status": "success",
+      "draft_flags": 4,
+      "literal_source_grounded_drafts": 4,
+      "final_report_findings": 3,
+      "source_sha256": "a480e39af0bb3df3663661ba747e5c281aef580d92ff7eb8fd721ce118762584",
+      "text_sha256": "55c2ed034a479d2f97a7ca190e7673f1bd03d9d9cfa8fed2573414a0a4a29916",
+      "artifact_sha256": {
+        "research/harness_v3/kr_main_input_pilot_03/documents/kr_insurance-a480e39af0bb3df36636/result.json": "83e068244c9c93ef7cf7cbd20c1f417b0b3fb62d20eb7c2d0350f89cf49bcc49",
+        "research/harness_v3/kr_main_input_pilot_03/documents/kr_insurance-a480e39af0bb3df36636/workspace/findings_ledger.json": "df8b0d2c0df037ea64e72d884b2316a9540dbd31b85d09efe05fd22c70ced5e2",
+        "research/harness_v3/kr_main_input_pilot_03/documents/kr_insurance-a480e39af0bb3df36636/workspace/validated_findings.json": "5ffac3932c27c0df9149c9198970a0d92e5a69cb477b324e7ba883b9c49f31eb",
+        "research/harness_v3/kr_main_input_pilot_03/documents/kr_insurance-a480e39af0bb3df36636/workspace/final_report.json": "a14f1df57d4103d2a04572a0cf3b9fbef5aef37f2ca5f5b32ec7fe9204197bdd"
+      }
+    },
+    {
+      "doc_id": "kr_insurance-d0c272643ff1ea7c6ba0",
+      "domain": "kr_insurance",
+      "latest_status": "success",
+      "draft_flags": 3,
+      "literal_source_grounded_drafts": 3,
+      "final_report_findings": 2,
+      "source_sha256": "d0c272643ff1ea7c6ba0e157384ba311d01ae179c4858da3d61c46eaecef965c",
+      "text_sha256": "63fd2a394f373879114a6d1f7a603863d05235ea2fe46fe9c333b84186631be6",
+      "artifact_sha256": {
+        "research/harness_v3/kr_main_input_pilot_03/documents/kr_insurance-d0c272643ff1ea7c6ba0/result.json": "01b0f9775784c2413f20bb0772cc519159a5f867a2c8e8adb899ebaffd2f4c1c",
+        "research/harness_v3/kr_main_input_pilot_03/documents/kr_insurance-d0c272643ff1ea7c6ba0/workspace/findings_ledger.json": "865136e3c55c4b022f85d221193caefafa7ea9295ea7e5f3ccffb0cd3fc0e5cf",
+        "research/harness_v3/kr_main_input_pilot_03/documents/kr_insurance-d0c272643ff1ea7c6ba0/workspace/validated_findings.json": "a3565937bf8a3355ba52e733574b28798a96db4a31f08f8c49fbcf121dd93df0",
+        "research/harness_v3/kr_main_input_pilot_03/documents/kr_insurance-d0c272643ff1ea7c6ba0/workspace/final_report.json": "2b153ce2de32101ed79092600908ed52ee63bfa75027087f6f65743b094df718"
+      }
+    },
+    {
+      "doc_id": "us_card-91507213e18384dec173",
+      "domain": "us_card",
+      "latest_status": "success",
+      "draft_flags": 26,
+      "literal_source_grounded_drafts": 26,
+      "final_report_findings": 26,
+      "source_sha256": "91507213e18384dec1733fe51a939e2795d13cf4288edbd23f2129b9425b0dbf",
+      "text_sha256": "0f9a477bbc50fc70fda62045e268e750af877f787cd6401e9305acec99bbd1cb",
+      "artifact_sha256": {
+        "research/harness_v3/us_dev_02/documents/us_card-91507213e18384dec173/result.json": "8d05e08a40d3024ee4cf580a8add1b09a7c2456978de7c10043d1e64f496a63a",
+        "research/harness_v3/us_dev_02/documents/us_card-91507213e18384dec173/vulnerability_drafts.json": "43b67fdd483d53530717e5a052da2ce02de8455adc09bc19ccbb7247eaf82b57",
+        "research/harness_v3/us_dev_02/documents/us_card-91507213e18384dec173/final_report.json": "4aa65164592194ae9d42b5b38d09ad02ac36a87cd309196781bc5c2dc0f41281"
+      }
+    },
+    {
+      "doc_id": "us_card-cbb7c8fae8b0e32dcdf1",
+      "domain": "us_card",
+      "latest_status": "success",
+      "draft_flags": 26,
+      "literal_source_grounded_drafts": 26,
+      "final_report_findings": 26,
+      "source_sha256": "cbb7c8fae8b0e32dcdf181f195df2b31749715aecd6de91cc065150ca2e88480",
+      "text_sha256": "487ee8c1c12420204d72a2dae5b94efc3530b5e7a752a607e20291f28ebc8ef8",
+      "artifact_sha256": {
+        "research/harness_v3/us_dev_02/documents/us_card-cbb7c8fae8b0e32dcdf1/result.json": "17bb740cbc21a8a00b0e87af3f14d6d20b3b93f18775c37a18b23bba65e91943",
+        "research/harness_v3/us_dev_02/documents/us_card-cbb7c8fae8b0e32dcdf1/vulnerability_drafts.json": "af17708aa74c702c7546b48e5620582e20c63c32957792165cd01be3002bd418",
+        "research/harness_v3/us_dev_02/documents/us_card-cbb7c8fae8b0e32dcdf1/final_report.json": "9eef8eff1e1f343c96260e52e7c35ed21bef36c94d4b86d3cf0285f97d49571e"
+      }
+    },
+    {
+      "doc_id": "us_card-d7188e1db92167f2e5c5",
+      "domain": "us_card",
+      "latest_status": "success",
+      "draft_flags": 18,
+      "literal_source_grounded_drafts": 18,
+      "final_report_findings": 18,
+      "source_sha256": "d7188e1db92167f2e5c5ee98a79a664552dd20ccdcc5a91b32d81417f12af834",
+      "text_sha256": "a5427b2b49b06808fde60e91c572a317c17be380e6b1dc849f04825cfce21f3c",
+      "artifact_sha256": {
+        "research/harness_v3/us_dev_02/documents/us_card-d7188e1db92167f2e5c5/result.json": "bb260f259cf77e2cd8c80a4cb61cca733554a8f54bb68fcf8afeb1130527ad94",
+        "research/harness_v3/us_dev_02/documents/us_card-d7188e1db92167f2e5c5/vulnerability_drafts.json": "67d8180bad1044f30bb847ad110132efcde2c6e15aff36cfc1bdcedc8de55b39",
+        "research/harness_v3/us_dev_02/documents/us_card-d7188e1db92167f2e5c5/final_report.json": "480b544195da88cb6f7757421da14d914f2803bcfceacf62ae167c75304e111e"
+      }
+    },
+    {
+      "doc_id": "us_card-ecdc293286cbb0442c5e",
+      "domain": "us_card",
+      "latest_status": "success",
+      "draft_flags": 12,
+      "literal_source_grounded_drafts": 12,
+      "final_report_findings": 12,
+      "source_sha256": "ecdc293286cbb0442c5e252cba4183d2915f1942bbf0c0408c1a5134b7d3895d",
+      "text_sha256": "7f312f87387caf5a18b15b31a45a82f63347ed92dc2312074f6c0f818da72a5a",
+      "artifact_sha256": {
+        "research/harness_v3/us_dev_02/documents/us_card-ecdc293286cbb0442c5e/result.json": "3e374709143c89ff6fcb6a15593678627bd94ba832f78f8d9323c70731d2973f",
+        "research/harness_v3/us_dev_02/documents/us_card-ecdc293286cbb0442c5e/vulnerability_drafts.json": "6d787a7f3e8cbb4a986eeb5a713e1f9c1075df679e65bdacc8733956aff5da5f",
+        "research/harness_v3/us_dev_02/documents/us_card-ecdc293286cbb0442c5e/final_report.json": "7fdadba8b5024bdf87e56a2d066aa28051c0c70e354e336ca51186f97e6f9e77"
+      }
+    },
+    {
+      "doc_id": "us_loan-3ddfd53a15e3093b48fd",
+      "domain": "us_loan",
+      "latest_status": "success",
+      "draft_flags": 0,
+      "literal_source_grounded_drafts": 0,
+      "final_report_findings": 0,
+      "source_sha256": "3ddfd53a15e3093b48fd65f2390fb1ad662966a11b9c697f65c5baddc28dad3f",
+      "text_sha256": "3ddfd53a15e3093b48fd65f2390fb1ad662966a11b9c697f65c5baddc28dad3f",
+      "artifact_sha256": {
+        "research/harness_v3/us_loan_dev_03/documents/us_loan-3ddfd53a15e3093b48fd/result.json": "c7109902b50ebfc3381340dee7b7349f47e6ce21df8aa02739e024e21f05e9a8",
+        "research/harness_v3/us_loan_dev_03/documents/us_loan-3ddfd53a15e3093b48fd/vulnerability_drafts.json": "c8fbc26f56dd06f22a398f7888aed59d2a2591e75b440a1794fbe986187a2d44",
+        "research/harness_v3/us_loan_dev_03/documents/us_loan-3ddfd53a15e3093b48fd/final_report.json": "c1d49a9088450e2d4fc628e85aa7437d3bb5cd73f6df47c9455251537ad07b3b"
+      }
+    },
+    {
+      "doc_id": "us_loan-8b1c95cbb058897b5cd0",
+      "domain": "us_loan",
+      "latest_status": "success",
+      "draft_flags": 0,
+      "literal_source_grounded_drafts": 0,
+      "final_report_findings": 0,
+      "source_sha256": "8b1c95cbb058897b5cd04424afeeeacbd3654263cd5cc06d3b61c04461f94ad7",
+      "text_sha256": "8b1c95cbb058897b5cd04424afeeeacbd3654263cd5cc06d3b61c04461f94ad7",
+      "artifact_sha256": {
+        "research/harness_v3/us_loan_dev_03/documents/us_loan-8b1c95cbb058897b5cd0/result.json": "960013ee238e3b8f482cadab735a645c8d9e6d7b32e38f62135eb4123e0d5b7b",
+        "research/harness_v3/us_loan_dev_03/documents/us_loan-8b1c95cbb058897b5cd0/vulnerability_drafts.json": "c8fbc26f56dd06f22a398f7888aed59d2a2591e75b440a1794fbe986187a2d44",
+        "research/harness_v3/us_loan_dev_03/documents/us_loan-8b1c95cbb058897b5cd0/final_report.json": "c1d49a9088450e2d4fc628e85aa7437d3bb5cd73f6df47c9455251537ad07b3b"
+      }
+    },
+    {
+      "doc_id": "us_loan-8d23fa8a6f822f25d452",
+      "domain": "us_loan",
+      "latest_status": "success",
+      "draft_flags": 1,
+      "literal_source_grounded_drafts": 1,
+      "final_report_findings": 1,
+      "source_sha256": "8d23fa8a6f822f25d4524fe167fb06122886d383d997bfd021c73bac7b522493",
+      "text_sha256": "8d23fa8a6f822f25d4524fe167fb06122886d383d997bfd021c73bac7b522493",
+      "artifact_sha256": {
+        "research/harness_v3/us_loan_dev_03/documents/us_loan-8d23fa8a6f822f25d452/result.json": "c1be3a55eb4577aedb4ede01c91aba4335584ced82ae68a3c331060f341680e9",
+        "research/harness_v3/us_loan_dev_03/documents/us_loan-8d23fa8a6f822f25d452/vulnerability_drafts.json": "201caf6875613137794218a2f9338f85fd42080b675255714da37b615b9c2ee4",
+        "research/harness_v3/us_loan_dev_03/documents/us_loan-8d23fa8a6f822f25d452/final_report.json": "5f79a18788cf44ff52941d01c64b03551f9559fdf4dae99e27aa5fb30371663e"
+      }
+    },
+    {
+      "doc_id": "us_loan-d7305b6688be2c6ea357",
+      "domain": "us_loan",
+      "latest_status": "success",
+      "draft_flags": 0,
+      "literal_source_grounded_drafts": 0,
+      "final_report_findings": 0,
+      "source_sha256": "d7305b6688be2c6ea357d030f82da3dfa640e31b93b97f9239a6b841c3473f2e",
+      "text_sha256": "d7305b6688be2c6ea357d030f82da3dfa640e31b93b97f9239a6b841c3473f2e",
+      "artifact_sha256": {
+        "research/harness_v3/us_loan_dev_03/documents/us_loan-d7305b6688be2c6ea357/result.json": "d6df390405b8a1c9dd5fa6ca074eedbb2163f3a98d252df334b78e0b237c359e",
+        "research/harness_v3/us_loan_dev_03/documents/us_loan-d7305b6688be2c6ea357/vulnerability_drafts.json": "c8fbc26f56dd06f22a398f7888aed59d2a2591e75b440a1794fbe986187a2d44",
+        "research/harness_v3/us_loan_dev_03/documents/us_loan-d7305b6688be2c6ea357/final_report.json": "ae315bbc3590d3cdf8ed604e0858400e39c90b130dcece800f46319807485c57"
+      }
+    }
+  ],
+  "summary": {
+    "documents": 12,
+    "latest_completed_documents": 12,
+    "draft_flags": 96,
+    "literal_source_grounded_drafts": 96,
+    "final_report_findings": 94,
+    "semantic_accuracy_verified": false,
+    "first_attempt_success_rate_verified": false,
+    "new_model_calls": 0
+  },
+  "scope": "Source-literal checks and latest completion snapshot, not legal correctness or semantic recall."
+}

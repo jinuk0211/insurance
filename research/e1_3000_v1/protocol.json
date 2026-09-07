@@ -1,0 +1,36 @@
+{
+  "input_sha256": {
+    "research/dataset_3000_v2/source_manifest.json": "a69c745bdc26014decff7155cc59b8d71ccf2ebbc26ff3bf2b98b176a70bf956",
+    "research/dataset_3000_v2/extraction_manifest.json": "902b32e3c29f2807277b3ce46d49c5fc90e99bf66f2b33da37be3949fb73475f",
+    "research/main_3000_groups_v1/allocation_manifest.json": "f1942df8980c2d6d65dc5ec765aac3a1d85e2de1821f69d5dd218a80e2f66655"
+  },
+  "implementation_sha256": {
+    "scripts_evolve/e1_cohort.py": "522ea501be37b905231adeff341e50547970a4f9c9bcd83da2e2117eb001bbf9",
+    "scripts_evolve/main_preflight.py": "f6860ebb8c67c65e69fa79d73b29822c5419588c80569c85d75bd71e77684353",
+    "scripts_evolve/full_corpus_v2.py": "9c18922708910075cf53e127d91eb37bf0e35502e321b1d42b177def2d624f28",
+    "ECC_harness_v3_txt/scripts/parse_txt.py": "a23e44580f17eb544033bb43cb275d895fa6800adb292aafce8a7446937fa29a",
+    "eval_KR_ins/eval_kr_ins.py": "08b550594e7286a5cdade32c814a07f90148bf80eb72c020e0d74c8d886b535a",
+    "eval_US_card/e1_preprocessing_us.py": "cff1c3f238f71729db9f9e8d636914c4a1fd14b9712a3ba19f5fa2966956ff92",
+    "eval_US_loan/eval_loan.py": "2fed1d8a3249e19b1cbafdfb2ae87686c17692f509f02c3e844cfc89139c9b73"
+  },
+  "runtime": {
+    "python": "3.14.2 (tags/v3.14.2:df79316, Dec  5 2025, 17:18:21) [MSC v.1944 64 bit (AMD64)]",
+    "numpy": "2.4.2",
+    "scipy": "1.17.1"
+  },
+  "per_domain": 1000,
+  "target_total": 3000,
+  "new_model_calls": 0,
+  "rules": "Original selected AST declarations, unchanged; frozen v2 extraction replaces old E1 PDF extraction.",
+  "ranking": "Algebraic float64 adaptation of original sentence split, TF cosine graph, d=.85, 30 steps, 50/80 selected sentences. Card uses original pair-local IDF rounded-four-decimal degree score with ratio=.6, not PageRank. Summation and rounding/ties can differ from original; no byte-equivalence claim. No source truncation.",
+  "keyword_metrics": "Literal substring inventory: KR case-sensitive, US lowercased. Legacy inventory hit-rate retains duplicates. Source retention deduplicates normalized inventory; denominator is keywords present in raw text; zero denominator is null. Not legal recall, semantic equivalence, occurrence retention or translated-language coverage.",
+  "lexical_metric": "Pair-local TF-IDF cosine; lowercase alphanumeric tokens length>=2, plus Hangul for KR. Empty token vectors yield null. This is lexical, not semantic, and differs from old corpus-IDF metrics.",
+  "size_metrics": "Unicode character and whitespace-unit output/input ratios, not billed model tokens. Empty denominator null.",
+  "unavailable_methods": [
+    "BART",
+    "KoBART",
+    "LLMLingua",
+    "ACE"
+  ],
+  "limitations": "All extraction failures/review flags and input IDs retained. OCR candidates not admitted. Collection groups provisional; reserved not verified held-out. Card language not verified English-only. Native KR parser payload measured separately from legacy rule filter. No downstream or legal-accuracy conclusion."
+}

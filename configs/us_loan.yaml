@@ -1,0 +1,21 @@
+# US commercial credit/loan agreements crawled from SEC EDGAR
+# (8-K and 10-Q Exhibit 10.x — "Credit Agreement", "Loan Agreement",
+#  "Term Loan Agreement", "Revolving Credit Facility", etc.).
+domain: us_loan
+language: en
+corpus: data/us_loan_corpus
+sample_size: 5
+seed: 42
+
+profile: data/profiles/us_default.json
+
+primary_metric: composite
+
+# Vulnerability taxonomy is shared with us_card initially; refine when the
+# loan-specific issues (acceleration triggers, MAC clauses, prepayment
+# penalties, cross-default, change-in-terms) get their own labels.
+targets:
+  stage1_kw_recall: 0.65
+  stage2_findings_per_doc: 3.0
+  stage3_mrr: 0.75
+  citation_gate_drops_max: 0

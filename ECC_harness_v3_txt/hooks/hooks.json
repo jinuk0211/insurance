@@ -1,0 +1,47 @@
+{
+  "hooks": {
+  "PreToolUse": [
+    {
+      "matcher": "Write",
+      "hooks": [
+        {
+          "type": "command",
+          "if": "Write(**/validated_findings.json)",
+          "command": "node",
+          "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/scripts/citation-gate.js"]
+        }
+      ]
+    },
+    {
+      "matcher": "tool_name == \"Write\" && tool_input.file_path matches \"workspace/final_report\\.json$\"",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node hooks/scripts/schema-validate.js \"$tool_input_file_path\" \"final_report\""
+        }
+      ]
+    }
+  ],
+
+  "PostToolUse": [
+    {
+      "matcher": "tool_name == \"Write\" && tool_input.file_path matches \"workspace/.*\\.json$\"",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node hooks/scripts/audit-logger.js \"$tool_input_file_path\""
+        }
+      ]
+    },
+    {
+      "matcher": "tool_name == \"Write\" && tool_input.file_path matches \"workspace/findings_ledger\\.json$\"",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node hooks/scripts/ledger-validate.js"
+        }
+      ]
+    }
+  ]
+  }
+}

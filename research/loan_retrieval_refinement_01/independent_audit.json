@@ -1,0 +1,64 @@
+{
+  "status": "passed",
+  "independent_saved_record_audit": true,
+  "documents": 1000,
+  "documents_with_queries": 883,
+  "documents_without_queries": 117,
+  "query_count_histogram": {
+    "0": 117,
+    "1": 431,
+    "2": 279,
+    "3": 173
+  },
+  "query_allocation": {
+    "evaluation_reserved": 1477,
+    "development_exposed_or_linked": 31
+  },
+  "paired_observations": 13572,
+  "individual_retrieval_calls": 27144,
+  "source_and_text_files_rehashed": 2000,
+  "parent_files_rehashed": 10,
+  "code_and_snapshot_pairs_rehashed": 8,
+  "timing": {
+    "original": {
+      "pairs": 4524,
+      "unique_scoped_pools": 10,
+      "cold_ms": 158.9027,
+      "fresh_first_s": 35.300804,
+      "prepared_first_with_cold_s": 16.1448167,
+      "first_pass_reduction_percent": 54.26501702340831,
+      "p50_reduction_percent": 54.34216863306618,
+      "fallback_calls": 0
+    },
+    "full_windows": {
+      "pairs": 4524,
+      "unique_scoped_pools": 10,
+      "cold_ms": 174.6585,
+      "fresh_first_s": 38.5461464,
+      "prepared_first_with_cold_s": 16.8413023,
+      "first_pass_reduction_percent": 56.30872636337001,
+      "p50_reduction_percent": 56.25123569558787,
+      "fallback_calls": 0
+    },
+    "compact_cover": {
+      "pairs": 4524,
+      "unique_scoped_pools": 10,
+      "cold_ms": 157.8577,
+      "fresh_first_s": 35.5359334,
+      "prepared_first_with_cold_s": 16.2638429,
+      "first_pass_reduction_percent": 54.23268409209705,
+      "p50_reduction_percent": 54.217012452590986,
+      "fallback_calls": 0
+    }
+  },
+  "outputs_sha256": {
+    "protocol.json": "0f17b44fe7d3202216295157aad3e565134561f6605deefd75c2dff6b503d0fe",
+    "queries.json": "24f4253d8bfc8fa5c3ff8366129bfb459be6a32a81565bf4601df4f8e524a989",
+    "preparations.json": "14870aca631f09bbba1911ca971c25878ea7ab10547bd81d960aebbea74186e1",
+    "query_results.json": "95d570de0db4733b75e6e8ff20663b5107640144a587276a5e818b7ec0b49684",
+    "summary.json": "197ba8d74d4f21c128937413f548251a5cf38314f3c1cfc211c8f908509d9e07"
+  },
+  "shared_host_timing_caveat": "PDF compilation overlapped timed retrieval from 2026-09-08 01:07:28.3516159 to 01:07:42.5944507 Asia/Seoul (14.24 seconds). Shared desktop, not isolated idle host; all samples retained.",
+  "query_generation_audit_limit": "Original extractor snapshot and saved-query hash verified; all 1508 triggered_by strings verified against source. The full slow extractor was not rerun in this independent audit.",
+  "model_calls": 0
+}
