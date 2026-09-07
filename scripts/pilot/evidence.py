@@ -5,13 +5,12 @@ IDs and exact source spans, not legal entailment; silver scoring is separate.
 """
 from __future__ import annotations
 
-import json
-
 from .legal import _catalog
 from .metrics import rank_passages
 from .schemas import STRING, object_schema, rows_schema
 from .tasks import (FINDING_FIELDS, GENERATOR_MODEL, PROFILES, SCOPE,
-                    _failure, _quote_valid, _rows, validate_config)
+                    _call_with_validation_repair, _failure, _quote_valid, _rows,
+                    validate_config)
 
 EVIDENCE_SCHEMA = rows_schema('validations', {
     'id': STRING,
@@ -58,45 +57,53 @@ def validate_evidence(client, doc_id: str, domain: str, text: str,
     payload = {'doc_id': doc_id, 'domain': domain, 'profile': PROFILES[domain],
                'source': text, 'findings': candidates, 'retrieved': retrieved,
                'catalog_limitations': catalog['limitations']}
-    call = client.call(label=f'validate_evidence:{doc_id}', model=getattr(client, 'generator_model', GENERATOR_MODEL),
-                       system=EVIDENCE_SYSTEM, prompt=json.dumps(payload, ensure_ascii=False),
-                       max_tokens=3200, schema=EVIDENCE_SCHEMA)
-    output = call.get('output')
-    if not isinstance(output, dict) or set(output) != {'validations'}:
-        _failure('Evidence output must contain exactly validations', call)
-    rows = output['validations']
-    if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
-        _failure('Evidence validations must be records', call)
     expected = {row['id']: row for row in candidates}
-    if len(rows) != len(expected) or {row.get('id') for row in rows} != set(expected):
-        _failure('Evidence validation must cover every finding exactly once', call)
     offered = {row['finding_id']: set(row['ranked_ids'][:3]) for row in retrieved}
-    validated = []
-    for row in rows:
-        if (set(row) != {'id', 'status', 'reason', 'citations'}
-                or row['status'] not in ('supported', 'uncertain', 'not_supported')
-                or not isinstance(row['reason'], str) or not row['reason'].strip()
-                or not isinstance(row['citations'], list)):
-            _failure('Malformed evidence validation record', call)
-        citations = row['citations']
-        if any(not isinstance(cite, dict) or set(cite) != {'authority_id', 'quote'}
-               or not all(isinstance(value, str) and value.strip() for value in cite.values())
-               for cite in citations):
-            _failure('Malformed evidence citation', call)
-        if len({cite['authority_id'] for cite in citations}) != len(citations):
-            _failure('Repeated evidence citation ID', call)
-        valid = all(cite['authority_id'] in offered[row['id']]
-                    and _quote_valid(cite['quote'], by_id[cite['authority_id']]['text'])
-                    for cite in citations)
-        source_valid = _quote_valid(expected[row['id']]['quote'], text)
-        withheld = not valid or not source_valid or (row['status'] == 'supported' and not citations)
-        validated.append({**row, 'model_status': row['status'],
-                          'status': 'uncertain' if withheld else row['status'],
-                          'citations': [] if withheld or row['status'] != 'supported' else citations,
-                          'proposed_citations': citations,
-                          'citation_identity_and_quote_valid': valid,
-                          'source_quote_valid': source_valid, 'withheld_by_gate': withheld})
-    return {'validations': validated, 'retrieved': retrieved, 'call': call,
+
+    def validate(call):
+        output = call.get('output')
+        if not isinstance(output, dict) or set(output) != {'validations'}:
+            _failure('Evidence output must contain exactly validations', call)
+        rows = output['validations']
+        if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
+            _failure('Evidence validations must be records', call)
+        if len(rows) != len(expected) or {row.get('id') for row in rows} != set(expected):
+            _failure('Evidence validation must cover every finding exactly once', call)
+        validated = []
+        for row in rows:
+            if (set(row) != {'id', 'status', 'reason', 'citations'}
+                    or row['status'] not in ('supported', 'uncertain', 'not_supported')
+                    or not isinstance(row['reason'], str) or not row['reason'].strip()
+                    or not isinstance(row['citations'], list)):
+                _failure('Malformed evidence validation record', call)
+            citations = row['citations']
+            if any(not isinstance(cite, dict) or set(cite) != {'authority_id', 'quote'}
+                   or not all(isinstance(value, str) and value.strip() for value in cite.values())
+                   for cite in citations):
+                _failure('Malformed evidence citation', call)
+            if len({cite['authority_id'] for cite in citations}) != len(citations):
+                _failure('Repeated evidence citation ID', call)
+            valid = all(cite['authority_id'] in offered[row['id']]
+                        and _quote_valid(cite['quote'], by_id[cite['authority_id']]['text'])
+                        for cite in citations)
+            source_valid = _quote_valid(expected[row['id']]['quote'], text)
+            withheld = not valid or not source_valid or (row['status'] == 'supported' and not citations)
+            validated.append({**row, 'model_status': row['status'],
+                              'status': 'uncertain' if withheld else row['status'],
+                              'citations': [] if withheld or row['status'] != 'supported' else citations,
+                              'proposed_citations': citations,
+                              'citation_identity_and_quote_valid': valid,
+                              'source_quote_valid': source_valid, 'withheld_by_gate': withheld})
+        return validated
+
+    validated, calls = _call_with_validation_repair(
+        client, label=f'validate_evidence:{doc_id}',
+        model=getattr(client, 'generator_model', GENERATOR_MODEL),
+        system=EVIDENCE_SYSTEM, payload=payload, max_tokens=3200,
+        schema=EVIDENCE_SCHEMA, validator=validate,
+    )
+    return {'validations': validated, 'retrieved': retrieved, 'call': calls[-1],
+            'calls': calls, 'validation_retries': len(calls) - 1,
             'catalog_sha256': fingerprint, 'source_chars': len(text),
             'model_inference': True, 'human_supervision': False,
             'scope': 'Selected evidence links with ID/span gate; not guaranteed legal validity'}

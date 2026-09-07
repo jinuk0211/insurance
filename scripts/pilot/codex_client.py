@@ -17,6 +17,9 @@ from pathlib import Path
 from .client import ModelFailure, parse_object, write_json
 
 MODEL = "gpt-5.6-luna"
+MINI_MODEL = "gpt-5.4-mini"
+SPARK_MODEL = "gpt-5.3-codex-spark"
+SUPPORTED_MODELS = (MODEL, MINI_MODEL, SPARK_MODEL)
 SETTINGS = {"reasoning_effort": "low", "sandbox": "read-only",
             "approval_policy": "never", "web_search": "disabled",
             "ignore_user_config": True, "ephemeral": True,
@@ -25,6 +28,10 @@ SETTINGS = {"reasoning_effort": "low", "sandbox": "read-only",
 SKILL_BUDGET_WARNING = ("Skill descriptions were shortened to fit the skills context budget. "
                        "Codex can still see every skill, but some descriptions are shorter. "
                        "Disable unused skills or plugins to leave more room for the rest.")
+SKILL_BUDGET_EXCEEDED = re.compile(
+    r"Exceeded skills context budget\. All skill descriptions were removed and \d+ "
+    r"additional skills were not included in the model-visible skills list\."
+)
 
 
 def canonical(value: object) -> str:
@@ -85,7 +92,9 @@ def parse_events(text: str) -> tuple[dict, dict, list[dict]]:
             if item.get("type") == "error":
                 message = item.get("message", "")
                 benign = isinstance(message, str) and (
-                    message == SKILL_BUDGET_WARNING or re.fullmatch(
+                    message == SKILL_BUDGET_WARNING
+                    or SKILL_BUDGET_EXCEEDED.fullmatch(message) is not None
+                    or re.fullmatch(
                         r"Ignoring malformed agent role definition: duplicate agent role name "
                         r"`txt-vulnerability-spotter` discovered in [^\r\n]+[\\/]\.codex[\\/]agents",
                         message) is not None)
@@ -109,15 +118,18 @@ def parse_events(text: str) -> tuple[dict, dict, list[dict]]:
     return parse_object(messages[-1]), usage, events
 
 
-def verify_codex_storage(path: Path) -> dict:
+def verify_codex_storage(path: Path, expected_model: str | None = None) -> dict:
     """Check native events, exact request/command/stdin and honest model/billing fields."""
     record = json.loads(path.read_text(encoding="utf-8"))
     folder = path.parent
     request = json.loads((folder / "request.json").read_text(encoding="utf-8"))
     required = {"provider", "model", "system", "prompt", "output_token_target", "schema",
                 "cli_version", "cli_sha256", "settings"}
+    model = request.get("model")
     if (set(request) != required or request["provider"] != "codex_cli"
-            or request["model"] != MODEL or canonical(request["settings"]) != canonical(SETTINGS)
+            or model not in SUPPORTED_MODELS
+            or (expected_model is not None and model != expected_model)
+            or canonical(request["settings"]) != canonical(SETTINGS)
             or type(request["output_token_target"]) is not int
             or not 1 <= request["output_token_target"] <= 10000
             or not all(isinstance(request[key], str) and request[key]
@@ -126,7 +138,7 @@ def verify_codex_storage(path: Path) -> dict:
         raise ModelFailure("Invalid native Codex request")
     identifier = request_id(request)
     if (folder.name != identifier or record.get("request_id") != identifier
-            or record.get("provider") != "codex_cli" or record.get("requested_model") != MODEL
+            or record.get("provider") != "codex_cli" or record.get("requested_model") != model
             or "resolved_model" not in record or record["resolved_model"] is not None
             or record.get("model_identity_verified") is not False
             or record.get("billing_kind") != "chatgpt_subscription"
@@ -166,17 +178,18 @@ def verify_codex_storage(path: Path) -> dict:
 class CodexClient:
     """Sequential, immutable request cache; no retries or alternate provider."""
 
-    generator_model = MODEL
-    supervisor_model = MODEL
-
     def __init__(self, directory: Path, executable: Path,
-                 max_calls: int = 10, token_stop_threshold: int = 500_000):
+                 max_calls: int = 10, token_stop_threshold: int = 500_000,
+                 model: str = MODEL):
         if any(type(value) is not int or value < 0 for value in (max_calls, token_stop_threshold)):
             raise ValueError("Call/token limits must be nonnegative integers")
+        if model not in SUPPORTED_MODELS:
+            raise ValueError("Unsupported Codex model")
         self.directory, self.executable = directory.resolve(), executable.resolve()
         if not self.executable.is_file() or self.executable.suffix.lower() != ".exe":
             raise ValueError("An explicit installed Codex executable is required")
         self.max_calls, self.token_stop_threshold = max_calls, token_stop_threshold
+        self.model = self.generator_model = self.supervisor_model = model
         self.cli_version = self._version()
         self.cli_sha256 = hashlib.sha256(self.executable.read_bytes()).hexdigest()
         self.directory.mkdir(parents=True, exist_ok=True)
@@ -192,7 +205,7 @@ class CodexClient:
 
     def provenance(self) -> dict:
         return {"provider": "codex_cli", "billing_kind": "chatgpt_subscription",
-                "generator_model": MODEL, "supervisor_model": MODEL,
+                "generator_model": self.model, "supervisor_model": self.model,
                 "model_identity": "CLI requested alias; response does not echo a pinned snapshot",
                 "cli_version": self.cli_version, "cli_sha256": self.cli_sha256,
                 "settings": SETTINGS, "temperature": "not configurable in this adapter",
@@ -200,7 +213,8 @@ class CodexClient:
 
     def usage_summary(self) -> dict:
         try:
-            records = [verify_codex_storage(path) for path in self.directory.glob("*/record.json")]
+            records = [verify_codex_storage(path, self.model)
+                       for path in self.directory.glob("*/record.json")]
         except (ModelFailure, OSError, ValueError, KeyError, TypeError) as exc:
             raise ModelFailure("Invalid prior accounting requires explicit reconciliation") from exc
         return {"billing_kind": "chatgpt_subscription", "cost_usd": None,
@@ -214,7 +228,7 @@ class CodexClient:
 
     def call(self, label: str, model: str, system: str, prompt: str,
              max_tokens: int = 2400, schema: dict | None = None) -> dict:
-        if model != MODEL:
+        if model != self.model:
             raise ModelFailure("Unexpected model; automatic model substitution is disabled")
         if type(max_tokens) is not int or not 1 <= max_tokens <= 10000:
             raise ModelFailure("Output target must be an integer in 1..10000")
@@ -228,7 +242,7 @@ class CodexClient:
             cached = json.loads(path.read_text(encoding="utf-8"))
             if cached.get("status") != "success":
                 raise ModelFailure("Cached failed/pending call requires explicit reconciliation")
-            verify_codex_storage(path)
+            verify_codex_storage(path, self.model)
             return {**cached, "cache_hit": True}
         summary = self.usage_summary()
         if summary["incomplete_calls"]:

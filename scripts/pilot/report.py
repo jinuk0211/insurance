@@ -225,11 +225,11 @@ def format_score(value: float | None) -> str:
     return "--" if value is None else f"{value:.3f}"
 
 
-def verify_call_storage(path: Path) -> dict:
+def verify_call_storage(path: Path, expected_codex_model: str | None = None) -> dict:
     """Verify request identity, successful response evidence and metered prices."""
     record, request = read_json(path), read_json(path.with_name("request.json"))
     if request.get("provider") == "codex_cli":
-        return verify_codex_storage(path)
+        return verify_codex_storage(path, expected_codex_model)
     required = {"request_id", "requested_model", "status", "label", "cost_usd",
                 "reserved_usd", "cache_hit"}
     if not isinstance(record, dict) or not required.issubset(record):
@@ -612,7 +612,14 @@ def build_report(root: Path, run_dir: Path) -> dict:
     paths = sorted((run_dir / "calls").glob("*/record.json"))
     if any(p.is_dir() and not (p / "record.json").is_file() for p in (run_dir / "calls").iterdir()):
         raise ValueError("Incomplete request directory lacks a call record")
-    records = [verify_call_storage(path) for path in paths]
+    model_provenance = protocol.get("model_provenance")
+    expected_codex_model = None
+    if model_provenance is not None and model_provenance.get("provider") == "codex_cli":
+        expected_codex_model = model_provenance.get("generator_model")
+        if (expected_codex_model is None
+                or model_provenance.get("supervisor_model") != expected_codex_model):
+            raise ValueError("Codex generator/supervisor model provenance must match")
+    records = [verify_call_storage(path, expected_codex_model) for path in paths]
     development_paths = verify_development_artifacts(root, run_dir, manifest, protocol, freeze, catalog, records)
     summary["costs"] = summarize_costs(records)
     indexed = {record["request_id"]: record for record in records}

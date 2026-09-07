@@ -5,8 +5,9 @@ def object_schema(properties: dict) -> dict:
             "additionalProperties": False}
 
 
-def rows_schema(key: str, fields: dict) -> dict:
-    return object_schema({key: {"type": "array", "items": object_schema(fields)}})
+def rows_schema(key: str, fields: dict, max_items: int = 6) -> dict:
+    return object_schema({key: {"type": "array", "items": object_schema(fields),
+                                "maxItems": max_items}})
 
 
 STRING = {"type": "string"}

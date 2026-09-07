@@ -10,12 +10,15 @@ from scripts.pilot.tasks import fixed_config
 
 class Client:
     def __init__(self, output):
-        self.output = output
+        self.outputs = output if isinstance(output, list) else [output]
         self.payload = None
+        self.requests = []
 
     def call(self, **kwargs):
+        self.requests.append(kwargs)
         self.payload = json.loads(kwargs['prompt'])
-        return {'output': self.output, 'request_id': 'mock-only'}
+        output = self.outputs[min(len(self.requests) - 1, len(self.outputs) - 1)]
+        return {'output': output, 'request_id': f'mock-{len(self.requests)}'}
 
 
 @pytest.fixture
@@ -44,6 +47,7 @@ def test_validator_uses_generated_query_and_no_silver_labels(case):
     assert client.payload['retrieved'][0]['query'] == finding['retrieval_query']
     assert client.payload['source'] == finding['quote']
     assert 'silver' not in json.dumps(client.payload)
+    assert client.requests[0]['schema']['properties']['validations']['maxItems'] == 6
 
 
 @pytest.mark.parametrize('citation', [
@@ -99,6 +103,18 @@ def test_missing_finding_fails(case):
     with pytest.raises(ModelFailure, match='every finding'):
         validate_evidence(Client({'validations': []}), 'd1', 'us_card',
                           finding['quote'], [finding], catalog, fixed_config())
+
+
+def test_duplicate_citation_receives_bounded_repair(case):
+    catalog, finding, review = case
+    invalid = {**review, 'citations': review['citations'] * 2}
+    client = Client([{'validations': [invalid]}, {'validations': [review]}])
+    result = validate_evidence(client, 'd1', 'us_card', finding['quote'],
+                               [finding], catalog, fixed_config())
+    assert result['validation_retries'] == 1
+    assert len(result['calls']) == 2
+    assert 'Repeated evidence citation ID' in client.payload['repair']['validation_error']
+    assert client.requests[1]['label'] == 'validate_evidence:d1:repair:1'
 
 
 def test_final_coverage_uses_actual_selected_citation():

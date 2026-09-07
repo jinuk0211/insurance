@@ -5,7 +5,13 @@ import subprocess
 import pytest
 
 from scripts.pilot.client import ModelFailure
-from scripts.pilot.codex_client import CodexClient, MODEL, parse_events, verify_codex_storage
+from scripts.pilot.codex_client import (
+    MODEL,
+    SPARK_MODEL,
+    CodexClient,
+    parse_events,
+    verify_codex_storage,
+)
 
 
 def event_stream(output='{"ok": true}', usage=None, extra=None):
@@ -50,6 +56,22 @@ def test_success_cache_and_honest_billing(tmp_path, monkeypatch):
     assert kwargs["shell"] is False
     assert kwargs["input"].endswith("prompt")
     assert list(client.directory.glob("*/events.jsonl"))
+
+
+def test_explicit_spark_model_is_provenanced_and_cannot_mix(tmp_path, monkeypatch):
+    client = make_client(tmp_path, monkeypatch, model=SPARK_MODEL)
+    monkeypatch.setattr(subprocess, "run", lambda command, **kwargs:
+                        subprocess.CompletedProcess(command, 0, event_stream(), ""))
+    client.call("spark", SPARK_MODEL, "system", "prompt")
+    path = next(client.directory.glob("*/record.json"))
+    record = verify_codex_storage(path, SPARK_MODEL)
+    assert record["requested_model"] == SPARK_MODEL
+    assert client.provenance()["generator_model"] == SPARK_MODEL
+    assert SPARK_MODEL in json.loads(path.with_name("command.json").read_text())
+    with pytest.raises(ModelFailure):
+        verify_codex_storage(path, MODEL)
+    with pytest.raises(ModelFailure, match="model"):
+        client.call("mixed", MODEL, "system", "different")
 
 
 @pytest.mark.parametrize("extra", [
@@ -112,6 +134,8 @@ def test_reject_wrong_model_and_invalid_limits(tmp_path, monkeypatch):
         client.call("test", "other", "system", "prompt")
     with pytest.raises(ValueError):
         make_client(tmp_path, monkeypatch, max_calls=True)
+    with pytest.raises(ValueError, match="Unsupported"):
+        make_client(tmp_path, monkeypatch, model="unknown")
 
 
 def test_incomplete_output_is_not_success():
@@ -188,13 +212,20 @@ def test_unknown_or_error_events_fail_closed(extra):
 
 def test_only_observed_startup_warning_is_allowed():
     from scripts.pilot.codex_client import SKILL_BUDGET_WARNING
-    warning = {"type": "item.completed", "item": {"type": "error", "message": SKILL_BUDGET_WARNING}}
-    output, _, _ = parse_events(event_stream(extra=[warning]))
-    assert output == {"ok": True}
-    events = event_stream().splitlines()
-    events.insert(-1, json.dumps(warning))
-    with pytest.raises(ModelFailure):
-        parse_events("\n".join(events))
+
+    messages = [
+        SKILL_BUDGET_WARNING,
+        ("Exceeded skills context budget. All skill descriptions were removed and 56 "
+         "additional skills were not included in the model-visible skills list."),
+    ]
+    for message in messages:
+        warning = {"type": "item.completed", "item": {"type": "error", "message": message}}
+        output, _, _ = parse_events(event_stream(extra=[warning]))
+        assert output == {"ok": True}
+        events = event_stream().splitlines()
+        events.insert(-1, json.dumps(warning))
+        with pytest.raises(ModelFailure):
+            parse_events("\n".join(events))
 
 
 @pytest.mark.parametrize("status", ["Not logged in; previous: Logged in using ChatGPT", "API key"])

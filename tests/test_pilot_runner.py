@@ -155,6 +155,13 @@ def test_cached_failure_cannot_become_completed_on_resume(tmp_path):
         pilot.evaluate(config, 'dev')
 
 
+@pytest.mark.parametrize("limit", [0, -1, True, 2])
+def test_development_probe_limit_must_select_existing_documents(tmp_path, limit):
+    pilot = minimal_pilot(tmp_path)
+    with pytest.raises(ValueError, match="Development document limit"):
+        pilot.evaluate(fixed_config(), "dev", limit)
+
+
 def test_wrong_cached_identity_is_rejected(tmp_path):
     pilot = minimal_pilot(tmp_path)
     config = fixed_config()

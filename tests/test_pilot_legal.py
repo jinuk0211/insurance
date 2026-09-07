@@ -140,17 +140,18 @@ class PilotLegalTests(unittest.TestCase):
             self.assertEqual(pilot.trace(uncertain)['documents'][0]['evidence_validations'][0]['status'], 'uncertain')
 
             # Failure in the last inference cannot leave a successful cached row.
-            outputs.extend([outputs[2], outputs[3], {'validations': []}])
+            outputs.extend([outputs[2], outputs[3],
+                            {'validations': []}, {'validations': []}, {'validations': []}])
             failed_config = {**fixed_config(), 'instruction': 'Review all material burdens.'}
             with self.assertRaisesRegex(ModelFailure, 'every finding'):
                 pilot.evaluate(failed_config, 'dev')
             from scripts.pilot.runner import digest, read_json
             failed = read_json(pilot.run_dir / 'evaluations' / digest(failed_config) / 'mock-doc.json')
             self.assertEqual(failed['status'], 'failure')
-            self.assertEqual(failed['failed_call']['request_id'], 'mock-11')
+            self.assertEqual(failed['failed_call']['request_id'], 'mock-13')
             with self.assertRaisesRegex(ModelFailure, 'failed evaluation'):
                 pilot.evaluate(failed_config, 'dev')
-            self.assertEqual(pilot.client.count, 11)
+            self.assertEqual(pilot.client.count, 13)
 
     def test_reference_uses_full_source_independent_issues_and_domain_authorities_only(self):
         client = FakeClient({"queries": [qrel()]})
@@ -165,6 +166,7 @@ class PilotLegalTests(unittest.TestCase):
         self.assertEqual(result["supervision"], "LLM_silver")
         self.assertFalse(result["human_supervision"])
         self.assertEqual(request["model"], "claude-sonnet-4-5-20250929")
+        self.assertEqual(request["schema"]["properties"]["queries"]["maxItems"], 6)
         self.assertIn("Topic-only", request["system"])
         self.assertIn("consumer-credit", request["system"])
 
@@ -203,6 +205,39 @@ class PilotLegalTests(unittest.TestCase):
                 legal_reference({"queries": [row]})
         row["relevance"]["loan-a"] = 0
         self.assertEqual(legal_reference({"queries": [row]})["queries"][0]["relevance"]["loan-a"], 0)
+
+    def test_invalid_legal_labels_receive_bounded_auditable_repair(self):
+        invalid = qrel()
+        invalid["applicability"]["loan-a"] = "uncertain"
+
+        class RepairClient:
+            def __init__(self):
+                self.outputs = [{"queries": [invalid]}, {"queries": [qrel()]}]
+                self.requests = []
+
+            def call(self, **kwargs):
+                self.requests.append(kwargs)
+                output = copy.deepcopy(self.outputs[len(self.requests) - 1])
+                return {"output": output, "request_id": f"repair-{len(self.requests)}",
+                        "cost_usd": .001, "latency_seconds": .01, "cache_hit": False}
+
+        client = RepairClient()
+        result = create_legal_reference(client, "doc1", "us_loan", TEXT, silver(), catalog())
+        self.assertEqual(result["annotation_retries"], 1)
+        self.assertEqual([call["request_id"] for call in result["calls"]],
+                         ["repair-1", "repair-2"])
+        repair = json.loads(client.requests[1]["prompt"])["repair"]
+        self.assertIn("grade 0", repair["validation_error"])
+        self.assertEqual(repair["invalid_output"], {"queries": [invalid]})
+        self.assertEqual(client.requests[1]["label"], "legal_silver_repair:doc1:1")
+
+    def test_legal_repair_stops_after_three_invalid_outputs(self):
+        row = qrel()
+        row["applicability"]["loan-a"] = "uncertain"
+        client = FakeClient({"queries": [row]})
+        with self.assertRaisesRegex(ModelFailure, "grade 0"):
+            create_legal_reference(client, "doc1", "us_loan", TEXT, silver(), catalog())
+        self.assertEqual(len(client.requests), 3)
 
     def test_catalog_requires_official_https_hosts_unique_ids_and_nonempty_excerpts(self):
         for url in ("http://law.go.kr/x", "https://law.go.kr.evil.example/x",

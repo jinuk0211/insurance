@@ -38,6 +38,19 @@ class FakeClient:
                 "cost_usd": 0.001, "latency_seconds": 0.1, "cache_hit": False}
 
 
+class SequenceClient:
+    def __init__(self, outputs):
+        self.outputs = outputs
+        self.requests = []
+
+    def call(self, **kwargs):
+        self.requests.append(kwargs)
+        output = copy.deepcopy(self.outputs[len(self.requests) - 1])
+        return {"output": output, "request_id": f"sequence-{len(self.requests)}",
+                "usage": {"input_tokens": 10, "output_tokens": 5},
+                "cost_usd": 0.001, "latency_seconds": 0.1, "cache_hit": False}
+
+
 def reference():
     return {"kind": "LLM_silver", "issues": [copy.deepcopy(ISSUE)],
             "passages": split_passages(TEXT)}
@@ -80,6 +93,7 @@ class PilotTaskTests(unittest.TestCase):
             self.assertEqual(result["grounding_failures"], 0)
             self.assertEqual(client.requests[0]["model"], "claude-haiku-4-5-20251001")
         requests = [client.requests[0] for client in clients]
+        self.assertEqual(requests[0]["schema"]["properties"]["findings"]["maxItems"], 6)
         self.assertEqual(requests[0]["system"], requests[1]["system"])
         prompts = [json.loads(request["prompt"]) for request in requests]
         self.assertEqual(prompts[0]["profile"], prompts[1]["profile"])
@@ -92,6 +106,17 @@ class PilotTaskTests(unittest.TestCase):
         self.assertEqual(result["grounding_failures"], 1)
         self.assertEqual(result["findings"][0]["quote"], finding["quote"])
         self.assertFalse(result["findings"][0]["quote_valid"])
+
+    def test_generation_schema_failure_receives_bounded_repair(self):
+        client = SequenceClient([{"findings": [FINDING, FINDING]},
+                                 {"findings": [FINDING]}])
+        result = generate(client, "doc1", "us_loan", TEXT, raw_config())
+        self.assertEqual(result["validation_retries"], 1)
+        self.assertEqual([call["request_id"] for call in result["calls"]],
+                         ["sequence-1", "sequence-2"])
+        repair = json.loads(client.requests[1]["prompt"])["repair"]
+        self.assertIn("duplicate", repair["validation_error"])
+        self.assertEqual(repair["invalid_output"], {"findings": [FINDING, FINDING]})
 
     def test_schema_failures_keep_call_record_and_provider_failure_is_not_empty(self):
         for output in ({}, {"findings": {}}, {"findings": [FINDING] * 7},
@@ -112,6 +137,7 @@ class PilotTaskTests(unittest.TestCase):
         self.assertNotIn("config", payload)
         self.assertEqual(payload["passages"], result["passages"])
         self.assertEqual(client.requests[0]["model"], "claude-sonnet-4-5-20250929")
+        self.assertEqual(client.requests[0]["schema"]["properties"]["issues"]["maxItems"], 6)
 
     def test_invalid_reference_ids_quotes_and_copied_queries_fail_closed(self):
         for issue in ({**RAW_ISSUE, "relevant_passage_ids": ["p9999"]},
@@ -143,6 +169,16 @@ class PilotTaskTests(unittest.TestCase):
                      [{**base, "status": "legally_valid"}]):
             with self.assertRaises(ModelFailure):
                 assess(FakeClient({"judgments": rows}), "doc1", "us_loan", TEXT, [FINDING], reference())
+
+    def test_assessment_schema_failure_receives_bounded_repair(self):
+        valid = {"id": "f1", "status": "supported", "reason": "Stated.",
+                 "relevant_ref_ids": ["r1"]}
+        client = SequenceClient([{"judgments": []}, {"judgments": [valid]}])
+        result = assess(client, "doc1", "us_loan", TEXT, [FINDING], reference())
+        self.assertEqual(result["validation_retries"], 1)
+        self.assertEqual(len(result["calls"]), 2)
+        self.assertIn("every candidate", json.loads(client.requests[1]["prompt"])
+                      ["repair"]["validation_error"])
 
     def test_empty_denominators_are_explicit_not_artificial_perfect_scores(self):
         result = assess(FakeClient({"judgments": []}), "doc1", "us_loan", TEXT, [],

@@ -8,7 +8,7 @@ from pathlib import Path
 from statistics import fmean
 
 from .client import ModelClient, ModelFailure, load_api_key, write_json
-from .codex_client import CodexClient
+from .codex_client import MODEL, SUPPORTED_MODELS, CodexClient
 from .metrics import aggregate_retrieval, rank_passages, retrieval_metrics
 from .prepare import validate_source_text
 from .refinement import proposal_chain, select_incumbent
@@ -145,11 +145,17 @@ class Pilot:
         write_json(path, result)
         return result
 
-    def evaluate(self, config: dict, split: str) -> dict:
+    def evaluate(self, config: dict, split: str,
+                 development_document_limit: int | None = None) -> dict:
         from .evidence import evaluate_validated_evidence, validate_evidence
         from .legal import evaluate_generated_retrieval, evaluate_legal_retrieval
 
         documents = self.documents(split)
+        if development_document_limit is not None:
+            if (split != "dev" or type(development_document_limit) is not int
+                    or not 1 <= development_document_limit <= len(documents)):
+                raise ValueError("Development document limit requires 1..N dev documents")
+            documents = documents[:development_document_limit]
         if split == "test" and config not in read_json(self.run_dir / "test_freeze.json")["methods"].values():
             raise ValueError("Test evaluation is restricted to frozen methods")
         rows = []
@@ -311,14 +317,16 @@ class Pilot:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("stage", choices=("develop", "freeze", "test", "all", "check"))
+    parser.add_argument("stage", choices=("probe", "develop", "freeze", "test", "all", "check"))
     parser.add_argument("--run-dir", type=Path, default=Path("research/pilot_v1/run_01"))
     parser.add_argument("--manifest", type=Path)
     parser.add_argument("--budget-usd", type=float, default=20.0)
     parser.add_argument("--provider", choices=("codex", "anthropic"), default="codex")
     parser.add_argument("--codex-executable", type=Path)
+    parser.add_argument("--codex-model", choices=SUPPORTED_MODELS, default=MODEL)
     parser.add_argument("--max-calls", type=int, default=10)
     parser.add_argument("--token-stop-threshold", type=int, default=500_000)
+    parser.add_argument("--probe-documents", type=int, default=2)
     parser.add_argument("--seeds", nargs="+", type=int, default=[42, 43])
     parser.add_argument("--rounds", type=int, default=2)
     args = parser.parse_args()
@@ -342,11 +350,20 @@ def main() -> None:
         if args.codex_executable is None:
             parser.error("--codex-executable is required for GPT subscription inference")
         client = CodexClient(run_dir / "calls", args.codex_executable,
-                             args.max_calls, args.token_stop_threshold)
+                             args.max_calls, args.token_stop_threshold, args.codex_model)
     else:
         client = ModelClient(run_dir / "calls", load_api_key(root), args.budget_usd)
     pilot = Pilot(root, run_dir, client, tuple(args.seeds), args.rounds,
                   manifest_path=args.manifest)
+    if args.stage == "probe":
+        result = pilot.evaluate(fixed_config(), "dev", args.probe_documents)
+        if result["failures"] or len(result["rows"]) != args.probe_documents:
+            raise ValueError("Development probe did not complete successfully")
+        print(json.dumps({"stage": args.stage, "status": "completed",
+                          "documents": [row["doc_id"] for row in result["rows"]],
+                          "score": result["score"], "billing": client.usage_summary()},
+                         indent=2), flush=True)
+        return
     if args.stage == "develop" or (args.stage == "all" and not (run_dir / "test_freeze.json").exists()):
         pilot.develop()
     if args.stage in ("freeze", "all"):
