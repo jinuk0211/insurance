@@ -105,16 +105,19 @@ def test_missing_finding_fails(case):
                           finding['quote'], [finding], catalog, fixed_config())
 
 
-def test_duplicate_citation_receives_bounded_repair(case):
+def test_duplicate_citation_is_preserved_but_withheld_by_gate(case):
     catalog, finding, review = case
     invalid = {**review, 'citations': review['citations'] * 2}
-    client = Client([{'validations': [invalid]}, {'validations': [review]}])
+    client = Client({'validations': [invalid]})
     result = validate_evidence(client, 'd1', 'us_card', finding['quote'],
                                [finding], catalog, fixed_config())
-    assert result['validation_retries'] == 1
-    assert len(result['calls']) == 2
-    assert 'Repeated evidence citation ID' in client.payload['repair']['validation_error']
-    assert client.requests[1]['label'] == 'validate_evidence:d1:repair:1'
+    row = result['validations'][0]
+    assert result['validation_retries'] == 0
+    assert len(result['calls']) == 1
+    assert row['status'] == 'uncertain'
+    assert not row['citation_identity_and_quote_valid']
+    assert row['citations'] == []
+    assert row['proposed_citations'] == invalid['citations']
 
 
 def test_final_coverage_uses_actual_selected_citation():

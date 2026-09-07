@@ -4,9 +4,9 @@
   [fin-harness-current-20260907.zip](https://drive.google.com/file/d/1HgnKFk8RxgNdEcUgjsCRCIRUIHjzRBY-/view?usp=drivesdk)
 - Owner verified by Drive metadata: `osatyunai@gmail.com`
 - Drive file ID: `1HgnKFk8RxgNdEcUgjsCRCIRUIHjzRBY-`
-- Uploaded size: 181,339 bytes
+- Uploaded size: 183,723 bytes
 - Local SHA-256:
-  `62704cacbe5762fd8d77bc6dd511338685ae74f81fe7cdfff8edbac749f0ce54`
+  `f529040f1459967e96493b8cd519c4bdd582b678f574cf0561bf23b23a38c210`
 - Visibility at upload: private/not shared; owner permission only
 
 The current ZIP is an in-progress code/document snapshot and excludes the live

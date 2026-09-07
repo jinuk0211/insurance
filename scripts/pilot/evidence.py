@@ -81,11 +81,10 @@ def validate_evidence(client, doc_id: str, domain: str, text: str,
                    or not all(isinstance(value, str) and value.strip() for value in cite.values())
                    for cite in citations):
                 _failure('Malformed evidence citation', call)
-            if len({cite['authority_id'] for cite in citations}) != len(citations):
-                _failure('Repeated evidence citation ID', call)
-            valid = all(cite['authority_id'] in offered[row['id']]
-                        and _quote_valid(cite['quote'], by_id[cite['authority_id']]['text'])
-                        for cite in citations)
+            unique = len({cite['authority_id'] for cite in citations}) == len(citations)
+            valid = unique and all(cite['authority_id'] in offered[row['id']]
+                                   and _quote_valid(cite['quote'], by_id[cite['authority_id']]['text'])
+                                   for cite in citations)
             source_valid = _quote_valid(expected[row['id']]['quote'], text)
             withheld = not valid or not source_valid or (row['status'] == 'supported' and not citations)
             validated.append({**row, 'model_status': row['status'],
