@@ -68,6 +68,37 @@ def test_seed_averaging_uses_six_documents_not_twelve(mock_inputs):
     assert result["paired_deltas"]["three_role_minus_fixed_full"]["kr_insurance"]["F1"]["mean"] == 0.0
 
 
+def test_rendered_latex_results_are_a_labeled_full_width_table(mock_inputs):
+    manifest, methods = mock_inputs
+    summary = report.summarize(manifest, methods, [42, 43])
+    summary.update(
+        costs={"subscription_call_count": 1, "observed_input_tokens": 10,
+               "observed_output_tokens": 2, "call_record_count": 1,
+               "status_counts": {"success": 1},
+               "scope": "Synthetic render fixture."},
+        logical_calls={"references": 1, "unique_requests": 1,
+                       "reused_references": 0},
+        provenance={"files": {}},
+        run_dir="synthetic/run",
+    )
+
+    _, latex = report.render(summary)
+
+    assert "\\begin{table*}[t]" in latex
+    assert "\\resizebox{\\textwidth}{!}{%" in latex
+    assert "\\label{tab:verified-held-out-results}" in latex
+    assert "\\caption{Verified held-out results." in latex
+    assert latex.rstrip().endswith(
+        "\\bottomrule\n\\end{tabular}%\n}\n"
+        "\\caption{Verified held-out results. Cells are document-macro means; "
+        "the audit report records document-bootstrap intervals and defined "
+        "denominators. Refined-condition rows average the two context labels "
+        "within each document. Supervision is LLM-silver, not human "
+        "validation.}\n"
+        "\\label{tab:verified-held-out-results}\n\\end{table*}"
+    )
+
+
 @pytest.mark.parametrize("damage", ["missing_method", "missing_doc", "duplicate_doc", "failed_doc", "wrong_domain"])
 def test_incomplete_or_mismatched_results_fail_closed(mock_inputs, damage):
     manifest, methods = mock_inputs

@@ -527,7 +527,11 @@ def render(summary: dict) -> tuple[str, str]:
              "Selected R (selected_authority_coverage) requires a model-selected authority ID after the ID/span gate, an independently source-supported issue match, and positive incomplete LLM-silver qrels for that issue/authority pair. Silver authority ID agreement is the fraction of selected IDs satisfying those conditions. These scores do not evaluate whether the selected quote or written reason semantically entails the issue, and are not legal precision or correctness. Inference does assess semantics using only the full source, generated candidates and retrieved excerpts, never silver labels; this independent scoring is narrower. Zero selected links give undefined ID agreement; missed eligible issues reduce selected-authority coverage.", "",
              summary["uncertainty_policy"], "", summary["latency_policy"], ""]
     tex = ["% LLM-supervised pilot only. All scores are document-macro means; no human validation.",
-           r"\begin{tabular}{llrrrrrr}", r"Method & Domain & Support P & Silver R & Silver F1 & Selected R & Auth. MRR & Retr. R@3 \\", r"\hline"]
+           r"\begin{table*}[t]", r"\centering", r"\small",
+           r"\resizebox{\textwidth}{!}{%", r"\begin{tabular}{llrrrrrr}",
+           r"\toprule",
+           r"Method & Domain & Support P & Silver R & Silver F1 & Selected R & Auth. MRR & Retr. R@3 \\",
+           r"\midrule"]
     for section in ("grouped", "per_seed"):
         lines.extend([f"## {section.replace('_', ' ').title()}", "",
                       "| Method | Domain | Support P | Silver R | Silver F1 | Clause MRR | Authority MRR | Retrieval R@3 | Selected R | Silver authority ID agreement |",
@@ -572,7 +576,12 @@ def render(summary: dict) -> tuple[str, str]:
                   "Source, text, catalog, protocol, frozen configurations, result identities and persisted call records were verified. Full file hashes and per-document scores are in summary.json.", "",
                   "```json", json.dumps(summary["provenance"]["files"], indent=2), "```", "",
                   "Rebuild: `python -m scripts.pilot.report --run-dir " + summary["run_dir"] + "`."])
-    return "\n".join(lines) + "\n", "\n".join(tex + [r"\end{tabular}"]) + "\n"
+    tex.extend([
+        r"\bottomrule", r"\end{tabular}%", r"}",
+        r"\caption{Verified held-out results. Cells are document-macro means; the audit report records document-bootstrap intervals and defined denominators. Refined-condition rows average the two context labels within each document. Supervision is LLM-silver, not human validation.}",
+        r"\label{tab:verified-held-out-results}", r"\end{table*}",
+    ])
+    return "\n".join(lines) + "\n", "\n".join(tex) + "\n"
 
 
 def build_report(root: Path, run_dir: Path) -> dict:
