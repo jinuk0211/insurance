@@ -13,13 +13,6 @@ if (existsSync(".env.local")) {
   }
 }
 
-// 공개 데모는 DB를 사용하지 않으므로 빌드에서만 마이그레이션을 생략한다.
-// 직접 실행한 db:migrate 및 실데이터 모드에서는 기존 검사를 유지한다.
-if (process.argv.includes("--skip-for-demo") && process.env.INSURANCE_DEMO_ONLY === "true") {
-  console.log("공개 데모 빌드: 데이터베이스 마이그레이션을 생략합니다.")
-  process.exit(0)
-}
-
 const url = process.env.DATABASE_URL
 if (!url) throw new Error("DATABASE_URL 없음")
 
