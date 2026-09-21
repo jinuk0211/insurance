@@ -209,13 +209,13 @@ export function TermsLibrary({ initialView = "analysis" }: { initialView?: View 
       </header>
 
       <section className="border-b border-slate-200/80 bg-white">
-        <div className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 sm:pt-12">
+        <div className={`mx-auto max-w-7xl px-4 sm:px-6 ${view === "research" ? "pt-7 sm:pt-8" : "pt-10 sm:pt-12"}`}>
           <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-            <div><p className="text-xs font-medium tracking-wide text-indigo-600">POLICY LIBRARY</p><h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">약관의 근거를 더 명확하게.</h1><p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500">공식 약관의 보장·면책·감액 조항을 탐색하고, 추출 결과를 원문과 대조하세요.</p></div>
+            <div>{view !== "research" && <p className="text-xs font-medium tracking-wide text-indigo-600">POLICY LIBRARY</p>}<h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">{view === "research" ? "상품별 조건 비교" : "약관의 근거를 더 명확하게."}</h1>{view !== "research" && <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500">공식 약관의 보장·면책·감액 조항을 탐색하고, 추출 결과를 원문과 대조하세요.</p>}</div>
             {view !== "research" && <div className="flex gap-8 rounded-2xl border border-slate-200/80 bg-slate-50 px-6 py-5"><div><p className="text-2xl font-semibold tabular-nums">{OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}<span className="ml-1 text-xs font-normal text-slate-400">개</span></p><p className="mt-1 text-[11px] text-slate-500">공식 약관</p></div><div className="border-l border-slate-200 pl-8"><p className="text-2xl font-semibold tabular-nums">{formatNumber(OFFICIAL_POLICY_ANALYSIS_SUMMARY.pageCount)}<span className="ml-1 text-xs font-normal text-slate-400">쪽</span></p><p className="mt-1 text-[11px] text-slate-500">검색 가능한 원문</p></div></div>}
           </div>
-          <div className="mt-8 flex gap-6 overflow-x-auto" aria-label="약관 자료실 보기">
-            {([['analysis','약관 탐색'],['research','Luna 실험 결과'],['compare',`상품 비교 ${selectedIds.length}/3`],['files','원문 자료실']] as const).map(([value,label]) => <button key={value} onClick={() => setView(value)} aria-pressed={view === value} className={`min-h-14 shrink-0 border-b-2 px-1 text-sm font-medium transition-colors ${view === value ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-900'}`}>{label}{value === 'research' && <span className="ml-2 rounded-md bg-indigo-50 px-1.5 py-0.5 text-[10px] text-indigo-600">NEW</span>}</button>)}
+          <div className={`flex gap-6 overflow-x-auto ${view === "research" ? "mt-4" : "mt-8"}`} aria-label="약관 자료실 보기">
+            {([['analysis','약관 탐색'],['research','추출 결과'],['compare',`상품 비교 ${selectedIds.length}/3`],['files','원문 자료실']] as const).map(([value,label]) => <button key={value} onClick={() => setView(value)} aria-pressed={view === value} className={`min-h-14 shrink-0 border-b-2 px-1 text-base font-medium transition-colors ${view === value ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-900'}`}>{label}</button>)}
           </div>
         </div>
       </section>
