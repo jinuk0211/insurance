@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   description: "공식 보험약관 PDF를 찾고 보장개시, 감액, 면책, 특약 관련 조항을 비교합니다.",
 }
 
-export default function InsuranceTermsPage() {
-  return <TermsLibrary />
+export default async function InsuranceTermsPage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
+  const { view } = await searchParams
+  return <TermsLibrary initialView={view === "research" ? "research" : "analysis"} />
 }

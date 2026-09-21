@@ -18,3 +18,12 @@ workspace/
 *.log
 *.pdf
 __pycache__/
+
+# Local experiments stay local; only the reviewed public pilot assets ship.
+output/
+tmp/
+ACM_kdd/
+EACL_industry/
+*.zip
+*.hwp
+!public/research/luna-pilot/*.pdf

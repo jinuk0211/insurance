@@ -1,11 +1,10 @@
 import type { Metadata } from 'next'
 import { Geist } from 'next/font/google'
-import { Fraunces, Noto_Sans_KR } from 'next/font/google'
+import { Noto_Sans_KR } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
-const _fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces" });
 const _notoSansKR = Noto_Sans_KR({ subsets: ["latin"], variable: "--font-noto-sans-kr" });
 
 export const metadata: Metadata = {
@@ -37,7 +36,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className="bg-background">
-      <body className={`${_geist.variable} ${_fraunces.variable} ${_notoSansKR.variable} font-sans antialiased`}>
+      <body className={`${_geist.variable} ${_notoSansKR.variable} font-sans antialiased`}>
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
