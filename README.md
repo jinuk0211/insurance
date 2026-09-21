@@ -32,7 +32,8 @@ pnpm build
 - 앱: Vercel
 - 데이터베이스: Railway PostgreSQL
 - Vercel의 `DATABASE_URL`에는 Railway 외부 TCP 연결 URL을 사용합니다.
-- 최초 배포 전 `pnpm db:migrate`를 한 번 실행합니다.
+- 실데이터 모드의 빌드는 `pnpm db:migrate`를 먼저 실행하며, DB 연결 또는 마이그레이션 실패 시 배포를 중단합니다.
+- `INSURANCE_DEMO_ONLY=true`인 공개 데모 빌드는 DB 마이그레이션 없이 화면을 빌드합니다. `pnpm db:migrate`를 직접 실행하면 데모 설정과 무관하게 마이그레이션을 수행합니다.
 - 공개 제출본에는 `INSURANCE_DEMO_ONLY=true`를 설정합니다.
 - 실데이터 API를 별도로 운영할 때만 CODEF 자격증명과 API 접근용 `INSURANCE_PREVIEW_USER`, `INSURANCE_PREVIEW_PASSWORD`를 설정합니다.
 
