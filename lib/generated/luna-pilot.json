@@ -1,0 +1,1062 @@
+{
+  "date": "2026-09-21",
+  "model": "gpt-5.6-luna",
+  "reasoning": "low",
+  "sourceType": "상품요약서",
+  "samplingSeed": 20260921,
+  "documentCount": 5,
+  "pageCount": 99,
+  "ruleCount": 53,
+  "matchedCount": 35,
+  "issueCount": 4,
+  "documents": [
+    {
+      "id": "D01",
+      "name": "동양생명 무배당우리WON하는실속플러스하나로암보험",
+      "category": "암보험",
+      "documentType": "상품요약서",
+      "pages": 16,
+      "sha256": "710fcb7c66506b32ff0e5e5d406296d900e3d4f56fa923deadb84fe2c77cbc96",
+      "pdfPath": "/research/luna-pilot/D01.pdf",
+      "rules": [
+        {
+          "id": "D01-R01",
+          "field": "waiting_period",
+          "scope": "상품요약서",
+          "claim": "암 보장개시일은 계약일(부활 시 부활일)부터 90일이 지난 다음 날이다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 2,
+              "quote": "1. 상품의 특이사항 및 보험가입자격요건 가. 상품의 특이사항 Q : 무배당우리 WON 하는실속플러스하나로암보험의 특이사항은 무엇인가요? A : 무배당우리 WON 하는실속플러스하나로암보험은 고액치료비관련 암, 고액치료비관련 암이외의 암 및 소액암을 하나로 종합 보장해주는 보험상품입니다. Q : 무배당우리 WON 하는실속플"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D01-R02",
+          "field": "payment_trigger",
+          "scope": "상품요약서",
+          "claim": "보장개시일 이후 고액치료비관련 암 또는 그 외 암 진단확정 시 각각 최초 1회 지급한다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 4,
+              "quote": "2. 보험금 지급사유 및 지급제한사항 가. 상품의 구성 구분 상품명 주계약 무배당우리 WON 하는실속플러스하나로암보험 선택특약 무배당상급종합병원암통원특약 A2 무배당암(소액암제외)진단비특약 A2 무배당암통원특약 A2 무배당특정면역항암약물허가치료특약(갱신형) 무배당표적항암약물허가치료특약(갱신형) 무배당항암방사선·약물치료특약"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D01-R03",
+          "field": "payment_formula",
+          "scope": "상품요약서",
+          "claim": "가입 1년 이상이면 고액치료비관련 암 5,000만원, 그 외 암 1,000만원이다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 4,
+              "quote": "2. 보험금 지급사유 및 지급제한사항 가. 상품의 구성 구분 상품명 주계약 무배당우리 WON 하는실속플러스하나로암보험 선택특약 무배당상급종합병원암통원특약 A2 무배당암(소액암제외)진단비특약 A2 무배당암통원특약 A2 무배당특정면역항암약물허가치료특약(갱신형) 무배당표적항암약물허가치료특약(갱신형) 무배당항암방사선·약물치료특약"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D01-R04",
+          "field": "reduction",
+          "scope": "상품요약서",
+          "claim": "가입 1년 미만이면 고액치료비관련 암 2,500만원, 그 외 암 500만원이며 유방암 180일 이전은 100만원이다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 4,
+              "quote": "2. 보험금 지급사유 및 지급제한사항 가. 상품의 구성 구분 상품명 주계약 무배당우리 WON 하는실속플러스하나로암보험 선택특약 무배당상급종합병원암통원특약 A2 무배당암(소액암제외)진단비특약 A2 무배당암통원특약 A2 무배당특정면역항암약물허가치료특약(갱신형) 무배당표적항암약물허가치료특약(갱신형) 무배당항암방사선·약물치료특약"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D01-R05",
+          "field": "payment_formula",
+          "scope": "상품요약서",
+          "claim": "소액암 4종은 1년 이상 각 200만원, 1년 미만 각 100만원을 최초 1회 지급한다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 5,
+              "quote": "급 부 명 지 급 사 유 지 급 금 액 갑상선암 진단비 피보험자가 보험기간 중 갑상선암으로 진단확정 되었을 때 (최초 1회한) 계약일로부터 1 년이상 : 200 만원 계약일로부터 1 년미만 : 10 0만원 제자리암 진단비 피보험자가 보험기간 중 제자리암으로 진단확정 되었을 때 (최초 1회한) 계약일로부터 1 년이상 : 2"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D01-R06",
+          "field": "exclusion",
+          "scope": "상품요약서",
+          "claim": "기타피부암과 갑상선암은 암 정의에서 제외되어 해당 진단비만 지급된다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 5,
+              "quote": "급 부 명 지 급 사 유 지 급 금 액 갑상선암 진단비 피보험자가 보험기간 중 갑상선암으로 진단확정 되었을 때 (최초 1회한) 계약일로부터 1 년이상 : 200 만원 계약일로부터 1 년미만 : 10 0만원 제자리암 진단비 피보험자가 보험기간 중 제자리암으로 진단확정 되었을 때 (최초 1회한) 계약일로부터 1 년이상 : 2"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D01-R07",
+          "field": "premium_waiver",
+          "scope": "상품요약서",
+          "claim": "암 진단확정 또는 동일 원인 장해지급률 50% 이상이면 차회 이후 보험료를 면제한다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 5,
+              "quote": "급 부 명 지 급 사 유 지 급 금 액 갑상선암 진단비 피보험자가 보험기간 중 갑상선암으로 진단확정 되었을 때 (최초 1회한) 계약일로부터 1 년이상 : 200 만원 계약일로부터 1 년미만 : 10 0만원 제자리암 진단비 피보험자가 보험기간 중 제자리암으로 진단확정 되었을 때 (최초 1회한) 계약일로부터 1 년이상 : 2"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D01-R08",
+          "field": "premium_waiver",
+          "scope": "상품요약서",
+          "claim": "소액암 4종 진단만으로는 보험료 납입면제가 되지 않으며 중증 갑상선암은 예외다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 5,
+              "quote": "급 부 명 지 급 사 유 지 급 금 액 갑상선암 진단비 피보험자가 보험기간 중 갑상선암으로 진단확정 되었을 때 (최초 1회한) 계약일로부터 1 년이상 : 200 만원 계약일로부터 1 년미만 : 10 0만원 제자리암 진단비 피보험자가 보험기간 중 제자리암으로 진단확정 되었을 때 (최초 1회한) 계약일로부터 1 년이상 : 2"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D01-R09",
+          "field": "frequency_limit",
+          "scope": "상품요약서",
+          "claim": "상급종합병원 직접치료 통원자금은 통원 1회당 암 2만원, 소액암 각 1만원이다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 6,
+              "quote": "- 무배당상급종합병원암통원특약A2 [기준: 특약보험가입금액 1,000만원] 급 부 명 지 급 사 유 지 급 금 액 암직접치료 상급종합병원 통원자금 피보험자가 이 특약의 보험기간 중 기타피부암, 갑상선암, 제자리암 또는 경계성종양으로 진단 확정되고 그 기타피부암, 갑상선암, 제자리암 또는 경계성종양의 직접적인 치료를 목적으"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D01-R10",
+          "field": "payment_formula",
+          "scope": "상품요약서",
+          "claim": "특정면역항암약물허가치료는 최초 1회, 1년 이상 가입금액 전액·1년 미만 50%다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 9,
+              "quote": "- 무배당특정면역항암약물허가치료특약(갱신형) [기준: 특약보험가입금액] 급 부 명 지 급 사 유 지 급 금 액 특정면역항암약물 허가치료보험금 피보험자가 이 특약의 보험기간 중 기타피 부암 또는 갑상선암으로 진단 확정되거나 암보장개시일 이후에 암으로 진단 확정되 고, 그 질병의 직접적인 치료를 목적으로 “특정면역항암약물허가"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D01-R11",
+          "field": "exclusion",
+          "scope": "상품요약서",
+          "claim": "특정면역항암제는 식약처 허가 효능효과 범위 내 사용을 보장하고 심평원 승인 요법도 예외 보장한다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 9,
+              "quote": "- 무배당특정면역항암약물허가치료특약(갱신형) [기준: 특약보험가입금액] 급 부 명 지 급 사 유 지 급 금 액 특정면역항암약물 허가치료보험금 피보험자가 이 특약의 보험기간 중 기타피 부암 또는 갑상선암으로 진단 확정되거나 암보장개시일 이후에 암으로 진단 확정되 고, 그 질병의 직접적인 치료를 목적으로 “특정면역항암약물허가"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D01-R12",
+          "field": "exclusion",
+          "scope": "상품요약서",
+          "claim": "고의 사고 등은 보험금 또는 납입면제가 제한되며 심신상실 예외가 있다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 12,
+              "quote": "다. 보험금 지급제한 사유 ▶ 일반적인 보험금 지급제한 사유 - 보험 당사자간에 의한 보험사고 발생시 지급제한 ○ 피보험자가 고의로 자신을 해친 경우 : 해약환급금 지급 ○ 보험수익자가 고의로 피보험자를 해친 경우 : 해약환급금 지급 ○ 계약자가 고의로 피보험자를 해친 경우 : 해약환급금 지급 ○ 보험금지급사유발생에 영향"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D01-R13",
+          "field": "surrender",
+          "scope": "상품요약서",
+          "claim": "중도 해지 해약환급금은 미상각신계약비 공제 후 산출되며 납입보험료보다 적거나 없을 수 있다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 14,
+              "quote": "4. 계약자배당에 관한 사항 Q : 계약자배당이란 무엇이며 그 종류는 어떤 것들이 있나요? A : 계약자가 납입한 보험료로 보험회사가 합리적인 경영을 하여 발생한 이익금을 금융 감독원장이 인가하는 방식에 따라 보험계약자에게 환원하여 드리는 것을 말하며 또 그 종류에는 총괄배당과 장기유지특별배당이 있습니다. 계약자 배당은 "
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        }
+      ],
+      "unknownFields": [
+        "claim paperwork",
+        "renewal terms"
+      ]
+    },
+    {
+      "id": "D02",
+      "name": "KB라이프생명 KB 착한암보험 무배당(해약환급금 미지급형)",
+      "category": "암보험",
+      "documentType": "상품요약서",
+      "pages": 8,
+      "sha256": "a480e39af0bb3df3663661ba747e5c281aef580d92ff7eb8fd721ce118762584",
+      "pdfPath": "/research/luna-pilot/D02.pdf",
+      "rules": [
+        {
+          "id": "D02-R01",
+          "field": "waiting_period",
+          "scope": "상품요약서",
+          "claim": "보장개시일은 계약일(부활 시 부활일)부터 90일 경과 후다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 1,
+              "quote": "1 상 품 요 약 서 이 상품요약서는 보험약관 등 KB 착한암보험 무배당의 기초서류에 기재된 주요내용을 요약한 것이므 로 구체적인 내용은 반드시 보험약관 등을 참조하시기 바랍니다. ◈ 상품의 특이사항 Q1 : KB 착한암보험 무배당의 특이사항은 무엇인가요? A) - KB 착한암보험 무배당은 암진단 확정시 진단비를 보장받을"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": {
+            "title": "암 담보의 예외가 빠졌습니다",
+            "detail": "90일 조건은 암 보장에 적용됩니다. 원문은 기타피부암·제자리암·경계성종양·중증 이외 갑상선암·대장점막내암을 계약일부터 보장하는 예외로 구분합니다.",
+            "pages": [
+              1
+            ]
+          }
+        },
+        {
+          "id": "D02-R02",
+          "field": "reduction",
+          "scope": "상품요약서",
+          "claim": "가입 1년 미만 보험금은 이후 지급액의 50%로 감액된다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 2,
+              "quote": "2 ◈ 보험가입자격요건 I. 보험종류 보험종목의 명칭 환급금 형태 KB 착한암보험 무배당 표준형 KB 착한암보험 무배당(해약환급금 미지급형) 해약환급금 미지급형 II. 보험기간, 보험료 납입기간, 가입나이, 납입주기 구분 보험기간 보험료 납입기간 가입나이 납입 주기 KB 착한암보험 무배당 KB 착한암보험 무배당(해 약환급"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D02-R03",
+          "field": "payment_trigger",
+          "scope": "상품요약서",
+          "claim": "약관상 진단확정 시 진단보험금을 지급한다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 3,
+              "quote": "3 II. 보험금 지급사유 및 보장내용별 보험금 지급제한 사항 ▣ KB 착한암보험 무배당 [기준 : 보험가입금액 1,000만원] 급부명 지급사유 지급금액 암진단 보험금 피보험자가 보험기간 중 “암보장개시 일” 이후에 “암”으로 진단확정 되었을 때 [다만, 각각 최초 1회에 한함] 고액암 : 2,000만원(1년 이상) : "
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D02-R04",
+          "field": "exclusion",
+          "scope": "상품요약서",
+          "claim": "소액암은 별도 급부 기준을 적용한다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 4,
+              "quote": "4 수익자인 경우에는 다른 보험수익자에 대한 보험금은 지급함] 3) 계약자가 고의로 피보험자를 해친 경우 2. 계약 전 알릴 의무에 관한 사항 • 계약자 또는 피보험자는 청약할 때(진단계약의 경우에는 건강진단할 때를 말합니다) 청약서에 서 질문한 사항에 대하여 알고 있는 사실을 반드시 사실대로 알려야(이하 \" 계약 전 알"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D02-R05",
+          "field": "frequency_limit",
+          "scope": "상품요약서",
+          "claim": "일부 급부는 최초 1회 또는 연간 한도다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 5,
+              "quote": "5 납입한 보험료를 말합니다)를 돌려드립니다. ◈ 보험료 산출기초 Ⅰ. 적용이율 Q : 적용이율이란 무엇인가요? A : 보험료를 납입하는 시점과 보험금 지급 사이에는 시차가 발생하므로 이 기간 동안 기대되는 수익을 미리 예상하여 일정한 비율로 보험료를 할인해 주는데, 이 할인율을 말합니다. 일반적으로 적용이율이 높아지면 "
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D02-R06",
+          "field": "premium_waiver",
+          "scope": "상품요약서",
+          "claim": "약관상 사유 발생 시 차회 이후 보험료를 면제한다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 6,
+              "quote": "6 ◈ 계약자 배당에 관한 사항 계약자 배당은 배당상품에 한하여 실시를 하며, 무배당 상품은 배당을 하지 않습니다. 그러나 무 배당 상품은 배당상품보다 상대적으로 저렴한 보험료로 가입하실 수 있습니다. “KB 착한암보험 무배당”은 무배당 상품으로써 계약자배당을 하지 않습니다. ◈ 해약환급금에 관한 사항 Ⅰ. 해약환급금 산"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D02-R07",
+          "field": "surrender",
+          "scope": "상품요약서",
+          "claim": "중도 해지 환급금은 납입보험료보다 적거나 없을 수 있다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 7,
+              "quote": "7 계약체결·유지비용, 해약공제금액 등이 차감되므로 납입보험료보다 적거나 없을 수도 있습니다. 2. 상기 해약환급금 예시는 미경과보험료에 대한 해약환급금을 제외하고 산출하였습니다. 3. 상기 해약환급금 예시는 “유방암”, “남녀생식기암” 및 “고액암”을 제외한 “암” 발생전 기준으로 작성하였습니다. (2) 해약환급금 미지"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D02-R08",
+          "field": "claim_paperwork",
+          "scope": "상품요약서",
+          "claim": "문서에 명시된 청구서류를 제출해야 한다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 8,
+              "quote": "8 상품명 보험기간 (년) 납입기간 (년) 보험가격지수 남자 여자 가입금액 (만원) KB 착한암보험 무배당 40 40 97.2% 92.4% 3,000 KB 착한암보험 무배당(해약환급금미지급형) 40 40 98.1% 93.3% 3,000 주) 상기 보험가격지수는 대표계약을 기준으로 예시한 것으로 실제 계약과는 상이할 수 있"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": {
+            "title": "인용문이 결론을 뒷받침하지 않습니다",
+            "detail": "청구서류가 필요하다는 주장에 보험가격지수 표를 인용했습니다. 인용문이 존재해도 해당 주장의 근거라는 뜻은 아닙니다.",
+            "pages": [
+              8
+            ]
+          }
+        }
+      ],
+      "unknownFields": [
+        "exact amounts",
+        "detailed exclusions"
+      ]
+    },
+    {
+      "id": "D03",
+      "name": "교보라이프플래닛생명 (무)교보라플 여성건강보험(순수보장형)",
+      "category": "질병보험",
+      "documentType": "상품요약서",
+      "pages": 26,
+      "sha256": "948064d2a9a0e70fc3f6a29edc7a10a11cad1afec4521b1a82c2eeaf1921f0fa",
+      "pdfPath": "/research/luna-pilot/D03.pdf",
+      "rules": [
+        {
+          "id": "D03-R01",
+          "field": "waiting_period",
+          "scope": "상품요약서",
+          "claim": "보장개시일은 계약일(부활 시 부활일)부터 90일 경과 후다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 1,
+              "quote": "1 상품요약서 무배당 교보라플 여성건강보험 이 상품요약서는 보험약관 등 무배당 교보라플 여성건강보험의 기초서류에 기재된 주요 내용을 요약한 것이므로 자세한 내용은 반드시 보험약관 및 상품설명서 등을 확인하시기 바랍니다."
+            }
+          ],
+          "quotesMatched": true,
+          "issue": {
+            "title": "담보별 보장개시일을 구분해야 합니다",
+            "detail": "표지를 근거로 상품 전체에 90일을 적용했습니다. 8쪽 표의 여성 4대 특정 질환·특정 부인과 질환 등의 급부는 계약일부터 보장합니다.",
+            "pages": [
+              8
+            ]
+          }
+        },
+        {
+          "id": "D03-R02",
+          "field": "reduction",
+          "scope": "상품요약서",
+          "claim": "가입 1년 미만 보험금은 이후 지급액의 50%로 감액된다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 2,
+              "quote": "2 목차 상품의 특이사항 ............................................................................................................. 3 보험가입 자격요건 ............................................"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": {
+            "title": "감액하지 않는 담보까지 일반화했습니다",
+            "detail": "원문 8쪽에는 감액하지 않는 입원·수술 담보가 있습니다. 17쪽은 50% 감액 범위를 약관 제11조 제2호부터 제11호의 급부로 제한합니다.",
+            "pages": [
+              8,
+              17
+            ]
+          }
+        },
+        {
+          "id": "D03-R03",
+          "field": "payment_trigger",
+          "scope": "상품요약서",
+          "claim": "약관상 진단확정 시 진단보험금을 지급한다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 3,
+              "quote": "3 상품의 특이사항 Q ) 무배당 교보라플 여성건강보험의 특이사항은 무엇인가요? A ) 무배당 교보라플 여성건강보험은 여성특화질병 등의 진단, 입원 및 수술을 보장하는 온라인 여성 전용 건강보험으로 고객 니즈에 따라 순수보장형 및 100% 만기환급형 중 선택하여 인 터넷을 통해 직접 가입할 수 있습니다. Q ) 무배당 교"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D03-R04",
+          "field": "exclusion",
+          "scope": "상품요약서",
+          "claim": "소액암은 별도 급부 기준을 적용한다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 4,
+              "quote": "4 이환의 분류번호부여를 위한 선정준칙과 지침”에 따라 C77~C80[이차성 및 상세불명 부위 의 악성 신생물(암)]로 분류되고, 일차성 악성 신생물(암)이 확인되는 경우에는 원발부위(최 초 발생한 부위)를 기준으로 분류합니다. 다만, 이 경우에도 이차성 및 상세불명 부위의 악성신생물(암)(C77~C80)의 진단 확정 시"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D03-R05",
+          "field": "frequency_limit",
+          "scope": "상품요약서",
+          "claim": "일부 급부는 최초 1회 또는 연간 한도다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 5,
+              "quote": "5 Q ) 무배당 교보라플 여성건강보험에서 진단보험금을 보장하는 「여성 4대 중증 질환」 및 「여성 3대 생활 질환」의 정의는 무엇인가요? A ) 무배당 교보라플 여성건강보험에서 「여성 4대 중증 질환」 및 「여성 3대 생활 질환」이라 함 은 다음에서 정한 질병을 말합니다. ① 여성 4대 중증 질환 : 「중증루푸스신염」,"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D03-R06",
+          "field": "premium_waiver",
+          "scope": "상품요약서",
+          "claim": "약관상 사유 발생 시 차회 이후 보험료를 면제한다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 6,
+              "quote": "6 Q ) 무배당 교보라플 여성건강보험에서 입원보험금 및 수술보험금을 보장하는 「여성 4 대 특정질환」 및 「특정 부인과 질환」의 정의는 무엇인가요? A ) 무배당 교보라플 여성건강보험에서 「여성 4대 특정질환」 및 「특정 부인과 질환」이라 함은 다음에서 정한 질병을 말합니다. ① 여성 4대 특정 질환 : 「하지의 정맥류"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D03-R07",
+          "field": "surrender",
+          "scope": "상품요약서",
+          "claim": "중도 해지 환급금은 납입보험료보다 적거나 없을 수 있다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 7,
+              "quote": "7 Q ) 무배당 교보라플 여성건강보험에서 보장개시일, 보장한도 및 보험금 감액 관련된 사항은 무엇인가요? A ) 무배당 교보라플 여성건강보험의 보장개시일, 보장한도 및 보험금 감액 사항은 아래와 같습 니다. 급부명 보장개시일 보장한도 보험금 감액지 급 3대암 진단보험금 암보장개시일 최초 1회 보장 ○ 여성 생식기 관련보"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D03-R08",
+          "field": "claim_paperwork",
+          "scope": "상품요약서",
+          "claim": "문서에 명시된 청구서류를 제출해야 한다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 8,
+              "quote": "8 급부명 보장개시일 보장한도 보험금 감액지 급 여성 4대 특정 질환 입원보험금 보험계약일[부활 (효력 회복)일] 1일 이상 입원일수 1일당 지 급 X 수술보험금 수술 1회당 보장 특정 부인과 질환 입원보험금 보험계약일[부활 (효력 회복)일] 4일 이상 입원일수 1일당 지 급 X 수술보험금 수술 1회당 보장 재해골절(치아"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        }
+      ],
+      "unknownFields": [
+        "exact amounts",
+        "detailed exclusions"
+      ]
+    },
+    {
+      "id": "D04",
+      "name": "DB생명 (무) 건강100 내가고른 통합보험(2601)(2종 일반형,해약환급금 미지급형)",
+      "category": "정기보험",
+      "documentType": "상품요약서",
+      "pages": 34,
+      "sha256": "a2c19bc07955ef938b8fc960b27c1e1989da94616b620a1bc86c05f0fc2fddd2",
+      "pdfPath": "/research/luna-pilot/D04.pdf",
+      "rules": [
+        {
+          "id": "D04-R01",
+          "field": "renewal/end",
+          "scope": "1종 무사고만기연장형의 소멸되지 않은 보장",
+          "claim": "보험료를 정상 납입완료하고 85세 계약해당일 전일 무사고 요건을 충족하면 보험기간이 100세까지 자동 연장된다.",
+          "conditions": [
+            "85세 이전 암(기타피부암·갑상선암 제외), 뇌졸중, 급성심근경색증 진단 또는 장기요양 1·2등급 판정이 없어야 함"
+          ],
+          "exceptions": [
+            "2종 일반형에는 적용하지 않음"
+          ],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 2,
+              "quote": "보험료를 정상적으로 납입완료하고 ... ‘무사고 만기연장 요건’을 충족한 경우 ... 보험기간은 100세까지 자동 연장됩니다."
+            }
+          ],
+          "quotesMatched": false,
+          "issue": null
+        },
+        {
+          "id": "D04-R02",
+          "field": "renewal/end",
+          "scope": "1종 무사고만기연장형",
+          "claim": "무사고 요건을 충족하지 못하면 보장기간은 85세 계약해당일에 종료되고 100세 연장은 무효이며 이후 보험금은 지급하지 않는다.",
+          "conditions": [],
+          "exceptions": [
+            "이미 지급된 보험금은 회사에 반환해야 함"
+          ],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 2,
+              "quote": "요건을 충족하지 못한 경우 ... 보험기간은 85세 계약해당일에 종료됩니다 ... 보험금을 지급하지 않으며 ... 회사에 반환"
+            }
+          ],
+          "quotesMatched": false,
+          "issue": null
+        },
+        {
+          "id": "D04-R03",
+          "field": "renewal/end",
+          "scope": "1종의 특정 특약",
+          "claim": "4대질병 보장·보험료 납입면제·보험료 환급 특약은 계약 시 선택한 보험기간을 적용하며 연장할 수 없다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 2,
+              "quote": "무배당 4대질병 보장특약Ⅰ(E) ... 보험료 납입면제특약Ⅰ(E) ... 보험료 환급특약Ⅰ(E) ... 보험기간 연장이 불가"
+            }
+          ],
+          "quotesMatched": false,
+          "issue": null
+        },
+        {
+          "id": "D04-R04",
+          "field": "surrender",
+          "scope": "해약환급금 미지급형",
+          "claim": "보험료 납입기간 중 해지하면 해약환급금이 없고, 납입기간 완료 후 해지하면 표준형 해약환급금의 50%를 지급한다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 3,
+              "quote": "보험료 납입기간 중 해지될 경우 해약환급금이 없으며 ... 납입기간이 완료된 이후 ... 표준형의 해약환급금의 50%"
+            }
+          ],
+          "quotesMatched": false,
+          "issue": null
+        },
+        {
+          "id": "D04-R05",
+          "field": "payment",
+          "scope": "주계약",
+          "claim": "보험가입금액 100만원 기준 사망 시 사망보험금 100만원을 지급한다.",
+          "conditions": [
+            "보험기간 중 사망"
+          ],
+          "exceptions": [
+            "사망보험금이 이미 납입한 주계약 보험료보다 적으면 그 보험료를 지급"
+          ],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 6,
+              "quote": "사망보험금 사망시 100만원 ... 사망보험금이 ‘이미 납입한 주계약 보험료’보다 적을 경우에는 ... 이미 납입한 주계약 보험료"
+            }
+          ],
+          "quotesMatched": false,
+          "issue": null
+        },
+        {
+          "id": "D04-R06",
+          "field": "diagnosis",
+          "scope": "4대질병 보장특약Ⅰ(E)",
+          "claim": "암(유사암 제외), 뇌졸중, 급성심근경색증 진단 또는 장기요양 1·2등급 판정 시 100만원을 최초 1회 지급한다.",
+          "conditions": [
+            "각 보장개시일 이후"
+          ],
+          "exceptions": [
+            "암은 기타피부암·갑상선암·경계성종양·제자리암 제외"
+          ],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 6,
+              "quote": "암(유사암제외), 뇌졸중, 급성심근경색증 ... 1~2등급 ... 100만원(최초1회한)"
+            }
+          ],
+          "quotesMatched": false,
+          "issue": null
+        },
+        {
+          "id": "D04-R07",
+          "field": "waiting_period",
+          "scope": "4대질병 특약의 암·장기요양 보장",
+          "claim": "암 및 장기요양 보장개시일은 계약일(부활일)부터 90일이 지난 날의 다음날이다.",
+          "conditions": [],
+          "exceptions": [
+            "재해 직접 원인의 장기요양 1·2등급은 계약일(부활일)이 개시일"
+          ],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 6,
+              "quote": "보험계약일(부활(효력회복)일)로부터 그 날을 포함하여 90일이 지난 날의 다음날"
+            }
+          ],
+          "quotesMatched": false,
+          "issue": null
+        },
+        {
+          "id": "D04-R08",
+          "field": "premium_waiver",
+          "scope": "4대질병 보험료 납입면제특약Ⅰ(E)",
+          "claim": "보장개시 후 4대질병 진단 또는 장기요양 1·2등급 판정 시 차회 이후 주계약 및 부가특약 보험료를 면제한다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 6,
+              "quote": "차회 이후 주계약 및 부가특약의 보험료 납입면제"
+            }
+          ],
+          "quotesMatched": false,
+          "issue": null
+        },
+        {
+          "id": "D04-R09",
+          "field": "refund",
+          "scope": "4대질병 보험료 환급특약Ⅰ(E)",
+          "claim": "최초 1회 지급사유 발생 시까지 납입한 약정보험료 합계의 50% 또는 100%를 환급한다.",
+          "conditions": [
+            "1종은 50%환급형, 2종은 100%환급형"
+          ],
+          "exceptions": [
+            "보험료 납입면제특약 보험료는 환급대상 특약에서 제외"
+          ],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 7,
+              "quote": "1종(50%환급형) ... 50% ... 2종(100%환급형) ... 100%"
+            }
+          ],
+          "quotesMatched": false,
+          "issue": null
+        },
+        {
+          "id": "D04-R10",
+          "field": "frequency/limits",
+          "scope": "장기요양 1~2등급 시설급여특약Ⅰ(E)",
+          "claim": "장기요양 1·2등급 수급자가 시설급여 이용 시 1회당 10만원을 월 1회 한도로 지급한다.",
+          "conditions": [
+            "보장개시일 이후 보험기간 중"
+          ],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 7,
+              "quote": "시설급여 이용시(다만, 월1회 한도) 10만원(이용1회당)"
+            }
+          ],
+          "quotesMatched": false,
+          "issue": null
+        },
+        {
+          "id": "D04-R11",
+          "field": "frequency/limits",
+          "scope": "장기요양 1~3등급 생활비지원특약Ⅰ(E)",
+          "claim": "장기요양 1~3등급 판정 후 매년 판정확정일 생존 시 매월 100만원을 지급하며 최초 36회 보증, 최대 종신 지급한다.",
+          "conditions": [
+            "장기요양상태 보장개시일 이후"
+          ],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 8,
+              "quote": "매년 판정확정일에 생존시(최초 36회 보증지급, 최대 종신 지급) 매월 100만원"
+            }
+          ],
+          "quotesMatched": false,
+          "issue": null
+        },
+        {
+          "id": "D04-R12",
+          "field": "exclusions",
+          "scope": "장기요양 특약",
+          "claim": "노인장기요양보험법 제29조에 따라 장기요양급여 제한을 받은 경우 해당 보험금을 지급하지 않는다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 7,
+              "quote": "노인장기요양보험법 제29조에 의해 장기요양급여의 제한을 받은 경우에는 해당보험금을 지급하지 않습니다."
+            }
+          ],
+          "quotesMatched": false,
+          "issue": null
+        }
+      ],
+      "unknownFields": [
+        "개별 특약별 청구서류"
+      ]
+    },
+    {
+      "id": "D05",
+      "name": "ABL생명 (무)우리WON상속종신보험Trust(해약환급금 미지급형)[일반심사형,총납입P플러스형]",
+      "category": "종신보험",
+      "documentType": "상품요약서",
+      "pages": 15,
+      "sha256": "884b05fd5e8cb790c4699360915fc219005b0de3005c762c8c2c0cfd68f89aa7",
+      "pdfPath": "/research/luna-pilot/D05.pdf",
+      "rules": [
+        {
+          "id": "D05-R01",
+          "field": "payment",
+          "scope": "주계약 1형 기납입P플러스형",
+          "claim": "보험기간 중 사망 시 보험가입금액과 사망 당시 이미 납입한 보험료를 합산해 지급한다.",
+          "conditions": [
+            "보험기간 중 피보험자 사망"
+          ],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 7,
+              "quote": "1형(기납입P플러스형) 보험가입금액 + 사망 당시 이미 납입한 보험료"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D05-R02",
+          "field": "payment",
+          "scope": "주계약 2형 총납입P플러스형",
+          "claim": "보험기간 중 사망 시 보험가입금액과 총 납입보험료를 합산해 지급한다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 7,
+              "quote": "2형(총납입P플러스형) 보험가입금액 + 총 납입보험료"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D05-R03",
+          "field": "premium_waiver",
+          "scope": "주계약",
+          "claim": "보험료 납입기간 중 50% 이상 장해 시 차회 이후 보험료 납입을 면제한다.",
+          "conditions": [
+            "1종은 동일 재해 원인, 2종은 동일 재해 또는 재해 이외 동일 원인"
+          ],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 7,
+              "quote": "여러 신체부위의 장해지급률을 더하여 50%이상인 장해상태가 되었을 경우"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D05-R04",
+          "field": "premium_waiver",
+          "scope": "6대질병보험료납입면제특약",
+          "claim": "암(제외 질병 명시), 뇌출혈, 급성심근경색증, 말기신부전증, 말기간질환 또는 중기이상 만성폐질환 진단 시 주계약과 특약의 차회 이후 보험료를 면제한다.",
+          "conditions": [
+            "암은 암 보장개시일 이후"
+          ],
+          "exceptions": [
+            "유방암·전립선암·중증 이외 갑상선암·기타피부암·대장점막내암 제외"
+          ],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 7,
+              "quote": "주계약 및 이 특약의 차회 이후의 보험료 납입면제"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D05-R05",
+          "field": "diagnosis",
+          "scope": "간편가입말기간질환진단특약(갱신형)",
+          "claim": "말기간질환 최초 1회 진단 시 1,000만원을 지급한다.",
+          "conditions": [
+            "특약 보험기간 중 확정진단"
+          ],
+          "exceptions": [
+            "계약일부터 2년이 지난 계약해당일 전일 이전 발생 시 50% 지급"
+          ],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 8,
+              "quote": "말기간질환으로 진단이 확정되었을 때(다만, 최초 1회에 한함) 1,000만원 ... 50%를 지급"
+            }
+          ],
+          "quotesMatched": false,
+          "issue": null
+        },
+        {
+          "id": "D05-R06",
+          "field": "diagnosis",
+          "scope": "간편가입말기신부전증진단특약(갱신형)",
+          "claim": "말기신부전증 최초 1회 진단 시 1,000만원을 지급한다.",
+          "conditions": [
+            "특약 보험기간 중 확정진단"
+          ],
+          "exceptions": [
+            "계약 후 2년 이내 지급사유는 50%, 갱신계약에는 해당 감액 미적용"
+          ],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 8,
+              "quote": "말기신부전증으로 진단이 확정되었을 때(다만, 최초 1회에 한함) 1,000만원"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D05-R07",
+          "field": "renewal/end",
+          "scope": "갱신형 특약",
+          "claim": "최종 갱신계약 종료일은 주계약 종료일을 따르되 주계약 종료일이 90세 계약해당일 전일 이후면 90세 전일로 한다.",
+          "conditions": [],
+          "exceptions": [
+            "특약 종료일이 최종 갱신계약 종료일과 같으면 갱신 불가"
+          ],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 8,
+              "quote": "최종 갱신계약의 보험기간 종료일은 주계약의 보험기간 종료일 ... 90세 계약해당일 전일"
+            }
+          ],
+          "quotesMatched": false,
+          "issue": null
+        },
+        {
+          "id": "D05-R08",
+          "field": "premium_waiver",
+          "scope": "갱신형 진단특약",
+          "claim": "주계약 보험료 납입면제 시 차회 이후 및 갱신계약 보험료도 면제한다.",
+          "conditions": [],
+          "exceptions": [
+            "‘보험료의 납입을 면제하는 특약’으로 주계약이 면제된 경우는 제외"
+          ],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 8,
+              "quote": "갱신을 할 때 갱신계약의 보험료도 납입을 면제합니다. 그러나 ... 특약으로 ... 면제된 경우에는 ... 면제하지 않습니다."
+            }
+          ],
+          "quotesMatched": false,
+          "issue": null
+        },
+        {
+          "id": "D05-R09",
+          "field": "diagnosis",
+          "scope": "2종 일반심사형 장해80%이상종신보장특약",
+          "claim": "동일 재해 또는 동일 원인으로 장해지급률 합계 80% 이상이면 1,000만원을 지급한다.",
+          "conditions": [
+            "특약 보험기간 중"
+          ],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 9,
+              "quote": "장해지급률을 더하여 80%이상인 장해상태가 되었을 때 1,000만원"
+            }
+          ],
+          "quotesMatched": true,
+          "issue": null
+        },
+        {
+          "id": "D05-R10",
+          "field": "exclusions",
+          "scope": "보험금 지급제한",
+          "claim": "고의로 자신 또는 피보험자를 해친 경우 보험금을 지급하지 않는다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 10,
+              "quote": "피보험자가 고의로 자신을 해친 경우 ... 보험수익자가 고의로 피보험자를 해친 경우 ... 보험금을 드리지 않습니다."
+            }
+          ],
+          "quotesMatched": false,
+          "issue": null
+        },
+        {
+          "id": "D05-R11",
+          "field": "exclusions",
+          "scope": "보험금 지급제한",
+          "claim": "계약 전 알릴 의무 위반으로 보험금 지급사유에 영향을 미친 경우 보험금을 지급하지 않을 수 있다.",
+          "conditions": [
+            "보장개시일부터 2년 이내(건강진단 계약은 1년 이내 해지 가능)"
+          ],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 10,
+              "quote": "계약 전 알릴 의무를 위반한 경우 ... 보험사고 발생 시 보험금을 지급하지 않을 수 있습니다."
+            }
+          ],
+          "quotesMatched": false,
+          "issue": null
+        },
+        {
+          "id": "D05-R12",
+          "field": "surrender",
+          "scope": "해약환급금 미지급형",
+          "claim": "납입기간 중 해지 시 환급금이 없고 납입완료 후에는 이미 납입한 보험료에 기본형 해약환급률에서 6%를 뺀 지급률을 곱한다.",
+          "conditions": [],
+          "exceptions": [],
+          "value_basis": "contract_rule",
+          "evidence": [
+            {
+              "pdf_page": 12,
+              "quote": "보험료 납입기간 중 계약이 해지될 경우 해약환급금을 지급하지 않으며 ... ‘기본형’의 해약환급률 – 6%"
+            }
+          ],
+          "quotesMatched": false,
+          "issue": null
+        }
+      ],
+      "unknownFields": [
+        "개별 특약별 청구서류",
+        "정확한 암 보장개시일 수치"
+      ]
+    }
+  ]
+}

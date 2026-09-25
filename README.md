@@ -32,8 +32,20 @@ pnpm build
 - 앱: Vercel
 - 데이터베이스: Railway PostgreSQL
 - Vercel의 `DATABASE_URL`에는 Railway 외부 TCP 연결 URL을 사용합니다.
-- 최초 배포 전 `pnpm db:migrate`를 한 번 실행합니다.
+- 최초 배포 또는 `drizzle/` 스키마 변경 시, 배포 전에 `pnpm db:migrate`를 별도 실행합니다. 실패하면 스키마 변경이 필요한 버전을 배포하지 않습니다.
+- Vercel의 `vercel-build`는 `pnpm build`만 실행합니다. 기존 스키마를 사용하는 화면 변경은 빌드 중 운영 DB에 연결하거나 마이그레이션을 다시 실행하지 않습니다.
 - 공개 제출본에는 `INSURANCE_DEMO_ONLY=true`를 설정합니다.
 - 실데이터 API를 별도로 운영할 때만 CODEF 자격증명과 API 접근용 `INSURANCE_PREVIEW_USER`, `INSURANCE_PREVIEW_PASSWORD`를 설정합니다.
 
 자세한 제품 범위는 [PRODUCT.md](./PRODUCT.md)를 참고하세요.
+
+## 약관 추출 실험 보기
+
+`/insurance`의 **약관·위험 → 분석 실험 결과**, 또는 `/insurance/terms?view=research`에서 2026-09-21 Luna 파일럿을 확인할 수 있습니다.
+
+- 상품요약서 5개, 전체 99쪽, 추출 초안 53개를 담았습니다.
+- 인용·페이지 일치 35개는 내용 정확도가 아닙니다. 확인된 오류와 모델 인용을 원본 PDF와 함께 검토할 수 있습니다.
+- 문서 2~3개를 선택하고 **나란히 비교**를 누르면 지급조건·감액·납입면제 등을 항목별로 대조할 수 있습니다. 비교는 한 항목씩 크게 표시하며 **비교 항목 → 전체 항목**으로 전체 내용을 볼 수 있습니다. 상품명은 간략히 표시하고 **전체 상품명**에서 원래 명칭을 확인합니다. 항목을 펼쳐 조건·예외와 원문 페이지를 확인할 수 있으며, 추출 결과가 없는 칸은 보장이 없다는 뜻이 아닙니다.
+- 고객 계약 근거 및 기존 50개 공식 약관 자료실과 구분됩니다.
+- 공개용 스냅샷은 `lib/generated/luna-pilot.json`, 공개 PDF와 다운로드 결과는 `public/research/luna-pilot/`에 있습니다. 로컬 파일 경로나 고객 데이터는 포함하지 않습니다.
+- 원본 실험 산출물이 `output/analysis/luna_pilot_2026-09-21/`에 있을 때 `python scripts/publish-luna-pilot.py`로 공개 스냅샷을 재생성할 수 있습니다. 서비스 실행 시 모델을 호출하지 않습니다.
