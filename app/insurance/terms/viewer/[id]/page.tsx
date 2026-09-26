@@ -4,10 +4,11 @@ import { notFound } from "next/navigation"
 import { ArrowLeft, ArrowUpRight, Download } from "lucide-react"
 
 import { PolicyPdfFrame } from "@/components/insurance/policy-pdf-frame"
-import { OFFICIAL_POLICY_DOCUMENTS, officialPolicyProxyPath } from "@/lib/policy-library"
+import { OFFICIAL_POLICY_ANALYSES, OFFICIAL_POLICY_DOCUMENTS, officialPolicyProxyPath } from "@/lib/policy-library"
 
 interface PageProps {
   params: Promise<{ id: string }>
+  searchParams: Promise<{ page?: string | string[] }>
 }
 
 export function generateStaticParams() {
@@ -24,12 +25,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function PolicyViewerPage({ params }: PageProps) {
+export default async function PolicyViewerPage({ params, searchParams }: PageProps) {
   const { id } = await params
   const document = OFFICIAL_POLICY_DOCUMENTS.find((item) => item.id === id)
   if (!document) notFound()
 
   const viewerUrl = officialPolicyProxyPath(document)
+  const pageParam = (await searchParams).page
+  const requestedPage = Number(Array.isArray(pageParam) ? pageParam[0] : pageParam)
+  const pageCount = OFFICIAL_POLICY_ANALYSES.find((item) => item.id === id)?.pageCount ?? 1
+  const page = Number.isSafeInteger(requestedPage) && requestedPage >= 1 && requestedPage <= pageCount ? requestedPage : 1
 
   return (
     <main className="flex min-h-screen flex-col bg-[#252525] text-white">
@@ -49,7 +54,7 @@ export default async function PolicyViewerPage({ params }: PageProps) {
       </header>
       <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col p-2 sm:p-4">
         <div className="mb-2 rounded-xl bg-amber-100 px-3 py-2 text-[10px] font-bold leading-4 text-amber-950 sm:text-xs">공식 PDF를 사이트에서 불러온 뒤 브라우저의 PDF 뷰어로 표시합니다. 파일 크기에 따라 처음 열 때 몇 초 걸릴 수 있습니다.</div>
-        <PolicyPdfFrame source={viewerUrl} title={`${document.productName} 보험약관 PDF`} />
+        <PolicyPdfFrame source={viewerUrl} page={page} title={`${document.productName} 보험약관 PDF`} />
       </div>
     </main>
   )

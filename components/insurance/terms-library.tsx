@@ -23,6 +23,7 @@ import {
   OFFICIAL_POLICY_ANALYSIS_METHOD,
   OFFICIAL_POLICY_ANALYSIS_NOTICE,
   OFFICIAL_POLICY_ANALYSIS_SUMMARY,
+  OFFICIAL_POLICY_COLLECTED_AT,
   OFFICIAL_POLICY_DOCUMENTS,
   OFFICIAL_POLICY_SOURCE,
   policyCategory,
@@ -74,12 +75,13 @@ function formatCharacters(value: number): string {
 }
 
 function sectionStatus(section: PolicyAnalysisSection): string {
-  return section.evidence.length ? `근거 ${section.evidence.length}건` : "자동 미탐지"
+  return section.evidence.length ? `원문 후보 ${section.evidence.length}건` : "자동 미탐지"
 }
 
-function EvidencePanel({ label, section, tone = "neutral" }: {
+function EvidencePanel({ label, section, documentId, tone = "neutral" }: {
   label: string
   section: PolicyAnalysisSection
+  documentId: string
   tone?: "neutral" | "red" | "amber" | "blue"
 }) {
   const toneClass = {
@@ -101,7 +103,7 @@ function EvidencePanel({ label, section, tone = "neutral" }: {
         <div className="mt-3 space-y-3">
           {section.evidence.map((evidence, index) => (
             <div key={`${evidence.page}-${index}`} className="border-t border-black/10 pt-3 first:border-0 first:pt-0">
-              <span className="inline-flex rounded-md bg-[#f3f0e8] px-2 py-1 text-[10px] font-black tabular-nums">PDF {evidence.page}쪽</span>
+              <Link href={"/insurance/terms/viewer/" + documentId + "?page=" + evidence.page} target="_blank" rel="noopener noreferrer" className="inline-flex rounded-md bg-[#f3f0e8] px-2 py-1 text-[10px] font-black tabular-nums underline-offset-2 hover:underline">PDF {evidence.page}쪽 ↗</Link>
               <p className="mt-2 text-[11px] leading-5 text-neutral-600">{evidence.excerpt}</p>
             </div>
           ))}
@@ -122,9 +124,10 @@ function Metric({ label, value, attention = false }: { label: string; value: str
   )
 }
 
-function EvidenceSummary({ section, tone }: {
+function EvidenceSummary({ section, tone, documentId }: {
   section: PolicyAnalysisSection
   tone: "red" | "amber" | "blue"
+  documentId: string
 }) {
   const evidence = section.evidence[0]
   if (!evidence) return <div className="rounded-xl border border-dashed border-amber-300 bg-amber-50 p-3 font-bold text-amber-900 sm:p-4">자동 미탐지<br /><span className="text-[10px] font-medium sm:text-[11px]">조항 없음이 아니므로 원문 확인 필요</span></div>
@@ -136,8 +139,8 @@ function EvidenceSummary({ section, tone }: {
   return (
     <div className={`rounded-xl border p-3 sm:p-4 ${toneClass}`}>
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <strong className="rounded-full bg-white px-2.5 py-1 text-[10px] text-[#17211f] shadow-sm sm:text-[11px]">PDF {evidence.page}쪽</strong>
-        <span className="text-[10px] font-black text-neutral-500">근거 {section.evidence.length}건 중 대표 문구</span>
+        <Link href={"/insurance/terms/viewer/" + documentId + "?page=" + evidence.page} target="_blank" rel="noopener noreferrer" className="rounded-full bg-white px-2.5 py-1 text-[10px] text-[#17211f] shadow-sm underline-offset-2 hover:underline sm:text-[11px]">PDF {evidence.page}쪽 ↗</Link>
+        <span className="text-[10px] font-black text-neutral-500">후보 {section.evidence.length}건 중 첫 문구</span>
       </div>
       <p className="mt-3 break-words text-[11px] leading-5 text-neutral-700 sm:text-[12px] sm:leading-6">{evidence.excerpt}</p>
     </div>
@@ -210,13 +213,13 @@ export function TermsLibrary() {
       <section className="overflow-hidden border-b border-[#d8d3c8] bg-[#17211f] text-white">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:py-16">
           <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f1b94c]">Full-text policy intelligence</p>
-            <h1 className="mt-4 max-w-3xl font-serif text-4xl font-bold leading-[1.12] tracking-[-0.035em] sm:text-5xl">약관 9,315쪽을<br />근거 단위로 꺼냈습니다.</h1>
-            <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">공식 PDF 50건의 전체 텍스트를 문서별 TXT로 보존하고, 보장 범위·특약·면책·감액·대기기간을 페이지 원문과 함께 구조화했습니다.</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f1b94c]">KB insurance policy evidence</p>
+            <h1 className="mt-4 max-w-3xl font-serif text-4xl font-bold leading-[1.12] tracking-[-0.035em] sm:text-5xl">KB손해보험 약관<br />{formatNumber(OFFICIAL_POLICY_ANALYSIS_SUMMARY.pageCount)}쪽을 탐색합니다.</h1>
+            <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">KB손해보험 질병보험 공시 PDF {OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}건을 문서별 TXT로 보존하고, 보장 범위·특약·면책·감액·대기기간의 후보 문구를 페이지별로 찾았습니다.</p>
             <div className="mt-7 flex flex-wrap gap-2">
               {([
                 ["analysis", "약관 분석"],
-                ["compare", `상품 비교 ${selectedIds.length}/3`],
+                ["compare", `약관 문구 비교 ${selectedIds.length}/3`],
                 ["files", "PDF · TXT 자료실"],
               ] as const).map(([value, label]) => (
                 <button key={value} onClick={() => setView(value)} className={`min-h-11 rounded-xl px-5 text-xs font-black ${view === value ? "bg-[#df2444] text-white" : "bg-white/10 text-white hover:bg-white/15"}`}>{label}</button>
@@ -225,10 +228,10 @@ export function TermsLibrary() {
           </div>
 
           <div className="grid grid-cols-2 gap-3 self-end">
-            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}</p><p className="mt-1 text-xs text-neutral-300">PDF · TXT 문서</p></div>
+            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}</p><p className="mt-1 text-xs text-neutral-300">KB 공식 약관</p></div>
             <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{formatNumber(OFFICIAL_POLICY_ANALYSIS_SUMMARY.pageCount)}</p><p className="mt-1 text-xs text-neutral-300">전체 추출 페이지</p></div>
             <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{(OFFICIAL_POLICY_ANALYSIS_SUMMARY.characterCount / 10_000_000).toFixed(2)}천만</p><p className="mt-1 text-xs text-neutral-300">원문 텍스트 글자</p></div>
-            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{formatNumber(OFFICIAL_POLICY_ANALYSIS_SUMMARY.evidenceCount)}</p><p className="mt-1 text-xs text-neutral-300">구조화된 페이지 근거</p></div>
+            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{formatNumber(OFFICIAL_POLICY_ANALYSIS_SUMMARY.evidenceCount)}</p><p className="mt-1 text-xs text-neutral-300">자동 탐지 문구</p></div>
             <div className="col-span-2 flex items-start gap-3 rounded-2xl bg-[#f1b94c] p-4 text-[#17211f]"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /><p className="text-[11px] font-bold leading-5">{formatDate(OFFICIAL_POLICY_ANALYSIS_GENERATED_AT.slice(0, 10))} 전체 텍스트 추출 완료 · 모든 TXT에 페이지 구분선과 원본 PDF 주소 포함</p></div>
           </div>
         </div>
@@ -239,8 +242,8 @@ export function TermsLibrary() {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#c71935]">Page-backed extraction</p>
-              <h2 id="analysis-title" className="mt-1 text-2xl font-black">조항별 자동 구조화</h2>
-              <p className="mt-2 text-xs leading-5 text-neutral-500">{OFFICIAL_POLICY_ANALYSIS_METHOD}. 구입한 담보가 아니라 약관 문서에서 감지된 전체 주제와 특약 후보입니다.</p>
+              <h2 id="analysis-title" className="mt-1 text-2xl font-black">조항 후보와 원문 페이지</h2>
+              <p className="mt-2 text-xs leading-5 text-neutral-500">{OFFICIAL_POLICY_ANALYSIS_METHOD}. 이는 검토할 문구의 위치를 찾는 기능이며 가입 담보·지급조건의 확정 결과가 아닙니다.</p>
             </div>
             <a href={OFFICIAL_POLICY_SOURCE.url} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center gap-2 self-start rounded-xl border border-black/10 bg-white px-4 text-xs font-black hover:border-black/25">공식 공시 원문 <ArrowUpRight className="h-4 w-4" /></a>
           </div>
@@ -249,12 +252,12 @@ export function TermsLibrary() {
             <label className="relative"><span className="sr-only">보험사, 상품명, 보장 주제 또는 특약 검색</span><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="상품명 · 보장 주제 · 특약 검색" className="min-h-11 w-full rounded-xl border border-black/10 bg-[#f8f6ef] pl-10 pr-3 text-sm outline-none focus:border-[#c71935]" /></label>
             <select value={focus} onChange={(event) => setFocus(event.target.value as FocusFilter)} className="min-h-11 rounded-xl border border-black/10 bg-[#f8f6ef] px-3 text-xs font-bold" aria-label="분석 항목 필터">{FOCUS_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>
             <select value={category} onChange={(event) => setCategory(event.target.value)} className="min-h-11 rounded-xl border border-black/10 bg-[#f8f6ef] px-3 text-xs font-bold" aria-label="보장 분야 필터"><option value="all">전체 보장 분야</option>{categories.map((item) => <option key={item} value={item}>{item}</option>)}</select>
-            <select value={saleFilter} onChange={(event) => setSaleFilter(event.target.value as SaleFilter)} className="min-h-11 rounded-xl border border-black/10 bg-[#f8f6ef] px-3 text-xs font-bold" aria-label="판매 상태 필터"><option value="all">전체 판매 상태</option><option value="on_sale">현재 판매</option><option value="off_sale">과거 판매</option></select>
+            <select value={saleFilter} onChange={(event) => setSaleFilter(event.target.value as SaleFilter)} className="min-h-11 rounded-xl border border-black/10 bg-[#f8f6ef] px-3 text-xs font-bold" aria-label="판매 상태 필터"><option value="all">전체 판매 상태</option><option value="on_sale">수집 당시 판매</option><option value="off_sale">수집 당시 판매 종료</option></select>
           </div>
 
           <div className="mt-4 flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-950 sm:flex-row sm:items-start">
             <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0" />
-            <p className="text-[11px] leading-5"><strong className="block text-xs">‘자동 미탐지’는 ‘조항 없음’이 아닙니다.</strong>{OFFICIAL_POLICY_ANALYSIS_NOTICE} 실제 가입 담보와 지급 판단은 가입설계서·증권·해당 시점 약관을 함께 봐야 합니다.</p>
+            <p className="text-[11px] leading-5"><strong className="block text-xs">‘자동 미탐지’는 ‘조항 없음’이 아닙니다.</strong>{OFFICIAL_POLICY_ANALYSIS_NOTICE} 수집일 {formatDate(OFFICIAL_POLICY_COLLECTED_AT.slice(0, 10))} 기준 KB손해보험 자료만 포함됩니다. 실제 가입 담보와 지급 판단은 가입설계서·증권·해당 시점 약관을 함께 봐야 합니다.</p>
           </div>
 
           <div className="mt-5 flex items-center justify-between text-xs"><span className="font-black">검색 결과 {filteredRecords.length}건</span><span className="text-neutral-500">카드 아래에서 원문 페이지 근거를 펼칠 수 있습니다</span></div>
@@ -267,7 +270,7 @@ export function TermsLibrary() {
                   <div className="p-5 sm:p-6">
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-2.5 py-1 text-[10px] font-black ${document.saleStatus === "on_sale" ? "bg-emerald-100 text-emerald-800" : "bg-neutral-100 text-neutral-600"}`}>{document.saleStatus === "on_sale" ? "현재 판매" : "과거 판매"}</span><span className="text-[10px] font-black text-[#c71935]">{document.insurer}</span><span className="text-[10px] font-bold text-neutral-500">{formatDate(document.effectiveFrom)}</span></div>
+                        <div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-2.5 py-1 text-[10px] font-black ${document.saleStatus === "on_sale" ? "bg-emerald-100 text-emerald-800" : "bg-neutral-100 text-neutral-600"}`}>{document.saleStatus === "on_sale" ? "수집 당시 판매" : "수집 당시 판매 종료"}</span><span className="text-[10px] font-black text-[#c71935]">{document.insurer}</span><span className="text-[10px] font-bold text-neutral-500">{formatDate(document.effectiveFrom)}</span></div>
                         <h3 className="mt-3 text-lg font-black leading-7">{document.productName}</h3>
                       </div>
                       <button onClick={() => toggleComparison(document.id)} aria-pressed={selected} className={`inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-xl border px-3 text-[10px] font-black ${selected ? "border-[#3155d9] bg-blue-50 text-[#3155d9]" : "border-black/10 bg-white hover:border-[#3155d9]"}`}>{selected ? <Check className="h-4 w-4" /> : <GitCompareArrows className="h-4 w-4" />}{selected ? "비교 선택됨" : "비교 담기"}</button>
@@ -279,9 +282,9 @@ export function TermsLibrary() {
 
                     <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
                       <Metric label="특약 후보" value={`${analysis.riders.detectedCount}개`} attention={!analysis.riders.evidence.length} />
-                      <Metric label="면책 근거" value={sectionStatus(analysis.exclusions)} attention={!analysis.exclusions.evidence.length} />
-                      <Metric label="감액 근거" value={sectionStatus(analysis.reduction)} attention={!analysis.reduction.evidence.length} />
-                      <Metric label="대기 근거" value={sectionStatus(analysis.waiting)} attention={!analysis.waiting.evidence.length} />
+                      <Metric label="면책 문구" value={sectionStatus(analysis.exclusions)} attention={!analysis.exclusions.evidence.length} />
+                      <Metric label="감액 문구" value={sectionStatus(analysis.reduction)} attention={!analysis.reduction.evidence.length} />
+                      <Metric label="대기 문구" value={sectionStatus(analysis.waiting)} attention={!analysis.waiting.evidence.length} />
                     </div>
 
                     {analysis.riders.names.length > 0 && <p className="mt-4 text-[11px] leading-5 text-neutral-600"><strong className="text-[#17211f]">감지 특약</strong> · {analysis.riders.names.slice(0, 5).join(" / ")}{analysis.riders.names.length > 5 ? ` 외 ${analysis.riders.names.length - 5}개` : ""}</p>}
@@ -294,13 +297,13 @@ export function TermsLibrary() {
                   </div>
 
                   <details className="group border-t border-black/10 bg-[#f8f6ef]">
-                    <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between px-5 text-xs font-black sm:px-6">페이지별 원문 근거 펼치기 <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" /></summary>
+                    <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between px-5 text-xs font-black sm:px-6">페이지별 원문 후보 펼치기 <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" /></summary>
                     <div className="grid gap-3 border-t border-black/10 p-4 sm:p-5 lg:grid-cols-2">
-                      <EvidencePanel label="보장 범위" section={analysis.coverage} tone="blue" />
-                      <EvidencePanel label="특약" section={analysis.riders} />
-                      <EvidencePanel label="면책 · 보상 제외" section={analysis.exclusions} tone="red" />
-                      <EvidencePanel label="초기 감액" section={analysis.reduction} tone="amber" />
-                      <div className="lg:col-span-2"><EvidencePanel label="면책기간 · 보장개시" section={analysis.waiting} tone="blue" /></div>
+                      <EvidencePanel label="보장 범위" section={analysis.coverage} documentId={document.id} tone="blue" />
+                      <EvidencePanel label="특약" section={analysis.riders} documentId={document.id} />
+                      <EvidencePanel label="면책 · 보상 제외" section={analysis.exclusions} documentId={document.id} tone="red" />
+                      <EvidencePanel label="초기 감액" section={analysis.reduction} documentId={document.id} tone="amber" />
+                      <div className="lg:col-span-2"><EvidencePanel label="면책기간 · 보장개시" section={analysis.waiting} documentId={document.id} tone="blue" /></div>
                     </div>
                   </details>
                 </article>
@@ -315,12 +318,12 @@ export function TermsLibrary() {
       {view === "compare" && (
         <section className="mx-auto max-w-[1540px] px-4 py-10 sm:px-6" aria-labelledby="compare-title">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#3155d9]">Official 50 documents</p><h2 id="compare-title" className="mt-1 text-2xl font-black">선택 상품 한눈에 비교</h2><p className="mt-2 text-[11px] leading-5 text-neutral-500">가로 스크롤 없이 화면 폭에 맞춰 최대 3개 상품을 나란히 보여줍니다.</p></div>
+            <div><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#3155d9]">KB policy documents</p><h2 id="compare-title" className="mt-1 text-2xl font-black">선택 약관의 후보 문구 비교</h2><p className="mt-2 text-[11px] leading-5 text-neutral-500">같은 보험사의 약관 원문 후보를 최대 3건 나란히 봅니다. 보험료·수수료·실제 가입조건이 없어 판매용 상품 비교설명 자료로 사용할 수 없습니다.</p></div>
             <span className="self-start rounded-full bg-[#17211f] px-3 py-1.5 text-[11px] font-black text-white">선택 {selectedRecords.length}/3</span>
           </div>
 
           <details className="group mt-5 overflow-hidden rounded-2xl border border-black/10 bg-white">
-            <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-5 text-xs font-black">비교할 약관 바꾸기 <span className="flex items-center gap-2 text-[#3155d9]">50개 목록 열기 <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" /></span></summary>
+            <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-5 text-xs font-black">비교할 약관 바꾸기 <span className="flex items-center gap-2 text-[#3155d9]">{POLICY_RECORDS.length}개 목록 열기 <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" /></span></summary>
             <div className="border-t border-black/10 p-4 sm:p-5">
               <label className="relative block"><span className="sr-only">비교 문서 검색</span><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="상품명 검색" className="min-h-11 w-full rounded-xl border border-black/10 bg-[#f8f6ef] pl-10 pr-3 text-sm outline-none focus:border-[#3155d9]" /></label>
               <p className="mt-3 text-[10px] font-bold text-neutral-500">최대 3건 · 네 번째 선택부터 가장 먼저 고른 약관이 교체됩니다.</p>
@@ -388,15 +391,15 @@ export function TermsLibrary() {
                   </tr>
                   <tr>
                     <th scope="row" className="bg-red-50 p-2 align-top font-black text-red-950 sm:p-4">면책 · 보상 제외</th>
-                    {selectedRecords.map(({ document, analysis }) => <td key={document.id} className="min-w-0 border-l border-black/10 p-2 align-top sm:p-4"><EvidenceSummary section={analysis.exclusions} tone="red" /></td>)}
+                    {selectedRecords.map(({ document, analysis }) => <td key={document.id} className="min-w-0 border-l border-black/10 p-2 align-top sm:p-4"><EvidenceSummary section={analysis.exclusions} tone="red" documentId={document.id} /></td>)}
                   </tr>
                   <tr>
                     <th scope="row" className="bg-amber-50 p-2 align-top font-black text-amber-950 sm:p-4">초기 감액</th>
-                    {selectedRecords.map(({ document, analysis }) => <td key={document.id} className="min-w-0 border-l border-black/10 p-2 align-top sm:p-4"><EvidenceSummary section={analysis.reduction} tone="amber" /></td>)}
+                    {selectedRecords.map(({ document, analysis }) => <td key={document.id} className="min-w-0 border-l border-black/10 p-2 align-top sm:p-4"><EvidenceSummary section={analysis.reduction} tone="amber" documentId={document.id} /></td>)}
                   </tr>
                   <tr>
                     <th scope="row" className="bg-blue-50 p-2 align-top font-black text-blue-950 sm:p-4">면책기간 · 보장개시</th>
-                    {selectedRecords.map(({ document, analysis }) => <td key={document.id} className="min-w-0 border-l border-black/10 p-2 align-top sm:p-4"><EvidenceSummary section={analysis.waiting} tone="blue" /></td>)}
+                    {selectedRecords.map(({ document, analysis }) => <td key={document.id} className="min-w-0 border-l border-black/10 p-2 align-top sm:p-4"><EvidenceSummary section={analysis.waiting} tone="blue" documentId={document.id} /></td>)}
                   </tr>
                   <tr>
                     <th scope="row" className="bg-[#f3f0e8] p-2 align-top font-black sm:p-4">원문 확인</th>
@@ -415,11 +418,11 @@ export function TermsLibrary() {
 
       {view === "files" && (
         <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6" aria-labelledby="files-title">
-          <div><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#c71935]">Source archive</p><h2 id="files-title" className="mt-1 text-2xl font-black">PDF · TXT 자료실 50건</h2><p className="mt-2 text-xs leading-5 text-neutral-500">TXT는 다운로드 전용이 아니라 브라우저에서 바로 열립니다. 각 페이지는 <code className="rounded bg-white px-1.5 py-0.5">===== PAGE N =====</code>으로 구분했습니다.</p></div>
+          <div><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#c71935]">Source archive</p><h2 id="files-title" className="mt-1 text-2xl font-black">PDF · TXT 자료실 {POLICY_RECORDS.length}건</h2><p className="mt-2 text-xs leading-5 text-neutral-500">TXT는 다운로드 전용이 아니라 브라우저에서 바로 열립니다. 각 페이지는 <code className="rounded bg-white px-1.5 py-0.5">===== PAGE N =====</code>으로 구분했습니다.</p></div>
           <div className="mt-6 overflow-hidden rounded-2xl border border-black/10 bg-white">
             {POLICY_RECORDS.map(({ document, analysis }, index) => (
               <article key={document.id} className={`grid gap-4 p-4 sm:p-5 lg:grid-cols-[90px_minmax(0,1fr)_170px_auto] lg:items-center ${index ? "border-t border-black/10" : ""}`}>
-                <div><span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-black ${document.saleStatus === "on_sale" ? "bg-emerald-100 text-emerald-800" : "bg-neutral-100 text-neutral-600"}`}>{document.saleStatus === "on_sale" ? "현재 판매" : "과거 판매"}</span><span className="mt-2 block text-[10px] font-bold text-neutral-500">{policyCategory(document.productName)}</span></div>
+                <div><span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-black ${document.saleStatus === "on_sale" ? "bg-emerald-100 text-emerald-800" : "bg-neutral-100 text-neutral-600"}`}>{document.saleStatus === "on_sale" ? "수집 당시 판매" : "수집 당시 판매 종료"}</span><span className="mt-2 block text-[10px] font-bold text-neutral-500">{policyCategory(document.productName)}</span></div>
                 <div className="min-w-0"><p className="text-[10px] font-black text-[#c71935]">{document.insurer}</p><h3 className="mt-1 text-sm font-black leading-6">{document.productName}</h3><p className="mt-1 text-[10px] text-neutral-500">{document.sourceFileName}</p></div>
                 <dl className="grid grid-cols-2 gap-2 text-[10px] lg:block"><div><dt className="text-neutral-500">적용 시작</dt><dd className="mt-0.5 font-black tabular-nums">{formatDate(document.effectiveFrom)}</dd></div><div className="lg:mt-2"><dt className="text-neutral-500">추출 분량</dt><dd className="mt-0.5 font-black tabular-nums">{formatNumber(analysis.pageCount)}쪽 · {formatCharacters(analysis.characterCount)}</dd></div></dl>
                 <div className="grid grid-cols-2 gap-2"><Link href={`/insurance/terms/viewer/${document.id}`} target="_blank" className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[#17211f] px-3 text-[10px] font-black text-white hover:bg-[#c71935]"><BookOpen className="h-4 w-4" /> PDF</Link><a href={analysis.textPath} target="_blank" className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-black/10 bg-white px-3 text-[10px] font-black hover:border-black/25"><FileText className="h-4 w-4" /> TXT</a></div>
