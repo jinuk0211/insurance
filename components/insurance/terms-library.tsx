@@ -30,6 +30,7 @@ import {
   type OfficialPolicyAnalysisDocument,
   type OfficialPolicyDocument,
   type PolicyAnalysisSection,
+  type PolicyEvidence,
 } from "@/lib/policy-library"
 
 type View = "analysis" | "compare" | "files"
@@ -76,6 +77,21 @@ function formatCharacters(value: number): string {
 
 function sectionStatus(section: PolicyAnalysisSection): string {
   return section.evidence.length ? `원문 후보 ${section.evidence.length}건` : "자동 미탐지"
+}
+
+function matchingEvidence(analysis: OfficialPolicyAnalysisDocument, query: string): PolicyEvidence[] {
+  if (!query) return []
+  const evidence = [analysis.coverage, analysis.riders, analysis.exclusions, analysis.reduction, analysis.waiting]
+    .flatMap((section) => section.evidence)
+    .filter(({ excerpt }) => excerpt.toLocaleLowerCase("ko-KR").includes(query))
+  return [...new Map(evidence.map((item) => [`${item.page}:${item.excerpt}`, item])).values()]
+}
+
+function matchesPolicyQuery(document: OfficialPolicyDocument, analysis: OfficialPolicyAnalysisDocument, query: string): boolean {
+  if (!query) return true
+  const searchable = [document.insurer, document.productName, ...analysis.coverage.topics, ...analysis.riders.names]
+    .join(" ").toLocaleLowerCase("ko-KR")
+  return searchable.includes(query) || matchingEvidence(analysis, query).length > 0
 }
 
 function EvidencePanel({ label, section, documentId, tone = "neutral" }: {
@@ -154,6 +170,7 @@ export function TermsLibrary() {
   const [saleFilter, setSaleFilter] = useState<SaleFilter>("all")
   const [focus, setFocus] = useState<FocusFilter>("all")
   const [selectedIds, setSelectedIds] = useState(DEFAULT_COMPARISON_IDS)
+  const normalizedQuery = query.trim().toLocaleLowerCase("ko-KR")
 
   const categories = useMemo(
     () => [...new Set(POLICY_RECORDS.map(({ document }) => policyCategory(document.productName)))].sort(),
@@ -161,21 +178,14 @@ export function TermsLibrary() {
   )
 
   const filteredRecords = useMemo(() => {
-    const normalizedQuery = query.trim().toLocaleLowerCase("ko-KR")
     return POLICY_RECORDS.filter(({ document, analysis }) => {
-      const searchable = [
-        document.insurer,
-        document.productName,
-        ...analysis.coverage.topics,
-        ...analysis.riders.names,
-      ].join(" ").toLocaleLowerCase("ko-KR")
-      const matchesQuery = !normalizedQuery || searchable.includes(normalizedQuery)
+      const matchesQuery = matchesPolicyQuery(document, analysis, normalizedQuery)
       const matchesCategory = category === "all" || policyCategory(document.productName) === category
       const matchesSale = saleFilter === "all" || document.saleStatus === saleFilter
       const matchesFocus = focus === "all" || analysis[focus].evidence.length > 0
       return matchesQuery && matchesCategory && matchesSale && matchesFocus
     })
-  }, [category, focus, query, saleFilter])
+  }, [category, focus, normalizedQuery, saleFilter])
 
   const selectedRecords = selectedIds
     .map((id) => POLICY_RECORDS.find(({ document }) => document.id === id))
@@ -249,7 +259,7 @@ export function TermsLibrary() {
           </div>
 
           <div className="mt-6 grid gap-3 rounded-2xl border border-black/10 bg-white p-3 lg:grid-cols-[1fr_160px_150px_150px]">
-            <label className="relative"><span className="sr-only">보험사, 상품명, 보장 주제 또는 특약 검색</span><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="상품명 · 보장 주제 · 특약 검색" className="min-h-11 w-full rounded-xl border border-black/10 bg-[#f8f6ef] pl-10 pr-3 text-sm outline-none focus:border-[#c71935]" /></label>
+            <label className="relative"><span className="sr-only">보험사, 상품명, 보장 주제, 특약 또는 원문 후보 문구 검색</span><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="상품명 · 보장 주제 · 후보 문구 검색" className="min-h-11 w-full rounded-xl border border-black/10 bg-[#f8f6ef] pl-10 pr-3 text-sm outline-none focus:border-[#c71935]" /></label>
             <select value={focus} onChange={(event) => setFocus(event.target.value as FocusFilter)} className="min-h-11 rounded-xl border border-black/10 bg-[#f8f6ef] px-3 text-xs font-bold" aria-label="분석 항목 필터">{FOCUS_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>
             <select value={category} onChange={(event) => setCategory(event.target.value)} className="min-h-11 rounded-xl border border-black/10 bg-[#f8f6ef] px-3 text-xs font-bold" aria-label="보장 분야 필터"><option value="all">전체 보장 분야</option>{categories.map((item) => <option key={item} value={item}>{item}</option>)}</select>
             <select value={saleFilter} onChange={(event) => setSaleFilter(event.target.value as SaleFilter)} className="min-h-11 rounded-xl border border-black/10 bg-[#f8f6ef] px-3 text-xs font-bold" aria-label="판매 상태 필터"><option value="all">전체 판매 상태</option><option value="on_sale">수집 당시 판매</option><option value="off_sale">수집 당시 판매 종료</option></select>
@@ -265,6 +275,7 @@ export function TermsLibrary() {
           <div className="mt-3 grid items-start gap-4 xl:grid-cols-2">
             {filteredRecords.map(({ document, analysis }) => {
               const selected = selectedIds.includes(document.id)
+              const matches = matchingEvidence(analysis, normalizedQuery)
               return (
                 <article key={document.id} className="overflow-hidden rounded-3xl border border-black/10 bg-[#fffdf8] shadow-[0_12px_35px_rgba(23,33,31,0.06)]">
                   <div className="p-5 sm:p-6">
@@ -288,6 +299,19 @@ export function TermsLibrary() {
                     </div>
 
                     {analysis.riders.names.length > 0 && <p className="mt-4 text-[11px] leading-5 text-neutral-600"><strong className="text-[#17211f]">감지 특약</strong> · {analysis.riders.names.slice(0, 5).join(" / ")}{analysis.riders.names.length > 5 ? ` 외 ${analysis.riders.names.length - 5}개` : ""}</p>}
+
+                    {matches.length > 0 && (
+                      <div className="mt-4 rounded-xl border border-[#3155d9]/20 bg-blue-50 p-3">
+                        <p className="text-[10px] font-black text-[#3155d9]">검색어가 포함된 원문 후보 {matches.length}건</p>
+                        <div className="mt-2 space-y-2">{matches.slice(0, 3).map((evidence) => (
+                          <div key={`${evidence.page}:${evidence.excerpt}`} className="border-t border-blue-100 pt-2 first:border-0 first:pt-0">
+                            <Link href={`/insurance/terms/viewer/${document.id}?page=${evidence.page}`} target="_blank" rel="noopener noreferrer" className="text-[10px] font-black text-[#3155d9] underline">PDF {evidence.page}쪽 ↗</Link>
+                            <p className="mt-1 text-[11px] leading-5 text-neutral-700">{evidence.excerpt}</p>
+                          </div>
+                        ))}</div>
+                        {matches.length > 3 && <p className="mt-2 text-[10px] text-neutral-500">나머지 {matches.length - 3}건은 아래 원문 후보에서 확인하세요.</p>}
+                      </div>
+                    )}
 
                     <div className="mt-5 grid grid-cols-3 gap-2">
                       <Link href={`/insurance/terms/viewer/${document.id}`} target="_blank" className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[#17211f] px-3 text-[10px] font-black text-white hover:bg-[#c71935]"><BookOpen className="h-4 w-4" /> PDF 보기</Link>
@@ -325,10 +349,10 @@ export function TermsLibrary() {
           <details className="group mt-5 overflow-hidden rounded-2xl border border-black/10 bg-white">
             <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-5 text-xs font-black">비교할 약관 바꾸기 <span className="flex items-center gap-2 text-[#3155d9]">{POLICY_RECORDS.length}개 목록 열기 <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" /></span></summary>
             <div className="border-t border-black/10 p-4 sm:p-5">
-              <label className="relative block"><span className="sr-only">비교 문서 검색</span><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="상품명 검색" className="min-h-11 w-full rounded-xl border border-black/10 bg-[#f8f6ef] pl-10 pr-3 text-sm outline-none focus:border-[#3155d9]" /></label>
+              <label className="relative block"><span className="sr-only">비교 문서 검색</span><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="상품명 · 후보 문구 검색" className="min-h-11 w-full rounded-xl border border-black/10 bg-[#f8f6ef] pl-10 pr-3 text-sm outline-none focus:border-[#3155d9]" /></label>
               <p className="mt-3 text-[10px] font-bold text-neutral-500">최대 3건 · 네 번째 선택부터 가장 먼저 고른 약관이 교체됩니다.</p>
               <div className="mt-3 grid max-h-80 gap-2 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {POLICY_RECORDS.filter(({ document }) => !query.trim() || document.productName.includes(query.trim())).map(({ document }) => {
+                {POLICY_RECORDS.filter(({ document, analysis }) => matchesPolicyQuery(document, analysis, normalizedQuery)).map(({ document }) => {
                   const selected = selectedIds.includes(document.id)
                   return <button key={document.id} onClick={() => toggleComparison(document.id)} aria-pressed={selected} className={`min-w-0 rounded-xl border p-3 text-left transition-colors ${selected ? "border-[#3155d9] bg-blue-50" : "border-black/10 bg-white hover:bg-[#f8f6ef]"}`}><span className="flex items-center justify-between gap-2"><span className="text-[10px] font-black text-[#3155d9]">{formatDate(document.effectiveFrom)}</span>{selected && <CheckCircle2 className="h-4 w-4 shrink-0 text-[#3155d9]" />}</span><span className="mt-1 block break-words text-xs font-bold leading-5">{document.productName}</span></button>
                 })}
