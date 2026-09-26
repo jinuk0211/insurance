@@ -602,6 +602,7 @@ export function StepResult({ data, onReset, onLogout, userName, demoMode = false
 
   function toggleSelected(id: string) {
     setSelectedIds((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id])
+    setReportStatus("draft")
   }
 
   return (
@@ -707,9 +708,9 @@ export function StepResult({ data, onReset, onLogout, userName, demoMode = false
           </section>
         </div>
 
-        <TargetSettingsDialog open={targetsOpen} onOpenChange={setTargetsOpen} model={model} values={targetValues} onChange={(id, value) => setTargetValues((current) => ({ ...current, [id]: value }))} onReset={() => setTargetValues({})} />
+        <TargetSettingsDialog open={targetsOpen} onOpenChange={setTargetsOpen} model={model} values={targetValues} onChange={(id, value) => { setTargetValues((current) => ({ ...current, [id]: value })); setReportStatus("draft") }} onReset={() => { setTargetValues({}); setReportStatus("draft") }} />
         <AdditionalContractsDialog open={additionalOpen} onOpenChange={setAdditionalOpen} model={model} selectedIds={selectedIds} onToggle={toggleSelected} />
-        <ProposalInputDialog open={proposalOpen} onOpenChange={setProposalOpen} onAdd={(proposal) => setProposals((current) => [...current, proposal])} />
+        <ProposalInputDialog open={proposalOpen} onOpenChange={setProposalOpen} onAdd={(proposal) => { setProposals((current) => [...current, proposal]); setReportStatus("draft") }} />
       </div>
     </div>
   )
