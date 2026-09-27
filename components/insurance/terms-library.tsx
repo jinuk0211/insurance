@@ -275,6 +275,7 @@ export function TermsLibrary() {
               <p className="text-xs font-medium tracking-wide text-indigo-600">POLICY LIBRARY</p>
               <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">약관의 근거를 더 명확하게.</h1>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500">공식 약관 {OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}건(고유 PDF {OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pdfCount}개)의 보장·면책·감액 문구를 탐색하고 원문과 대조하세요.</p>
+              <Link href="/insurance/corpus" className="mt-4 inline-flex min-h-10 items-center rounded-xl border border-indigo-200 bg-indigo-50 px-4 text-xs font-semibold text-indigo-700 hover:border-indigo-400">별도 수집 PDF 1,000건 보기 ↗</Link>
             </div>
             <div className="flex gap-8 rounded-2xl border border-slate-200/80 bg-slate-50 px-6 py-5">
               <div><p className="text-2xl font-semibold tabular-nums">{OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}<span className="ml-1 text-xs font-normal text-slate-400">건</span></p><p className="mt-1 text-[11px] text-slate-500">공식 약관 항목</p></div>
