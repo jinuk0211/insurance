@@ -43,7 +43,9 @@ import {
 
 const SummaryLibrary = dynamic(() => import("@/components/insurance/summary-library").then((module) => module.SummaryLibrary), { ssr: false })
 
-type View = "analysis" | "riders" | "compare" | "files" | "summaries"
+const TermsQa = dynamic(() => import("@/components/insurance/terms-qa").then((module) => module.TermsQa), { ssr: false })
+
+type View = "analysis" | "riders" | "compare" | "files" | "summaries" | "questions"
 type SaleFilter = "all" | "on_sale" | "off_sale" | "unknown"
 type FocusFilter = "all" | "reviewed" | "coverage" | "riders" | "exclusions" | "reduction" | "waiting"
 
@@ -222,7 +224,8 @@ function EvidenceSummary({ section, tone, documentId }: {
 }
 
 export function TermsLibrary() {
-  const [view, setView] = useState<View>("analysis")
+  const [view, setView] = useState<View>("questions")
+  const [selectedQaId, setSelectedQaId] = useState<string | null>(null)
   const [query, setQuery] = useState("")
   const [category, setCategory] = useState("all")
   const [saleFilter, setSaleFilter] = useState<SaleFilter>("all")
@@ -297,6 +300,7 @@ export function TermsLibrary() {
           </div>
           <div className="mt-8 flex gap-6 overflow-x-auto" aria-label="약관 자료실 보기">
             {([
+              ["questions", "약관에 질문"],
               ["analysis", "약관 탐색"],
               ["riders", "특약 살펴보기"],
               ["compare", `상품 비교 ${selectedIds.length}/3`],
@@ -309,6 +313,7 @@ export function TermsLibrary() {
         </div>
       </section>
 
+      {view === "questions" && <TermsQa initialDocumentId={selectedQaId} />}
       {view === "summaries" && <SummaryLibrary />}
 
       {view === "analysis" && (
@@ -362,6 +367,7 @@ export function TermsLibrary() {
                     </div>
 
 
+                    <button onClick={() => { setSelectedQaId(document.id); setView("questions") }} className="mt-4 mr-2 inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 px-3 text-xs font-semibold text-indigo-700 hover:bg-indigo-100">이 약관에 질문 <ArrowUpRight className="h-3.5 w-3.5" /></button>
                     {RIDER_GUIDES.some((guide) => guide.documentId === document.id && guide.sha256 === analysis.sourceSha256) && (
                       <button onClick={() => { setSelectedRiderId(document.id); setView("riders"); window.scrollTo({ top: 0, behavior: "smooth" }) }} className="mt-4 inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 px-3 text-xs font-semibold text-indigo-700 hover:bg-indigo-100">원문 검토 특약 살펴보기 <ArrowUpRight className="h-3.5 w-3.5" /></button>
                     )}
