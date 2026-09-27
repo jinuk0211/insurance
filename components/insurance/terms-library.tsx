@@ -17,6 +17,7 @@ import {
   Sparkles,
 } from "lucide-react"
 
+import { HANWHA_POLICY_CHECKPOINTS, HANWHA_POLICY_DOCUMENT_ID, HANWHA_POLICY_SHA256 } from "@/lib/hanwha-policy-checkpoints"
 import {
   OFFICIAL_POLICY_ANALYSES,
   OFFICIAL_POLICY_ANALYSIS_GENERATED_AT,
@@ -61,7 +62,9 @@ const analysisById = new Map(OFFICIAL_POLICY_ANALYSES.map((analysis) => [analysi
 const POLICY_RECORDS = OFFICIAL_POLICY_DOCUMENTS.flatMap((document) => {
   const analysis = analysisById.get(document.id)
   return analysis ? [{ document, analysis }] : []
-})
+}).sort((left, right) =>
+  Number(right.document.id === HANWHA_POLICY_DOCUMENT_ID && right.analysis.sourceSha256 === HANWHA_POLICY_SHA256)
+  - Number(left.document.id === HANWHA_POLICY_DOCUMENT_ID && left.analysis.sourceSha256 === HANWHA_POLICY_SHA256))
 const ON_SALE_COUNT = POLICY_RECORDS.filter(({ document }) => document.saleStatus === "on_sale").length
 
 function formatDate(value: string | null): string {
@@ -90,7 +93,10 @@ function matchingEvidence(analysis: OfficialPolicyAnalysisDocument, query: strin
 
 function matchesPolicyQuery(document: OfficialPolicyDocument, analysis: OfficialPolicyAnalysisDocument, query: string): boolean {
   if (!query) return true
-  const searchable = [document.insurer, document.productName, ...analysis.coverage.topics, ...analysis.riders.names]
+  const reviewedText = document.id === HANWHA_POLICY_DOCUMENT_ID && analysis.sourceSha256 === HANWHA_POLICY_SHA256
+    ? HANWHA_POLICY_CHECKPOINTS.flatMap((item) => [item.title, item.summary, item.advisorCheck]).join(" ")
+    : ""
+  const searchable = [document.insurer, document.productName, ...analysis.coverage.topics, ...analysis.riders.names, reviewedText]
     .join(" ").toLocaleLowerCase("ko-KR")
   return searchable.includes(query) || matchingEvidence(analysis, query).length > 0
 }
@@ -225,7 +231,7 @@ export function TermsLibrary() {
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:py-16">
           <div>
             <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f1b94c]">Two-insurer policy evidence</p>
-            <h1 className="mt-4 max-w-3xl font-serif text-4xl font-bold leading-[1.12] tracking-[-0.035em] sm:text-5xl">공식 보험약관<br />{formatNumber(OFFICIAL_POLICY_ANALYSIS_SUMMARY.pageCount)}쪽을 탐색합니다.</h1>
+            <h1 className="mt-4 max-w-3xl font-serif text-4xl font-bold leading-[1.12] tracking-[-0.035em] sm:text-5xl">공식 보험약관<br />{formatNumber(OFFICIAL_POLICY_ANALYSIS_SUMMARY.pageCount)}쪽 원문 탐색</h1>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">KB손해보험 50건과 한화생명 1건, 총 {OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}건 중 확인 당시 판매 문서는 {ON_SALE_COUNT}건입니다. 문서별 TXT를 보존하고 보장 범위·특약·면책·감액·대기기간의 후보 문구를 페이지별로 찾았습니다.</p>
             <div className="mt-7 flex flex-wrap gap-2">
               {([
@@ -272,6 +278,34 @@ export function TermsLibrary() {
           </div>
 
           <div className="mt-5 flex items-center justify-between text-xs"><span className="font-black">검색 결과 {filteredRecords.length}건</span><span className="text-neutral-500">카드 아래에서 원문 페이지 근거를 펼칠 수 있습니다</span></div>
+
+          {filteredRecords.some(({ document, analysis }) =>
+            document.id === HANWHA_POLICY_DOCUMENT_ID && analysis.sourceSha256 === HANWHA_POLICY_SHA256) && (
+            <section className="mt-4 rounded-3xl border border-emerald-200 bg-emerald-50/70 p-5 sm:p-6" aria-label="한화생명 원문 검토 체크포인트">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p className="text-[10px] font-black tracking-[0.14em] text-emerald-800">한화생명 원문 검토 · {HANWHA_POLICY_CHECKPOINTS.length}개</p>
+                  <h3 className="mt-1 text-lg font-black text-[#17211f]">설계사가 확인할 약관 조건</h3>
+                  <p className="mt-2 max-w-3xl text-[11px] leading-5 text-emerald-950">2026.04.17 파일에서 확인한 조항입니다. 실제 가입 계약의 약관 버전이 일치하기 전에는 지급 여부나 금액을 판단하지 않습니다.</p>
+                </div>
+                <Link href={`/insurance/terms/viewer/${HANWHA_POLICY_DOCUMENT_ID}`} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-900 px-4 text-xs font-black text-white hover:bg-emerald-800"><BookOpen className="h-4 w-4" /> 181쪽 원문 보기</Link>
+              </div>
+              <ol className="mt-5 grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
+                {HANWHA_POLICY_CHECKPOINTS.map((item, index) => (
+                  <li key={item.title} className="rounded-xl border border-emerald-100 bg-white p-4">
+                    <h4 className="text-xs font-black text-[#17211f]">{index + 1}. {item.title}</h4>
+                    <p className="mt-2 text-[11px] leading-5 text-neutral-700">{item.summary}</p>
+                    <p className="mt-2 text-[10px] font-bold leading-5 text-emerald-900">확인: {item.advisorCheck}</p>
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {item.evidence.map((entry) => (
+                        <Link key={entry.article + entry.page + entry.anchor} href={`/insurance/terms/viewer/${HANWHA_POLICY_DOCUMENT_ID}?page=${entry.page}`} target="_blank" rel="noopener noreferrer" className="rounded-md bg-emerald-100 px-2 py-1 text-[10px] font-bold text-emerald-900 underline-offset-2 hover:underline">{entry.article} · PDF {entry.page}쪽 ↗</Link>
+                      ))}
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
 
           <div className="mt-3 grid items-start gap-4 xl:grid-cols-2">
             {filteredRecords.map(({ document, analysis }) => {
