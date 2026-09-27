@@ -5,7 +5,7 @@ import { ArrowUpRight, BookOpen, Loader2, Search, Send, X } from "lucide-react"
 import catalog from "@/lib/generated/terms-qa-documents.json"
 import { searchQaDocuments, type QaDocument } from "@/lib/terms-qa-core"
 
-interface Citation { page: number; quote: string; url: string }
+interface Citation { page: number; quote: string; url: string; pdfUrl: string }
 interface Reply {
   status: "answered" | "insufficient" | "select_document"
   message?: string
@@ -20,11 +20,16 @@ const kindLabel = (kind: string) => kind === "policy" ? "보험약관" : kind ==
 
 function SourceLinks({ citations }: { citations: Citation[] }) {
   return <div className="mt-3 space-y-2">{citations.map((citation, index) => (
-    <details key={citation.page + ":" + index} className="rounded-xl border border-indigo-100 bg-indigo-50/50 px-3 py-2">
-      <summary className="cursor-pointer text-xs font-semibold text-indigo-700">PDF {citation.page}쪽 · 인용문 확인</summary>
-      <blockquote className="mt-2 whitespace-pre-wrap break-words border-l-2 border-indigo-200 pl-3 text-xs leading-6 text-slate-600">{citation.quote}</blockquote>
-      <a href={citation.url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex min-h-9 items-center gap-1 text-xs font-semibold text-indigo-700 underline underline-offset-4">PDF {citation.page}쪽 원문 열기 <ArrowUpRight className="h-3.5 w-3.5" /></a>
-    </details>
+    <div key={citation.page + ":" + index} className="rounded-xl border border-indigo-100 bg-indigo-50/50 px-3 py-2">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <details className="min-w-0 flex-1">
+          <summary className="cursor-pointer py-2 text-xs font-semibold text-indigo-700">PDF {citation.page}쪽 · 인용문 확인</summary>
+          <blockquote className="mt-2 whitespace-pre-wrap break-words border-l-2 border-indigo-200 pl-3 text-xs leading-6 text-slate-600">{citation.quote}</blockquote>
+          <a href={citation.url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex min-h-9 items-center gap-1 text-xs font-semibold text-indigo-700 underline underline-offset-4">약관 뷰어에서 열기 <ArrowUpRight className="h-3.5 w-3.5" /></a>
+        </details>
+        <a href={citation.pdfUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-9 shrink-0 items-center gap-1 rounded-lg border border-indigo-200 bg-white px-3 text-xs font-semibold text-indigo-700 hover:bg-indigo-100">PDF {citation.page}쪽 바로 열기 <ArrowUpRight className="h-3.5 w-3.5" /></a>
+      </div>
+    </div>
   ))}</div>
 }
 

@@ -5,7 +5,7 @@ import { ipAddress } from "@vercel/functions"
 import { z } from "zod"
 
 import catalog from "@/lib/generated/terms-qa-documents.json"
-import { citationUrl, hasEditionMismatch, retrievePassages, searchQaDocuments, type QaDocument, type QaPage } from "@/lib/terms-qa-core"
+import { citationPdfUrl, citationUrl, hasEditionMismatch, retrievePassages, searchQaDocuments, type QaDocument, type QaPage } from "@/lib/terms-qa-core"
 import { generateQaAnswer, QaProviderError } from "@/lib/terms-qa-provider"
 import { QaBudgetExceeded, reserveQaRequest } from "@/lib/terms-qa-budget"
 
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
   if (hasEditionMismatch(input.question, document)) {
     return json({ status: "select_document", message: "질문에 적힌 개정월과 선택 자료가 일치하지 않습니다. 요청하신 버전의 자료를 선택해 주세요.", candidates: searchQaDocuments(documents, input.question, 12).filter((doc) => !hasEditionMismatch(input.question, doc)).slice(0, 6) })
   }
-  if (!document.textPages) return json({ status: "insufficient", document, message: "이 PDF는 원문 텍스트를 읽을 수 없어 AI 답변을 만들 수 없습니다. PDF 원문에서 내용을 확인해 주세요.", sources: [{ page: 1, quote: "텍스트를 읽을 수 없는 문서입니다.", url: citationUrl(document, 1) }] })
+  if (!document.textPages) return json({ status: "insufficient", document, message: "이 PDF는 원문 텍스트를 읽을 수 없어 AI 답변을 만들 수 없습니다. PDF 원문에서 내용을 확인해 주세요.", sources: [{ page: 1, quote: "텍스트를 읽을 수 없는 문서입니다.", url: citationUrl(document, 1), pdfUrl: citationPdfUrl(document, 1) }] })
   let stage = "corpus"
   try {
     const pages = await loadPages(document)
@@ -85,13 +85,13 @@ export async function POST(request: Request) {
     stage = "provider"
     const answer = await generateQaAnswer(input.question, document, passages, input.previousQuestions)
     if (!answer.answered) {
-      return json({ status: "insufficient", document, message: "검색된 원문만으로는 질문에 답할 근거가 충분하지 않습니다. 아래 원문을 확인하거나 특약명을 더 구체적으로 입력해 주세요.", sources: passages.slice(0, 3).map((passage) => ({ page: passage.page, quote: passage.text.slice(0, 500), url: citationUrl(document, passage.page) })) })
+      return json({ status: "insufficient", document, message: "검색된 원문만으로는 질문에 답할 근거가 충분하지 않습니다. 아래 원문을 확인하거나 특약명을 더 구체적으로 입력해 주세요.", sources: passages.slice(0, 3).map((passage) => ({ page: passage.page, quote: passage.text.slice(0, 500), url: citationUrl(document, passage.page), pdfUrl: citationPdfUrl(document, passage.page) })) })
     }
     return json({ status: "answered", document, statements: answer.statements.map((statement) => ({
       text: statement.text,
       citations: statement.citations.map((citation) => {
         const passage = passages.find((item) => item.id === citation.id)!
-        return { page: passage.page, quote: passage.text, url: citationUrl(document, passage.page) }
+        return { page: passage.page, quote: passage.text, url: citationUrl(document, passage.page), pdfUrl: citationPdfUrl(document, passage.page) }
       }),
     })) })
   } catch (error) {

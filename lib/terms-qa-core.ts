@@ -85,6 +85,10 @@ export function citationUrl(document: QaDocument, page: number): string {
   if (!Number.isInteger(page) || page < 1 || page > document.pageCount) throw new Error("Invalid PDF page")
   return document.kind === "policy" ? document.pdfUrl + "?page=" + page : document.pdfUrl.split("#")[0] + "#page=" + page
 }
+export function citationPdfUrl(document: QaDocument, page: number): string {
+  const existingUrl = citationUrl(document, page)
+  return document.kind === "policy" ? "/policy-files/" + encodeURIComponent(document.id) + "#page=" + page : existingUrl
+}
 export function validateGroundedAnswer(answer: QaAnswer, passages: QaPassage[]): boolean {
   if (!answer.answered) return answer.statements.length === 0
   if (answer.statements.length === 0 || answer.statements.length > 8) return false
