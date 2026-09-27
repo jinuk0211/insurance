@@ -48,7 +48,7 @@ export default async function PolicyViewerPage({ params, searchParams }: PagePro
           </div>
           <div className="flex gap-2">
             <a href={document.pdfUrl} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/15 px-3 text-xs font-bold hover:bg-white/10"><Download className="h-4 w-4" /> 원본 다운로드</a>
-            <a href={document.sourcePageUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#df2444] px-3 text-xs font-black hover:bg-[#c71935]">공시 페이지 <ArrowUpRight className="h-4 w-4" /></a>
+            <a href={document.sourcePageUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#df2444] px-3 text-xs font-black hover:bg-[#c71935]">보험사 출처 <ArrowUpRight className="h-4 w-4" /></a>
           </div>
         </div>
       </header>

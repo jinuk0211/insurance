@@ -16,6 +16,22 @@
       "byteLength": 3661413,
       "expectedSha256": "918796d28b8274195258621c08c32c87159c18b1a50fb6e6f653a8c42ba8f7ed",
       "expectedPageCount": 181
+    },
+    {
+      "id": "samsungfire-direct-realloss-conversion-2605-1",
+      "insurer": "삼성화재",
+      "productName": "무배당 삼성화재 다이렉트 실손의료비보험(2605.1, 계약전환용)",
+      "productType": "실손의료비보험",
+      "saleStatus": "on_sale",
+      "versionKey": "2605.1-conversion-pdf",
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "pdfUrl": "https://direct.samsungfire.com/docs/realloss.pdf",
+      "sourceFileName": "realloss.pdf (무배당 삼성화재 다이렉트 실손의료비보험 2605.1 계약전환용)",
+      "sourcePageUrl": "https://direct.samsungfire.com/m/mall/MP030404_001.html",
+      "byteLength": 2519879,
+      "expectedSha256": "db0ed9738c9f59fbb28b678b910e0bdd3ef4bf08bdac52643c2e2dd167003415",
+      "expectedPageCount": 157
     }
   ]
 }

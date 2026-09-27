@@ -19,6 +19,7 @@ import {
 
 import { HANWHA_POLICY_CHECKPOINTS, HANWHA_POLICY_DOCUMENT_ID, HANWHA_POLICY_SHA256 } from "@/lib/hanwha-policy-checkpoints"
 import { KB_POLICY_CHECKPOINTS, KB_POLICY_DOCUMENT_ID, KB_POLICY_SHA256 } from "@/lib/kb-policy-checkpoints"
+import { SAMSUNGFIRE_POLICY_CHECKPOINTS, SAMSUNGFIRE_POLICY_DOCUMENT_ID, SAMSUNGFIRE_POLICY_SHA256 } from "@/lib/samsungfire-policy-checkpoints"
 import {
   OFFICIAL_POLICY_ANALYSES,
   OFFICIAL_POLICY_ANALYSIS_GENERATED_AT,
@@ -62,6 +63,7 @@ const FOCUS_OPTIONS: Array<{ value: FocusFilter; label: string }> = [
 const REVIEWED_POLICIES = [
   { documentId: HANWHA_POLICY_DOCUMENT_ID, sha256: HANWHA_POLICY_SHA256, insurer: "한화생명", fileLabel: "2026.04.17 파일", pageCount: 181, checkpoints: HANWHA_POLICY_CHECKPOINTS },
   { documentId: KB_POLICY_DOCUMENT_ID, sha256: KB_POLICY_SHA256, insurer: "KB손해보험", fileLabel: "2026.07 개정본", pageCount: 774, checkpoints: KB_POLICY_CHECKPOINTS },
+  { documentId: SAMSUNGFIRE_POLICY_DOCUMENT_ID, sha256: SAMSUNGFIRE_POLICY_SHA256, insurer: "삼성화재", fileLabel: "2605.1 계약전환용", pageCount: 157, checkpoints: SAMSUNGFIRE_POLICY_CHECKPOINTS },
 ]
 
 const analysisById = new Map(OFFICIAL_POLICY_ANALYSES.map((analysis) => [analysis.id, analysis]))
@@ -246,9 +248,9 @@ export function TermsLibrary() {
       <section className="overflow-hidden border-b border-[#d8d3c8] bg-[#17211f] text-white">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:py-16">
           <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f1b94c]">Two-insurer policy evidence</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f1b94c]">Three-insurer policy evidence</p>
             <h1 className="mt-4 max-w-3xl font-serif text-4xl font-bold leading-[1.12] tracking-[-0.035em] sm:text-5xl">공식 보험약관<br />{formatNumber(OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pageCount)}쪽 원문 탐색</h1>
-            <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">KB손해보험 50건과 한화생명 1건은 공시 항목 수입니다. 서로 다른 PDF는 {OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pdfCount}개이며, 중복을 뺀 원문에서 보장 범위·특약·면책·감액·대기기간 후보 문구를 찾았습니다.</p>
+            <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">KB손해보험 50건, 한화생명 1건, 삼성화재 계약전환용 1건은 자료실 항목 수입니다. 서로 다른 PDF는 {OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pdfCount}개이며, 중복을 뺀 원문에서 보장 범위·특약·면책·감액·대기기간 후보 문구를 찾았습니다.</p>
             <div className="mt-7 flex flex-wrap gap-2">
               {([
                 ["analysis", "약관 분석"],
@@ -290,7 +292,7 @@ export function TermsLibrary() {
 
           <div className="mt-4 flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-950 sm:flex-row sm:items-start">
             <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0" />
-            <p className="text-[11px] leading-5"><strong className="block text-xs">‘자동 미탐지’는 ‘조항 없음’이 아닙니다.</strong>{OFFICIAL_POLICY_ANALYSIS_NOTICE} KB손해보험 50건은 {formatDate(OFFICIAL_POLICY_COLLECTED_AT.slice(0, 10))} 수집본이며, 한화생명 1건은 공식 상품 페이지의 2026.04.17 파일입니다. 한화생명 파일명의 날짜는 계약 적용일로 확인되지 않았습니다. 상품 유형별 항목이 같은 PDF를 공유할 수 있습니다. 실제 가입 담보와 지급 판단은 가입설계서·증권·해당 시점 약관을 함께 봐야 합니다.</p>
+            <p className="text-[11px] leading-5"><strong className="block text-xs">‘자동 미탐지’는 ‘조항 없음’이 아닙니다.</strong>{OFFICIAL_POLICY_ANALYSIS_NOTICE} KB손해보험 50건은 {formatDate(OFFICIAL_POLICY_COLLECTED_AT.slice(0, 10))} 수집본이며, 한화생명 1건은 공식 상품 페이지의 2026.04.17 파일입니다. 한화생명 파일명의 날짜와 삼성화재 2605.1 표기는 계약 적용 시작일로 확인되지 않았습니다. 삼성화재 약관은 계약전환용입니다. 상품 유형별 항목이 같은 PDF를 공유할 수 있습니다. 실제 가입 담보와 지급 판단은 가입설계서·증권·해당 시점 약관을 함께 봐야 합니다.</p>
           </div>
 
           <div className="mt-5 flex items-center justify-between text-xs"><span className="font-black">검색 결과 {filteredRecords.length}건</span><span className="text-neutral-500">카드 아래에서 원문 페이지 근거를 펼칠 수 있습니다</span></div>
@@ -504,7 +506,7 @@ export function TermsLibrary() {
             {POLICY_RECORDS.map(({ document, analysis }, index) => (
               <article key={document.id} className={`grid gap-4 p-4 sm:p-5 lg:grid-cols-[90px_minmax(0,1fr)_170px_auto] lg:items-center ${index ? "border-t border-black/10" : ""}`}>
                 <div><span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-black ${document.saleStatus === "on_sale" ? "bg-emerald-100 text-emerald-800" : "bg-neutral-100 text-neutral-600"}`}>{document.saleStatus === "on_sale" ? "수집 당시 판매" : "수집 당시 판매 종료"}</span><span className="mt-2 block text-[10px] font-bold text-neutral-500">{policyCategory(document.productName)}</span></div>
-                <div className="min-w-0"><p className="text-[10px] font-black text-[#c71935]">{document.insurer}</p><h3 className="mt-1 text-sm font-black leading-6">{document.productName}</h3><p className="mt-1 text-[10px] text-neutral-500">{document.sourceFileName}</p></div>
+                <div className="min-w-0"><p className="text-[10px] font-black text-[#c71935]">{document.insurer}</p><h3 className="mt-1 text-sm font-black leading-6">{document.productName}</h3><p className="mt-1 text-[10px] text-neutral-500">{document.sourceFileName}</p><a href={document.sourcePageUrl} target="_blank" rel="noreferrer" className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-[#3155d9] underline-offset-2 hover:underline">보험사 공식 출처 <ArrowUpRight className="h-3 w-3" /></a></div>
                 <dl className="grid grid-cols-2 gap-2 text-[10px] lg:block"><div><dt className="text-neutral-500">적용 시작</dt><dd className="mt-0.5 font-black tabular-nums">{formatDate(document.effectiveFrom)}</dd></div><div className="lg:mt-2"><dt className="text-neutral-500">추출 분량</dt><dd className="mt-0.5 font-black tabular-nums">{formatNumber(analysis.pageCount)}쪽 · {formatCharacters(analysis.characterCount)}</dd></div></dl>
                 <div className="grid grid-cols-2 gap-2"><Link href={`/insurance/terms/viewer/${document.id}`} target="_blank" className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[#17211f] px-3 text-[10px] font-black text-white hover:bg-[#c71935]"><BookOpen className="h-4 w-4" /> PDF</Link><a href={analysis.textPath} target="_blank" className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-black/10 bg-white px-3 text-[10px] font-black hover:border-black/25"><FileText className="h-4 w-4" /> TXT</a></div>
               </article>
