@@ -22,6 +22,7 @@ import { HYUNDAI_POLICY_CHECKPOINTS, HYUNDAI_POLICY_DOCUMENT_ID, HYUNDAI_POLICY_
 import { HANWHA_POLICY_CHECKPOINTS, HANWHA_POLICY_DOCUMENT_ID, HANWHA_POLICY_SHA256 } from "@/lib/hanwha-policy-checkpoints"
 import { KB_POLICY_CHECKPOINTS, KB_POLICY_DOCUMENT_ID, KB_POLICY_SHA256 } from "@/lib/kb-policy-checkpoints"
 import { KB_DENTAL_POLICY_CHECKPOINTS, KB_DENTAL_POLICY_DOCUMENT_ID, KB_DENTAL_POLICY_SHA256 } from "@/lib/kb-dental-policy-checkpoints"
+import { KB_CARE_NO_REFUND_CHECKPOINTS, KB_CARE_POLICY_CHECKPOINTS, KB_CARE_POLICY_DOCUMENT_IDS, KB_CARE_POLICY_SHA256 } from "@/lib/kb-care-policy-checkpoints"
 import { KDB_RENEWAL_POLICY_CHECKPOINTS, KDB_RENEWAL_POLICY_DOCUMENT_ID, KDB_RENEWAL_POLICY_SHA256, KDB_STANDARD_POLICY_CHECKPOINTS, KDB_STANDARD_POLICY_DOCUMENT_ID, KDB_STANDARD_POLICY_SHA256 } from "@/lib/kdb-policy-checkpoints"
 import { NHLIFE_POLICY_CHECKPOINTS, NHLIFE_POLICY_DOCUMENT_ID, NHLIFE_POLICY_SHA256 } from "@/lib/nhlife-policy-checkpoints"
 import { NHLIFE_REALLOSS_CHECKPOINTS, NHLIFE_REALLOSS_DOCUMENT_ID, NHLIFE_REALLOSS_SHA256 } from "@/lib/nhlife-realloss-policy-checkpoints"
@@ -70,6 +71,8 @@ const REVIEWED_POLICIES = [
   { documentId: HANWHA_POLICY_DOCUMENT_ID, sha256: HANWHA_POLICY_SHA256, insurer: "한화생명", fileLabel: "2026.04.17 파일", pageCount: 181, checkpoints: HANWHA_POLICY_CHECKPOINTS },
   { documentId: KB_POLICY_DOCUMENT_ID, sha256: KB_POLICY_SHA256, insurer: "KB손해보험", fileLabel: "2026.07 개정본", pageCount: 774, checkpoints: KB_POLICY_CHECKPOINTS },
   { documentId: KB_DENTAL_POLICY_DOCUMENT_ID, sha256: KB_DENTAL_POLICY_SHA256, insurer: "KB손해보험", fileLabel: "26.07 치아보험", pageCount: 144, checkpoints: KB_DENTAL_POLICY_CHECKPOINTS },
+  { documentId: KB_CARE_POLICY_DOCUMENT_IDS[0], sha256: KB_CARE_POLICY_SHA256, insurer: "KB손해보험", fileLabel: "26.09 간병보험 · 지급형", pageCount: 388, checkpoints: KB_CARE_POLICY_CHECKPOINTS },
+  { documentId: KB_CARE_POLICY_DOCUMENT_IDS[1], sha256: KB_CARE_POLICY_SHA256, insurer: "KB손해보험", fileLabel: "26.09 간병보험 · 미지급형", pageCount: 388, checkpoints: KB_CARE_NO_REFUND_CHECKPOINTS },
   { documentId: SAMSUNGFIRE_POLICY_DOCUMENT_ID, sha256: SAMSUNGFIRE_POLICY_SHA256, insurer: "삼성화재", fileLabel: "2605.1 계약전환용", pageCount: 157, checkpoints: SAMSUNGFIRE_POLICY_CHECKPOINTS },
   { documentId: DB_POLICY_DOCUMENT_ID, sha256: DB_POLICY_SHA256, insurer: "DB손해보험", fileLabel: "2607 표기 파일", pageCount: 314, checkpoints: DB_POLICY_CHECKPOINTS },
   { documentId: HYUNDAI_POLICY_DOCUMENT_ID, sha256: HYUNDAI_POLICY_SHA256, insurer: "현대해상", fileLabel: "Hi2504 · 2025.09.01 파일", pageCount: 215, checkpoints: HYUNDAI_POLICY_CHECKPOINTS },

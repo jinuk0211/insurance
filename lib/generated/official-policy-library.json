@@ -940,6 +940,40 @@
       "expectedSha256": "42ce81976809453b8e3d80ba893c75ef2872897847c2412d1cf24518de95b955",
       "expectedPageCount": 176,
       "analysisStartPage": 28
+    },
+    {
+      "id": "kb-25469-2026-09-01",
+      "insurer": "KB손해보험",
+      "productName": "KB 골든라이프케어 간병보험(무배당)(26.09)",
+      "productType": "질병보험",
+      "saleStatus": "on_sale",
+      "versionKey": "2026-09-01",
+      "effectiveFrom": "2026-09-01",
+      "effectiveTo": null,
+      "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=25469_1_1.pdf",
+      "sourceFileName": "25469_1_1.pdf",
+      "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
+      "byteLength": 11568250,
+      "expectedSha256": "9383617085cc37c4a7dede31cac6e9ef635f7efaa2d3144ada63611521bfcf56",
+      "expectedPageCount": 388,
+      "analysisStartPage": 62
+    },
+    {
+      "id": "kb-25470-2026-09-01",
+      "insurer": "KB손해보험",
+      "productName": "KB 골든라이프케어 간병보험(무배당)(26.09)_해약환급금 미지급형",
+      "productType": "질병보험",
+      "saleStatus": "on_sale",
+      "versionKey": "2026-09-01",
+      "effectiveFrom": "2026-09-01",
+      "effectiveTo": null,
+      "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=25470_1_1.pdf",
+      "sourceFileName": "25470_1_1.pdf",
+      "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
+      "byteLength": 11568250,
+      "expectedSha256": "9383617085cc37c4a7dede31cac6e9ef635f7efaa2d3144ada63611521bfcf56",
+      "expectedPageCount": 388,
+      "analysisStartPage": 62
     }
   ]
 }

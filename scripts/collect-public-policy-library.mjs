@@ -73,7 +73,7 @@ const result = {
     url: SOURCE_PAGE_URL,
     category: "질병보험",
   },
-  documents: [...documents, ...verifiedSupplement.documents],
+  documents: [...documents, ...verifiedSupplement.documents.filter((document) => !documents.some((collected) => collected.id === document.id))],
 }
 
 await writeFile(OUTPUT_PATH, `${JSON.stringify(result, null, 2)}\n`, "utf8")
