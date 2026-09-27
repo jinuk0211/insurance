@@ -66,6 +66,40 @@
       "expectedSha256": "be85fdea7a50fc028c183a99835b5f734733113a2e3e19e5105cd0c2c01b1eee",
       "expectedPageCount": 215,
       "analysisStartPage": 39
+    },
+    {
+      "id": "kdb-direct-cancer-renewal-2026-04-01",
+      "insurer": "KDB생명",
+      "productName": "KDB 다이렉트 암보험(갱신형)(무)",
+      "productType": "암보험",
+      "saleStatus": "unknown",
+      "versionKey": "renewal-2026-04-01-pdf",
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "pdfUrl": "https://direct.kdblife.co.kr/resources/doc/policy/40869_policy.pdf",
+      "sourceFileName": "40869_policy.pdf",
+      "sourcePageUrl": "https://direct.kdblife.co.kr/edirect/product/cancerDetail.do",
+      "byteLength": 6658723,
+      "expectedSha256": "73fda0712d0e484f0717299e2fcbe683347a2ae0b160b63d41e0bcf9925c2673",
+      "expectedPageCount": 258,
+      "analysisStartPage": 26
+    },
+    {
+      "id": "kdb-direct-cancer-standard-no-refund-2026-04-01",
+      "insurer": "KDB생명",
+      "productName": "KDB 다이렉트 암보험(표준형, 해약환급금 미지급형Ⅲ)(무)",
+      "productType": "암보험",
+      "saleStatus": "unknown",
+      "versionKey": "standard-no-refund-2026-04-01-pdf",
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "pdfUrl": "https://direct.kdblife.co.kr/resources/doc/policy/40870_policy.pdf",
+      "sourceFileName": "40870_policy.pdf",
+      "sourcePageUrl": "https://direct.kdblife.co.kr/edirect/product/cancerDetail.do",
+      "byteLength": 6741745,
+      "expectedSha256": "0bb88e7957e9b29d3e3f963dc44012f6255067c1e55da51cf395d24c5761b1ae",
+      "expectedPageCount": 256,
+      "analysisStartPage": 26
     }
   ]
 }
