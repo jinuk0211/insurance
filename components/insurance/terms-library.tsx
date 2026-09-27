@@ -42,7 +42,7 @@ import {
 
 type View = "analysis" | "compare" | "files"
 type SaleFilter = "all" | "on_sale" | "off_sale" | "unknown"
-type FocusFilter = "all" | "coverage" | "riders" | "exclusions" | "reduction" | "waiting"
+type FocusFilter = "all" | "reviewed" | "coverage" | "riders" | "exclusions" | "reduction" | "waiting"
 
 interface PolicyRecord {
   document: OfficialPolicyDocument
@@ -57,6 +57,7 @@ const DEFAULT_COMPARISON_IDS = [
 
 const FOCUS_OPTIONS: Array<{ value: FocusFilter; label: string }> = [
   { value: "all", label: "전체 분석" },
+  { value: "reviewed", label: "원문 체크포인트" },
   { value: "coverage", label: "지급사유 문구" },
   { value: "riders", label: "특약" },
   { value: "exclusions", label: "면책" },
@@ -221,7 +222,9 @@ export function TermsLibrary() {
       const matchesQuery = matchesPolicyQuery(document, analysis, normalizedQuery)
       const matchesCategory = category === "all" || policyCategory(document.productName) === category
       const matchesSale = saleFilter === "all" || document.saleStatus === saleFilter
-      const matchesFocus = focus === "all" || analysis[focus].evidence.length > 0
+      const matchesFocus = focus === "all" || (focus === "reviewed"
+        ? REVIEWED_POLICIES.some((policy) => policy.documentId === document.id && policy.sha256 === analysis.sourceSha256)
+        : analysis[focus].evidence.length > 0)
       return matchesQuery && matchesCategory && matchesSale && matchesFocus
     })
   }, [category, focus, normalizedQuery, saleFilter])
