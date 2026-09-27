@@ -46,8 +46,13 @@ export default function InsurancePage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [resultData, setResultData] = useState<any>(null)
 
-  // Check for saved user on mount
+  // Deployed synthetic demo clears profiles left by the former live lookup.
   useEffect(() => {
+    if (process.env.NODE_ENV !== "development") {
+      clearSavedUser()
+      setIsLoading(false)
+      return
+    }
     const user = getSavedUser()
     if (user) {
       setSavedUser(user)

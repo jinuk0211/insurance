@@ -342,7 +342,7 @@ function CancerScenarioCalculator({ model }: { model: InsuranceDashboardModel })
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-700">Deterministic cancer rule</p>
           <h2 id="cancer-scenario-title" className="mt-1 text-xl font-black">암종·진단일 약관 계산</h2>
-          <p className="mt-2 max-w-2xl text-xs leading-5 text-neutral-500">CODEF 계약일·특약명·가입금액을 검증 규칙 5개와 보유 문서 {INSURANCE_TERMS_DOCUMENT_COUNT}개에 대입합니다. 자동 추출 문서는 원문 검토 전에는 후보금액을 확정하지 않습니다.</p>
+          <p className="mt-2 max-w-2xl text-xs leading-5 text-neutral-500">합성 계약일·특약명·가입금액을 검증 규칙 5개와 보유 문서 {INSURANCE_TERMS_DOCUMENT_COUNT}개에 대입합니다. 자동 추출 문서는 원문 검토 전에는 후보금액을 확정하지 않습니다.</p>
         </div>
         <form onSubmit={(event) => { event.preventDefault(); setSubmitted(true) }} className="grid gap-2 sm:grid-cols-[1fr_150px_auto] xl:grid-cols-[1fr_150px]">
           <label className="text-[10px] font-black text-neutral-600">진단 암종
@@ -358,7 +358,7 @@ function CancerScenarioCalculator({ model }: { model: InsuranceDashboardModel })
       </div>
 
       {!submitted && <div className="p-6 text-center text-xs text-neutral-500">암종과 진단일을 선택하면 정상 상태의 암 관련 계약 {cancerContracts.length}건을 계산합니다.</div>}
-      {submitted && cancerContracts.length === 0 && <div className="p-8 text-center text-sm font-bold text-amber-900">CODEF 응답에서 암 관련 계약이나 담보를 찾지 못했습니다.</div>}
+      {submitted && cancerContracts.length === 0 && <div className="p-8 text-center text-sm font-bold text-amber-900">합성 자료에서 암 관련 계약이나 담보를 찾지 못했습니다.</div>}
       {submitted && assessments.length > 0 && <div className="divide-y divide-black/10">
         {assessments.map((assessment) => {
           const status = assessmentStatus(assessment)

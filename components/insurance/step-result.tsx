@@ -660,7 +660,7 @@ export function StepResult({ data, onReset, onLogout, userName, demoMode = false
             <div className="mt-3 border-t border-black/10 px-3 pt-3">
               <div className={`rounded-2xl border p-3 ${demoMode ? "border-amber-300 bg-amber-50" : "border-emerald-200 bg-emerald-50"}`}>
                 <div className={`flex items-center gap-2 text-xs font-bold ${demoMode ? "text-amber-900" : "text-emerald-800"}`}><ShieldCheck className="h-4 w-4" aria-hidden="true" />{demoMode ? "시연용 합성 데이터" : "암호화 조회 이력"}</div>
-                <p className="mt-1 text-[10px] leading-4 text-neutral-600">{demoMode ? "고객·보험사·상품·약관이 모두 가상입니다." : "현재 결과는 CODEF 응답 기반입니다."}</p>
+                <p className="mt-1 text-[10px] leading-4 text-neutral-600">{demoMode ? "대시보드 계약과 분석 문구는 합성 자료입니다. 약관 자료실에는 실제 공식 PDF가 있습니다." : "현재 결과는 CODEF 응답 기반입니다."}</p>
               </div>
               {demoMode && onConnect && (
                 <button onClick={onConnect} className="mt-2 flex min-h-11 w-full items-center justify-between rounded-2xl bg-neutral-950 px-3 text-left text-[11px] font-black text-white transition-colors hover:bg-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2">
@@ -675,7 +675,7 @@ export function StepResult({ data, onReset, onLogout, userName, demoMode = false
             <header className="dashboard-header sticky top-0 z-20 border-b border-black/10 bg-white/95 backdrop-blur-xl print:static">
               {demoMode && (
                 <div className="demo-banner mx-3 mt-3 flex flex-col gap-2 rounded-[18px] bg-[#fff1bd] px-4 py-2.5 text-[11px] text-amber-950 sm:flex-row sm:items-center sm:justify-between lg:mx-5">
-                  <p><strong className="font-black">합성 샘플 데모</strong> · 표시된 고객, 보험사, 상품, 금액, 약관 근거는 실제 데이터가 아닙니다.</p>
+                  <p><strong className="font-black">합성 샘플 데모</strong> · 대시보드의 고객·계약·금액·분석 문구는 합성 자료입니다. 약관 자료실에는 실제 공식 PDF가 있습니다.</p>
                   {onConnect && <button onClick={onConnect} className="inline-flex min-h-9 shrink-0 items-center justify-center gap-1 rounded-xl bg-[#df2444] px-4 font-black text-white transition-colors hover:bg-[#c71935]">실데이터 CODEF 연결 <ChevronRight className="h-3 w-3" aria-hidden="true" /></button>}
                 </div>
               )}

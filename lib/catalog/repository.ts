@@ -53,15 +53,6 @@ export async function loadKbCursor(): Promise<CatalogCursor> {
   }
 }
 
-export async function wasKbCatalogCollectedRecently(hours: number): Promise<boolean> {
-  const rows = await getDb().select({ lastSuccessAt: catalogSource.lastSuccessAt })
-    .from(catalogSource)
-    .where(eq(catalogSource.id, KB_SOURCE_ID))
-    .limit(1)
-  const lastSuccessAt = rows[0]?.lastSuccessAt
-  return Boolean(lastSuccessAt && Date.now() - lastSuccessAt.getTime() < hours * 60 * 60 * 1_000)
-}
-
 export async function beginCollectionRun(cursor: CatalogCursor): Promise<string> {
   const rows = await getDb().insert(catalogCollectionRun).values({
     sourceId: KB_SOURCE_ID,
