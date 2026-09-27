@@ -73,13 +73,16 @@ export async function POST(request: Request) {
     return json({ status: "select_document", message: "질문에 적힌 개정월과 선택 자료가 일치하지 않습니다. 요청하신 버전의 자료를 선택해 주세요.", candidates: searchQaDocuments(documents, input.question, 12).filter((doc) => !hasEditionMismatch(input.question, doc)).slice(0, 6) })
   }
   if (!document.textPages) return json({ status: "insufficient", document, message: "이 PDF는 원문 텍스트를 읽을 수 없어 AI 답변을 만들 수 없습니다. PDF 원문에서 내용을 확인해 주세요.", sources: [{ page: 1, quote: "텍스트를 읽을 수 없는 문서입니다.", url: citationUrl(document, 1) }] })
+  let stage = "corpus"
   try {
     const pages = await loadPages(document)
     const searchQuestion = [...input.previousQuestions.slice(-1), input.question].join("\n")
     const passages = retrievePassages(pages, searchQuestion, document.firstPage)
     if (!passages.length) return json({ status: "insufficient", document, message: "질문과 관련된 원문 근거를 찾지 못했습니다. 특약명이나 확인할 조건을 구체적으로 입력해 주세요. 해당 조항이 없다는 뜻은 아닙니다." })
     if (!process.env.OPENAI_API_KEY) return json({ error: "질문 연결을 준비 중입니다. 잠시 후 다시 시도해 주세요." }, 503)
+    stage = "budget"
     await reserveQaRequest(ipAddress(request) || "unknown")
+    stage = "provider"
     const answer = await generateQaAnswer(input.question, document, passages, input.previousQuestions)
     if (!answer.answered) {
       return json({ status: "insufficient", document, message: "검색된 원문만으로는 질문에 답할 근거가 충분하지 않습니다. 아래 원문을 확인하거나 특약명을 더 구체적으로 입력해 주세요.", sources: passages.slice(0, 3).map((passage) => ({ page: passage.page, quote: passage.text.slice(0, 500), url: citationUrl(document, passage.page) })) })
@@ -104,9 +107,11 @@ export async function POST(request: Request) {
       console.error("terms_qa_provider", error.message)
       return json({ error: errors[error.message] || "AI 연결을 준비 중입니다." }, 503)
     }
-    console.error("terms_qa_unavailable", error instanceof Error ? error.name : "UnknownError")
+    const code = error && typeof error === "object" && "code" in error ? String(error.code) : "unknown"
+    console.error("terms_qa_unavailable", { stage, name: error instanceof Error ? error.name : "UnknownError", code: /^[A-Z0-9_]{2,40}$/.test(code) ? code : "unknown" })
     return json({ error: "원문 검색 또는 이용량 확인에 실패했습니다. 잠시 후 다시 시도해 주세요." }, 503)
   }
 }
+
 
 
