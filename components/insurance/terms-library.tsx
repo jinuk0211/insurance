@@ -1,5 +1,6 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import Link from "next/link"
 import { useMemo, useState } from "react"
 import {
@@ -31,8 +32,6 @@ import {
   OFFICIAL_POLICY_ANALYSES,
   OFFICIAL_POLICY_ANALYSIS_METHOD,
   OFFICIAL_POLICY_ANALYSIS_NOTICE,
-  OFFICIAL_POLICY_ANALYSIS_SUMMARY,
-  OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY,
   OFFICIAL_POLICY_DOCUMENTS,
   OFFICIAL_POLICY_SOURCE,
   policyCategory,
@@ -42,7 +41,9 @@ import {
   type PolicyEvidence,
 } from "@/lib/policy-library"
 
-type View = "analysis" | "compare" | "files"
+const SummaryLibrary = dynamic(() => import("@/components/insurance/summary-library").then((module) => module.SummaryLibrary), { ssr: false })
+
+type View = "analysis" | "riders" | "compare" | "files" | "summaries"
 type SaleFilter = "all" | "on_sale" | "off_sale" | "unknown"
 type FocusFilter = "all" | "reviewed" | "coverage" | "riders" | "exclusions" | "reduction" | "waiting"
 
@@ -80,6 +81,18 @@ const REVIEWED_POLICIES = [
   { documentId: KDB_STANDARD_POLICY_DOCUMENT_ID, sha256: KDB_STANDARD_POLICY_SHA256, insurer: "KDB생명", fileLabel: "2026.04.01 판매일자 · 표준형/해약환급금 미지급형Ⅲ", pageCount: 256, checkpoints: KDB_STANDARD_POLICY_CHECKPOINTS },
   { documentId: NHLIFE_POLICY_DOCUMENT_ID, sha256: NHLIFE_POLICY_SHA256, insurer: "NH농협생명", fileLabel: "2605 · 2026.07 판매월", pageCount: 328, checkpoints: NHLIFE_POLICY_CHECKPOINTS },
   { documentId: NHLIFE_REALLOSS_DOCUMENT_ID, sha256: NHLIFE_REALLOSS_SHA256, insurer: "NH농협생명", fileLabel: "2605 · 2026.05 판매월 · 일반 실손", pageCount: 176, checkpoints: NHLIFE_REALLOSS_CHECKPOINTS },
+]
+
+const CARE_RIDER_NAMES = [
+  "간병인지원 상해입원일당(1일이상)Ⅲ【갱신계약】",
+  "간병인지원 질병입원일당(1일이상)Ⅲ【갱신계약】",
+]
+
+const RIDER_GUIDES = [
+  { documentId: KB_CARE_POLICY_DOCUMENT_IDS[0], sha256: KB_CARE_POLICY_SHA256, names: CARE_RIDER_NAMES, checkpoints: KB_CARE_POLICY_CHECKPOINTS.slice(0, 4) },
+  { documentId: KB_CARE_POLICY_DOCUMENT_IDS[1], sha256: KB_CARE_POLICY_SHA256, names: CARE_RIDER_NAMES, checkpoints: KB_CARE_POLICY_CHECKPOINTS.slice(0, 4) },
+  { documentId: KB_DENTAL_POLICY_DOCUMENT_ID, sha256: KB_DENTAL_POLICY_SHA256, names: ["치석제거(스케일링)치료비【갱신계약】", "치수치료비(유치 및 영구치, 상해 및 질병)【갱신계약】", "치아보존치료비(유치 및 영구치, 상해 및 질병)【갱신계약】", "영구치보철치료비(상해 및 질병)【갱신계약】"], checkpoints: KB_DENTAL_POLICY_CHECKPOINTS },
+  { documentId: NHLIFE_POLICY_DOCUMENT_ID, sha256: NHLIFE_POLICY_SHA256, names: ["치매생활자금특약(무배당)_W"], checkpoints: NHLIFE_POLICY_CHECKPOINTS.slice(0, 4) },
 ]
 
 const analysisById = new Map(OFFICIAL_POLICY_ANALYSES.map((analysis) => [analysis.id, analysis]))
@@ -215,6 +228,7 @@ export function TermsLibrary() {
   const [saleFilter, setSaleFilter] = useState<SaleFilter>("all")
   const [focus, setFocus] = useState<FocusFilter>("all")
   const [selectedIds, setSelectedIds] = useState(DEFAULT_COMPARISON_IDS)
+  const [selectedRiderId, setSelectedRiderId] = useState<string>(KB_CARE_POLICY_DOCUMENT_IDS[0])
   const normalizedQuery = query.trim().toLocaleLowerCase("ko-KR")
 
   const categories = useMemo(
@@ -238,6 +252,9 @@ export function TermsLibrary() {
     .map((id) => POLICY_RECORDS.find(({ document }) => document.id === id))
     .filter((record): record is PolicyRecord => Boolean(record))
   const selectedPdfCount = new Set(selectedRecords.map(({ analysis }) => analysis.sourceSha256)).size
+  const selectedRiderGuide = RIDER_GUIDES.find((guide) => guide.documentId === selectedRiderId) ?? RIDER_GUIDES[0]
+  const selectedRiderRecord = POLICY_RECORDS.find(({ document, analysis }) =>
+    document.id === selectedRiderGuide.documentId && analysis.sourceSha256 === selectedRiderGuide.sha256)
 
   function toggleComparison(id: string) {
     setSelectedIds((current) => {
@@ -253,6 +270,7 @@ export function TermsLibrary() {
     setSaleFilter("all")
     setFocus("all")
   }
+
 
   return (
     <main className="terms-library min-h-screen bg-slate-50 text-slate-900">
@@ -274,24 +292,24 @@ export function TermsLibrary() {
             <div>
               <p className="text-xs font-medium tracking-wide text-indigo-600">POLICY LIBRARY</p>
               <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">약관의 근거를 더 명확하게.</h1>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500">공식 약관 {OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}건(고유 PDF {OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pdfCount}개)의 보장·면책·감액 문구를 탐색하고 원문과 대조하세요.</p>
-            </div>
-            <div className="flex gap-8 rounded-2xl border border-slate-200/80 bg-slate-50 px-6 py-5">
-              <div><p className="text-2xl font-semibold tabular-nums">{OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}<span className="ml-1 text-xs font-normal text-slate-400">건</span></p><p className="mt-1 text-[11px] text-slate-500">공식 약관 항목</p></div>
-              <div className="border-l border-slate-200 pl-8"><p className="text-2xl font-semibold tabular-nums">{formatNumber(OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pageCount)}<span className="ml-1 text-xs font-normal text-slate-400">쪽</span></p><p className="mt-1 text-[11px] text-slate-500">중복 제외 원문</p></div>
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500">상품과 특약의 보장 조건을 확인하고, 상담에 필요한 조항을 PDF 원문과 대조하세요.</p>
             </div>
           </div>
           <div className="mt-8 flex gap-6 overflow-x-auto" aria-label="약관 자료실 보기">
             {([
               ["analysis", "약관 탐색"],
+              ["riders", "특약 살펴보기"],
               ["compare", `상품 비교 ${selectedIds.length}/3`],
               ["files", "원문 자료실"],
+              ["summaries", "상품요약서 · 공시자료"],
             ] as const).map(([value, label]) => (
               <button key={value} onClick={() => setView(value)} aria-pressed={view === value} className={`min-h-14 shrink-0 border-b-2 px-1 text-base font-medium transition-colors ${view === value ? "border-indigo-600 text-indigo-600" : "border-transparent text-slate-500 hover:text-slate-900"}`}>{label}</button>
             ))}
           </div>
         </div>
       </section>
+
+      {view === "summaries" && <SummaryLibrary />}
 
       {view === "analysis" && (
         <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6" aria-labelledby="analysis-title">
@@ -337,13 +355,16 @@ export function TermsLibrary() {
                     <div className="mt-4"><p className="mb-2 text-[10px] font-bold text-neutral-500">상품명 기준 분야 · 가입 보장 확인 아님</p><span className="inline-flex rounded-lg bg-[#17243b] px-2.5 py-1.5 text-[10px] font-bold text-white">{policyCategory(document.productName)}</span></div>
 
                     <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                      <Metric label="특약 후보" value={`${analysis.riders.detectedCount}개`} attention={!analysis.riders.evidence.length} />
+                      <Metric label="특약 원문" value={sectionStatus(analysis.riders)} attention={!analysis.riders.evidence.length} />
                       <Metric label="면책 문구" value={sectionStatus(analysis.exclusions)} attention={!analysis.exclusions.evidence.length} />
                       <Metric label="감액 문구" value={sectionStatus(analysis.reduction)} attention={!analysis.reduction.evidence.length} />
                       <Metric label="대기 문구" value={sectionStatus(analysis.waiting)} attention={!analysis.waiting.evidence.length} />
                     </div>
 
-                    {analysis.riders.names.length > 0 && <p className="mt-4 text-[11px] leading-5 text-neutral-600"><strong className="text-[#17243b]">원문 내 특약명 후보</strong> · {analysis.riders.names.slice(0, 5).join(" / ")}{analysis.riders.names.length > 5 ? ` 외 ${analysis.riders.names.length - 5}개` : ""}</p>}
+
+                    {RIDER_GUIDES.some((guide) => guide.documentId === document.id && guide.sha256 === analysis.sourceSha256) && (
+                      <button onClick={() => { setSelectedRiderId(document.id); setView("riders"); window.scrollTo({ top: 0, behavior: "smooth" }) }} className="mt-4 inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 px-3 text-xs font-semibold text-indigo-700 hover:bg-indigo-100">원문 검토 특약 살펴보기 <ArrowUpRight className="h-3.5 w-3.5" /></button>
+                    )}
 
                     {matches.length > 0 && (
                       <div className="mt-4 rounded-xl border border-[#4f46e5]/20 bg-blue-50 p-3">
@@ -395,6 +416,49 @@ export function TermsLibrary() {
           </div>
 
           {filteredRecords.length === 0 && <div className="mt-4 rounded-2xl border border-dashed border-black/20 bg-white p-12 text-center"><FileSearch className="mx-auto h-7 w-7 text-neutral-400" /><p className="mt-3 text-sm font-semibold">조건에 맞는 약관이 없습니다</p><button onClick={resetFilters} className="mt-3 text-xs font-bold text-[#4338ca] underline">필터 초기화</button></div>}
+        </section>
+      )}
+
+      {view === "riders" && (
+        <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6" aria-labelledby="riders-title">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#4338ca]">Verified rider clauses</p>
+              <h2 id="riders-title" className="mt-1 text-2xl font-semibold">특약 살펴보기</h2>
+              <p className="mt-2 max-w-3xl text-xs leading-6 text-neutral-600">원문 페이지를 확인한 특약의 보장개시, 지급 제한, 상담 확인사항을 모았습니다. 표시된 특약은 상품 약관에 포함된 조항이며 고객의 실제 가입 특약 목록은 아닙니다.</p>
+            </div>
+            <span className="self-start rounded-full bg-indigo-50 px-3 py-1.5 text-[11px] font-semibold text-indigo-700">원문 검토 항목</span>
+          </div>
+          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+            <label htmlFor="rider-policy" className="block text-xs font-semibold text-slate-700">살펴볼 상품 약관</label>
+            <select id="rider-policy" value={selectedRiderId} onChange={(event) => setSelectedRiderId(event.target.value)} className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-900 outline-none focus:border-indigo-500">
+              {RIDER_GUIDES.map((guide) => {
+                const record = POLICY_RECORDS.find(({ document, analysis }) => document.id === guide.documentId && analysis.sourceSha256 === guide.sha256)
+                return record ? <option key={guide.documentId} value={guide.documentId}>{record.document.insurer} · {record.document.productName}</option> : null
+              })}
+            </select>
+            {selectedRiderRecord ? (
+              <>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {selectedRiderGuide.names.map((name) => <span key={name} className="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-[11px] font-semibold text-indigo-800">{name}</span>)}
+                </div>
+                <p className="mt-4 text-[11px] leading-5 text-neutral-600">현재 화면은 원문 검토된 주요 조항을 보여줍니다. 전체 특약 목록과 가입 여부는 해당 약관, 가입설계서·증권에서 확인하세요.</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <Link href={"/insurance/terms/viewer/" + selectedRiderGuide.documentId} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#17243b] px-4 text-xs font-semibold text-white hover:bg-[#4338ca]"><BookOpen className="h-4 w-4" /> 약관 PDF 열기</Link>
+                  <a href={selectedRiderRecord.document.sourcePageUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-200 px-4 text-xs font-semibold text-slate-700 hover:border-indigo-300">보험사 공식 출처 <ArrowUpRight className="h-4 w-4" /></a>
+                </div>
+              </>
+            ) : <p className="mt-4 text-xs text-amber-900">검토한 원문 버전과 현재 보관된 PDF가 일치하지 않아 특약 조항을 표시하지 않습니다.</p>}
+          </div>
+          {selectedRiderRecord && <ol className="mt-6 grid gap-4 lg:grid-cols-2">
+            {selectedRiderGuide.checkpoints.map((item, index) => <li key={item.title} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_8px_25px_rgba(15,23,42,0.04)]">
+              <span className="text-[10px] font-semibold text-indigo-600">검토 항목 {index + 1}</span>
+              <h3 className="mt-1 text-sm font-semibold text-[#17243b]">{item.title}</h3>
+              <p className="mt-3 text-xs leading-6 text-slate-700">{item.summary}</p>
+              <div className="mt-4 rounded-xl bg-slate-50 p-3"><p className="text-[10px] font-semibold text-slate-500">상담 시 확인</p><p className="mt-1 text-[11px] leading-5 text-slate-700">{item.advisorCheck}</p></div>
+              <div className="mt-4 flex flex-wrap gap-2">{item.evidence.map((entry) => <Link key={entry.article + entry.page + entry.anchor} href={"/insurance/terms/viewer/" + selectedRiderGuide.documentId + "?page=" + entry.page} target="_blank" rel="noopener noreferrer" className="rounded-lg border border-indigo-100 bg-indigo-50 px-2.5 py-1.5 text-[10px] font-semibold text-indigo-700 underline-offset-2 hover:underline">{entry.article} · PDF {entry.page}쪽 ↗</Link>)}</div>
+            </li>)}
+          </ol>}
         </section>
       )}
 
@@ -502,13 +566,8 @@ export function TermsLibrary() {
                     ))}
                   </tr>
                   <tr>
-                    <th scope="row" className="sticky left-0 z-10 bg-violet-50 p-2 align-top font-semibold text-violet-950 sm:p-4">특약 후보</th>
-                    {selectedRecords.map(({ document, analysis }) => (
-                      <td key={document.id} className="min-w-0 border-l border-black/10 p-2 align-top sm:p-4">
-                        <strong className="mb-2 inline-flex rounded-full bg-violet-100 px-2 py-1 text-[9px] text-violet-900 sm:text-[10px]">{analysis.riders.detectedCount}개 감지</strong>
-                        {analysis.riders.names.length ? <ul className="space-y-1.5 pl-3 text-[10px] leading-4 text-neutral-700 sm:pl-4 sm:text-[12px] sm:leading-5">{analysis.riders.names.slice(0, 5).map((name) => <li key={name} className="list-disc [overflow-wrap:anywhere]">{name}</li>)}</ul> : <p className="font-bold text-amber-900">자동 미탐지 · 원문 확인 필요</p>}
-                      </td>
-                    ))}
+                    <th scope="row" className="sticky left-0 z-10 bg-violet-50 p-2 align-top font-semibold text-violet-950 sm:p-4">특약 원문</th>
+                    {selectedRecords.map(({ document, analysis }) => <td key={document.id} className="min-w-0 border-l border-black/10 p-2 align-top sm:p-4"><EvidenceSummary section={analysis.riders} tone="blue" documentId={document.id} /></td>)}
                   </tr>
                   <tr>
                     <th scope="row" className="sticky left-0 z-10 bg-red-50 p-2 align-top font-semibold text-red-950 sm:p-4">면책 · 보상 제외</th>
@@ -539,7 +598,7 @@ export function TermsLibrary() {
 
       {view === "files" && (
         <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6" aria-labelledby="files-title">
-          <div><p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#4338ca]">Source archive</p><h2 id="files-title" className="mt-1 text-2xl font-semibold">PDF · TXT 자료실 {POLICY_RECORDS.length}건</h2><p className="mt-2 text-xs leading-5 text-neutral-500">TXT는 다운로드 전용이 아니라 브라우저에서 바로 열립니다. 각 페이지는 <code className="rounded bg-white px-1.5 py-0.5">===== PAGE N =====</code>으로 구분했습니다.</p></div>
+          <div><p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#4338ca]">Source archive</p><h2 id="files-title" className="mt-1 text-2xl font-semibold">PDF · TXT 원문 자료실</h2><p className="mt-2 text-xs leading-5 text-neutral-500">TXT는 다운로드 전용이 아니라 브라우저에서 바로 열립니다. 각 페이지는 <code className="rounded bg-white px-1.5 py-0.5">===== PAGE N =====</code>으로 구분했습니다.</p></div>
           <div className="mt-6 overflow-hidden rounded-2xl border border-black/10 bg-white">
             {POLICY_RECORDS.map(({ document, analysis }, index) => (
               <article key={document.id} className={`grid gap-4 p-4 sm:p-5 lg:grid-cols-[90px_minmax(0,1fr)_170px_auto] lg:items-center ${index ? "border-t border-black/10" : ""}`}>
