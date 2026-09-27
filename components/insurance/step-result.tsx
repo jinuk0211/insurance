@@ -474,10 +474,10 @@ function PolicyFindingCard({ finding, model }: { finding: InsurancePolicyFinding
       </dl>
       <div className="flex flex-col gap-2 border-t border-black/10 bg-[#f3f0e8] px-4 py-3 text-[10px] sm:flex-row sm:items-center sm:justify-between">
         <span className="min-w-0 truncate font-semibold text-neutral-600" title={finding.sourceDocument || undefined}>
-          근거 문서 · {finding.sourceDocument || "문서명 미제공"}
+          {catalogCandidate ? "로컬 추출 문서 · 원본 PDF 미제공 · " : "근거 문서 · "}{finding.sourceDocument || "문서명 미제공"}
         </span>
         <span className={`shrink-0 px-2 py-1 font-black ${finding.sourcePage === null ? "bg-neutral-200 text-neutral-600" : "bg-[#df2444] text-white"}`}>
-          {finding.sourcePage === null ? "페이지 미제공" : `원문 ${finding.sourcePage}쪽`}
+          {finding.sourcePage === null ? "페이지 미제공" : `${catalogCandidate ? "추출본" : "원문"} ${finding.sourcePage}쪽`}
         </span>
       </div>
     </article>
@@ -543,11 +543,11 @@ function TermsRiskPanel({ model, demoMode }: { model: InsuranceDashboardModel; d
         <div className="flex items-start gap-3">
           <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
           <div>
-            <h2 className="text-sm font-black">{demoMode ? "시연용으로 구성한 가상 약관 분석입니다" : "연결된 구조화 약관 분석 결과입니다"}</h2>
+            <h2 className="text-sm font-black">{demoMode ? "시연용으로 구성한 가상 약관 분석입니다" : "자동 추출된 약관 문구 후보입니다"}</h2>
             <p className="mt-1 text-xs leading-5 opacity-80">
               {demoMode
                 ? "보험사·상품·약관 문서·근거 페이지·위험 경고는 모두 합성 샘플이며 실제 계약 판단에 사용할 수 없습니다."
-                : "매칭 신뢰도와 근거 페이지를 확인한 뒤 설계사가 원문을 검토해야 하며, 보험금 지급 여부를 확정하지 않습니다."}
+                : "로컬 추출 카탈로그의 원본 PDF는 배포본에 없습니다. 설계사가 발행기관 공시에서 동일 개정본과 해당 쪽을 대조하기 전에는 계약 판단에 사용하지 마세요."}
             </p>
           </div>
         </div>
@@ -702,7 +702,7 @@ export function StepResult({ data, onReset, onLogout, userName, demoMode = false
             {tab === "quality" && <DataQualityPanel model={model} />}
             {tab === "diagnosis" && <DiagnosisPanel model={model} onOpenTargets={() => setTargetsOpen(true)} />}
             {tab === "medical" && <MedicalDataPanel initialProfile={connectionProfile} />}
-            {tab === "decision" && <DecisionPanel model={model} />}
+            {tab === "decision" && <DecisionPanel model={model} demoMode={demoMode} />}
             {tab === "charts" && <ChartsNeedsPanel model={model} configuredTargets={Object.values(targetValues).filter(Boolean).length} onOpenTargets={() => setTargetsOpen(true)} />}
             {tab === "consulting" && <ConsultingPanel model={model} selectedIds={selectedIds} onToggle={toggleSelected} onOpenAdditional={() => setAdditionalOpen(true)} proposals={proposals} onOpenProposal={() => setProposalOpen(true)} reportStatus={reportStatus} onReportStatusChange={setReportStatus} />}
             {tab === "terms" && <TermsRiskPanel model={model} demoMode={demoMode} />}

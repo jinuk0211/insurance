@@ -247,7 +247,7 @@ export function DataQualityPanel({ model }: { model: InsuranceDashboardModel }) 
             <DataQualityMetric label="계약 핵심정보" value={`${quality.coreCompleteCount}/${quality.contractCount}`} note="상태·기간·보험료 확인" tone="green" />
             <DataQualityMetric label="담보 수집" value={`${quality.coverageCount}건`} note="원본 담보명이 확인된 항목" tone="blue" />
             <DataQualityMetric label="가입금액 확인" value={`${quality.coverageAmountKnownCount}/${quality.coverageCount}`} note="미수집은 0원으로 계산하지 않음" tone={quality.coverageAmountMissingCount ? "rose" : "green"} />
-            <DataQualityMetric label="약관 근거" value={`${quality.termsEvidenceCount}건`} note="문서 버전·페이지 연결" tone="neutral" />
+            <DataQualityMetric label="연결 완료 약관 근거" value={`${quality.termsEvidenceCount}건`} note="계약·문서명 일치 및 문서 연결 상태" tone="neutral" />
           </div>
         </div>
       </section>
@@ -393,7 +393,7 @@ function CancerScenarioCalculator({ model }: { model: InsuranceDashboardModel })
   )
 }
 
-export function DecisionPanel({ model }: { model: InsuranceDashboardModel }) {
+export function DecisionPanel({ model, demoMode }: { model: InsuranceDashboardModel; demoMode: boolean }) {
   const scenarios = model.enrichment.decisionScenarios
   const [selectedId, setSelectedId] = useState(scenarios[0]?.id ?? "")
   const selected = scenarios.find((scenario) => scenario.id === selectedId) ?? scenarios[0]
@@ -401,7 +401,12 @@ export function DecisionPanel({ model }: { model: InsuranceDashboardModel }) {
   const [customSubmitted, setCustomSubmitted] = useState(false)
   return (
     <div className="space-y-6">
-      <CancerScenarioCalculator model={model} />
+      {demoMode ? <CancerScenarioCalculator model={model} /> : (
+        <section className="result-surface p-5">
+          <h2 className="text-base font-black">계약별 암 보장 계산 검토 대기</h2>
+          <p className="mt-2 text-xs leading-5 text-neutral-600">현재 로컬 추출 자료의 원본 PDF와 가입 약관 개정본이 연결되지 않았습니다. 설계사가 발행기관 공시와 실제 가입 특약을 대조하기 전에는 면책기간·지급률·후보금액을 계산하지 않습니다.</p>
+        </section>
+      )}
       <section className="result-surface p-5">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#c71935]">Disease & treatment reasoning</p><h2 className="mt-1 text-xl font-black">질병·치료 기준 조회</h2><p className="mt-1 text-xs text-neutral-500">진단명·치료행위·시점을 약관 규칙에 대입하되 보험금 지급을 확정하지 않습니다.</p></div>
