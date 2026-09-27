@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "documents": [
+    {
+      "id": "hanwha-e-cancer-2026-04-17",
+      "insurer": "한화생명",
+      "productName": "한화생명 e암보험(비갱신형) 무배당",
+      "productType": "암보험",
+      "saleStatus": "on_sale",
+      "versionKey": "2026-04-17-pdf",
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "pdfUrl": "https://direct.hanwhalife.com/products/downloadProxy/%ED%95%9C%ED%99%94%EC%83%9D%EB%AA%85%20e%EC%95%94%EB%B3%B4%ED%97%98%28%EB%B9%84%EA%B0%B1%EC%8B%A0%ED%98%95%29%20%EB%AC%B4%EB%B0%B0%EB%8B%B9_%EC%95%BD%EA%B4%80_20260417.pdf?docUrl=dynamic%2Fdirect%2Fproduct%2Fcms_T3jquWCZurf6YKm6_1776383470397.pdf",
+      "sourceFileName": "한화생명 e암보험(비갱신형) 무배당_약관_20260417.pdf",
+      "sourcePageUrl": "https://direct.hanwhalife.com/products/CMS00012",
+      "byteLength": 3661413,
+      "expectedSha256": "918796d28b8274195258621c08c32c87159c18b1a50fb6e6f653a8c42ba8f7ed",
+      "expectedPageCount": 181
+    }
+  ]
+}

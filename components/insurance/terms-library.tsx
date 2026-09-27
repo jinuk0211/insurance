@@ -224,9 +224,9 @@ export function TermsLibrary() {
       <section className="overflow-hidden border-b border-[#d8d3c8] bg-[#17211f] text-white">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:py-16">
           <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f1b94c]">KB insurance policy evidence</p>
-            <h1 className="mt-4 max-w-3xl font-serif text-4xl font-bold leading-[1.12] tracking-[-0.035em] sm:text-5xl">KB손해보험 약관<br />{formatNumber(OFFICIAL_POLICY_ANALYSIS_SUMMARY.pageCount)}쪽을 탐색합니다.</h1>
-            <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">KB손해보험 질병보험 공시 PDF {OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}건 중 수집 당시 판매 문서는 {ON_SALE_COUNT}건입니다. 문서별 TXT를 보존하고 보장 범위·특약·면책·감액·대기기간의 후보 문구를 페이지별로 찾았습니다.</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f1b94c]">Two-insurer policy evidence</p>
+            <h1 className="mt-4 max-w-3xl font-serif text-4xl font-bold leading-[1.12] tracking-[-0.035em] sm:text-5xl">공식 보험약관<br />{formatNumber(OFFICIAL_POLICY_ANALYSIS_SUMMARY.pageCount)}쪽을 탐색합니다.</h1>
+            <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">KB손해보험 50건과 한화생명 1건, 총 {OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}건 중 확인 당시 판매 문서는 {ON_SALE_COUNT}건입니다. 문서별 TXT를 보존하고 보장 범위·특약·면책·감액·대기기간의 후보 문구를 페이지별로 찾았습니다.</p>
             <div className="mt-7 flex flex-wrap gap-2">
               {([
                 ["analysis", "약관 분석"],
@@ -239,7 +239,7 @@ export function TermsLibrary() {
           </div>
 
           <div className="grid grid-cols-2 gap-3 self-end">
-            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}</p><p className="mt-1 text-xs text-neutral-300">KB 공식 약관 · 수집 당시 판매 {ON_SALE_COUNT}건</p></div>
+            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}</p><p className="mt-1 text-xs text-neutral-300">2개 보험사 공식 약관 · 확인 당시 판매 {ON_SALE_COUNT}건</p></div>
             <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{formatNumber(OFFICIAL_POLICY_ANALYSIS_SUMMARY.pageCount)}</p><p className="mt-1 text-xs text-neutral-300">전체 추출 페이지</p></div>
             <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{(OFFICIAL_POLICY_ANALYSIS_SUMMARY.characterCount / 10_000_000).toFixed(2)}천만</p><p className="mt-1 text-xs text-neutral-300">원문 텍스트 글자</p></div>
             <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{formatNumber(OFFICIAL_POLICY_ANALYSIS_SUMMARY.evidenceCount)}</p><p className="mt-1 text-xs text-neutral-300">자동 탐지 문구</p></div>
@@ -256,7 +256,7 @@ export function TermsLibrary() {
               <h2 id="analysis-title" className="mt-1 text-2xl font-black">조항 후보와 원문 페이지</h2>
               <p className="mt-2 text-xs leading-5 text-neutral-500">{OFFICIAL_POLICY_ANALYSIS_METHOD}. 이는 검토할 문구의 위치를 찾는 기능이며 가입 담보·지급조건의 확정 결과가 아닙니다.</p>
             </div>
-            <a href={OFFICIAL_POLICY_SOURCE.url} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center gap-2 self-start rounded-xl border border-black/10 bg-white px-4 text-xs font-black hover:border-black/25">공식 공시 원문 <ArrowUpRight className="h-4 w-4" /></a>
+            <a href={OFFICIAL_POLICY_SOURCE.url} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center gap-2 self-start rounded-xl border border-black/10 bg-white px-4 text-xs font-black hover:border-black/25">KB 공식 공시 <ArrowUpRight className="h-4 w-4" /></a>
           </div>
 
           <div className="mt-6 grid gap-3 rounded-2xl border border-black/10 bg-white p-3 lg:grid-cols-[1fr_160px_150px_150px]">
@@ -268,7 +268,7 @@ export function TermsLibrary() {
 
           <div className="mt-4 flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-950 sm:flex-row sm:items-start">
             <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0" />
-            <p className="text-[11px] leading-5"><strong className="block text-xs">‘자동 미탐지’는 ‘조항 없음’이 아닙니다.</strong>{OFFICIAL_POLICY_ANALYSIS_NOTICE} 수집일 {formatDate(OFFICIAL_POLICY_COLLECTED_AT.slice(0, 10))} 기준 KB손해보험 자료만 포함됩니다. 실제 가입 담보와 지급 판단은 가입설계서·증권·해당 시점 약관을 함께 봐야 합니다.</p>
+            <p className="text-[11px] leading-5"><strong className="block text-xs">‘자동 미탐지’는 ‘조항 없음’이 아닙니다.</strong>{OFFICIAL_POLICY_ANALYSIS_NOTICE} KB손해보험 50건은 {formatDate(OFFICIAL_POLICY_COLLECTED_AT.slice(0, 10))} 수집본이며, 한화생명 1건은 공식 상품 페이지의 2026.04.17 파일입니다. 한화생명 파일명의 날짜는 계약 적용일로 확인되지 않았습니다. 실제 가입 담보와 지급 판단은 가입설계서·증권·해당 시점 약관을 함께 봐야 합니다.</p>
           </div>
 
           <div className="mt-5 flex items-center justify-between text-xs"><span className="font-black">검색 결과 {filteredRecords.length}건</span><span className="text-neutral-500">카드 아래에서 원문 페이지 근거를 펼칠 수 있습니다</span></div>
@@ -343,7 +343,7 @@ export function TermsLibrary() {
       {view === "compare" && (
         <section className="mx-auto max-w-[1540px] px-4 py-10 sm:px-6" aria-labelledby="compare-title">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#3155d9]">KB policy documents</p><h2 id="compare-title" className="mt-1 text-2xl font-black">선택 약관의 후보 문구 비교</h2><p className="mt-2 text-[11px] leading-5 text-neutral-500">같은 보험사의 약관 원문 후보를 최대 3건 나란히 봅니다. 보험료·수수료·실제 가입조건이 없어 판매용 상품 비교설명 자료로 사용할 수 없습니다.</p></div>
+            <div><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#3155d9]">Official policy documents</p><h2 id="compare-title" className="mt-1 text-2xl font-black">선택 약관의 후보 문구 비교</h2><p className="mt-2 text-[11px] leading-5 text-neutral-500">공식 약관의 원문 후보를 최대 3건 나란히 봅니다. 보험료·수수료·실제 가입조건이 없어 판매용 상품 비교설명 자료로 사용할 수 없습니다.</p></div>
             <span className="self-start rounded-full bg-[#17211f] px-3 py-1.5 text-[11px] font-black text-white">선택 {selectedRecords.length}/3</span>
           </div>
 

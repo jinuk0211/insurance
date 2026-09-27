@@ -1,10 +1,11 @@
-import { writeFile } from "node:fs/promises"
+import { readFile, writeFile } from "node:fs/promises"
 import iconv from "iconv-lite"
 
 import { collectKbDisclosurePage } from "../lib/catalog/sources/kb-disclosure.ts"
 
 const TARGET_COUNT = 50
 const OUTPUT_PATH = new URL("../lib/generated/official-policy-library.json", import.meta.url)
+const SUPPLEMENT_PATH = new URL("../lib/generated/verified-policy-supplement.json", import.meta.url)
 const SOURCE_PAGE_URL = "https://www.kbinsure.co.kr/CG802030001.ec"
 
 const documents = []
@@ -54,6 +55,8 @@ if (documents.length !== TARGET_COUNT) {
   throw new Error(`공식 약관 ${TARGET_COUNT}건을 수집하지 못했습니다. 현재 ${documents.length}건입니다.`)
 }
 
+const verifiedSupplement = JSON.parse(await readFile(SUPPLEMENT_PATH, "utf8"))
+
 const result = {
   schemaVersion: 1,
   collectedAt: new Date().toISOString(),
@@ -62,7 +65,7 @@ const result = {
     url: SOURCE_PAGE_URL,
     category: "질병보험",
   },
-  documents,
+  documents: [...documents, ...verifiedSupplement.documents],
 }
 
 await writeFile(OUTPUT_PATH, `${JSON.stringify(result, null, 2)}\n`, "utf8")
