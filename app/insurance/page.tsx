@@ -149,7 +149,7 @@ export default function InsurancePage() {
 
   if (step === "demo") {
     return (
-      <div className="insurance-shell min-h-screen bg-[#f3f0e8]">
+      <div className="insurance-shell min-h-screen bg-[#f1f5f9]">
         <StepResult
           key={`insurance-demo-${demoRevision}`}
           data={INSURANCE_DEMO_DATA}
@@ -163,7 +163,7 @@ export default function InsurancePage() {
 
   if (step === 7) {
     return (
-      <div className="insurance-shell min-h-screen bg-[#f3f0e8]">
+      <div className="insurance-shell min-h-screen bg-[#f1f5f9]">
         <StepResult
           data={resultData}
           onReset={reset}
@@ -180,7 +180,7 @@ export default function InsurancePage() {
   }
 
   return (
-    <div className="insurance-shell min-h-screen bg-[#f3f0e8]">
+    <div className="insurance-shell min-h-screen bg-[#f1f5f9]">
       <InsuranceHeader />
       <main className="mx-auto max-w-xl px-4 pb-20 pt-10 sm:px-6">
 
@@ -189,9 +189,9 @@ export default function InsurancePage() {
           <div className="animate-fade-in">
             {savedUser ? (
               // Returning user
-              <div className="rounded-[28px] border border-[#d8d3c8] bg-[#fffdf8] p-7 shadow-[0_24px_70px_rgba(23,33,31,0.08)] sm:p-9">
+              <div className="rounded-[28px] border border-[#e2e8f0] bg-[#ffffff] p-7 shadow-[0_24px_70px_rgba(23,33,31,0.08)] sm:p-9">
                 <div className="mb-6 text-center">
-                  <div className="mb-2 inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#d8d3c8] bg-[#edf4ef]">
+                  <div className="mb-2 inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#e2e8f0] bg-[#edf4ef]">
                     <span className="text-xl text-primary">✓</span>
                   </div>
                   <h2 className="mt-4 font-serif text-xl font-bold text-foreground">
@@ -228,19 +228,19 @@ export default function InsurancePage() {
                 <div className="space-y-3">
                   <button
                     onClick={handleLoginWithSaved}
-                    className="w-full rounded-xl bg-[#17211f] py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#25332f]"
+                    className="w-full rounded-xl bg-[#17243b] py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#273b60]"
                   >
                     내 보험 바로 조회하기
                   </button>
                   <button
                     onClick={handleNewRegistration}
-                    className="w-full rounded-xl border border-[#d8d3c8] bg-white py-3.5 text-sm font-medium text-[#17211f] transition-colors hover:bg-[#f3f0e8]"
+                    className="w-full rounded-xl border border-[#e2e8f0] bg-white py-3.5 text-sm font-medium text-[#17243b] transition-colors hover:bg-[#f1f5f9]"
                   >
                     다른 정보로 새로 등록
                   </button>
                   <button
                     onClick={() => setStep("history")}
-                    className="w-full rounded-xl border border-transparent bg-transparent py-3 text-sm font-medium text-[#6e6a62] transition-colors hover:border-[#d8d3c8] hover:bg-white hover:text-[#17211f]"
+                    className="w-full rounded-xl border border-transparent bg-transparent py-3 text-sm font-medium text-[#6e6a62] transition-colors hover:border-[#e2e8f0] hover:bg-white hover:text-[#17243b]"
                   >
                     이전 조회 이력 보기
                   </button>
@@ -252,9 +252,9 @@ export default function InsurancePage() {
               </div>
             ) : (
               // New user
-              <div className="rounded-[28px] border border-[#d8d3c8] bg-[#fffdf8] p-7 shadow-[0_24px_70px_rgba(23,33,31,0.08)] sm:p-9">
+              <div className="rounded-[28px] border border-[#e2e8f0] bg-[#ffffff] p-7 shadow-[0_24px_70px_rgba(23,33,31,0.08)] sm:p-9">
                 <div className="mb-6 text-center">
-                  <div className="mb-2 inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#d8d3c8] bg-[#fff1ed]">
+                  <div className="mb-2 inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#e2e8f0] bg-[#eef2ff]">
                     <span className="text-xl text-primary">!</span>
                   </div>
                   <h2 className="mt-4 font-serif text-xl font-bold text-foreground">
@@ -282,7 +282,7 @@ export default function InsurancePage() {
 
                 <button
                   onClick={() => setStep(1)}
-                  className="w-full rounded-xl bg-[#d94835] py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#bd3828]"
+                  className="w-full rounded-xl bg-[#4f46e5] py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#4338ca]"
                 >
                   시작하기
                 </button>

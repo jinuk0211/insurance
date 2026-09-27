@@ -38,17 +38,17 @@ export default async function PolicyViewerPage({ params, searchParams }: PagePro
 
   return (
     <main className="flex min-h-screen flex-col bg-[#252525] text-white">
-      <header className="border-b border-white/10 bg-[#17211f]">
+      <header className="border-b border-white/10 bg-[#17243b]">
         <div className="mx-auto flex max-w-[1600px] flex-col gap-3 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex min-w-0 items-start gap-3">
             <Link href="/insurance/terms" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/5 hover:bg-white/10" aria-label="약관 자료실로 돌아가기">
               <ArrowLeft className="h-4 w-4" />
             </Link>
-            <div className="min-w-0"><p className="text-[10px] font-black text-[#f1b94c]">{document.insurer} · 공식 보험약관</p><h1 className="mt-1 truncate text-sm font-black sm:text-base" title={document.productName}>{document.productName}</h1><p className="mt-1 text-[10px] text-neutral-400">적용 시작 {document.effectiveFrom?.replaceAll("-", ".") ?? "일자 미표시"}</p></div>
+            <div className="min-w-0"><p className="text-[10px] font-black text-[#c7d2fe]">{document.insurer} · 공식 보험약관</p><h1 className="mt-1 truncate text-sm font-black sm:text-base" title={document.productName}>{document.productName}</h1><p className="mt-1 text-[10px] text-neutral-400">적용 시작 {document.effectiveFrom?.replaceAll("-", ".") ?? "일자 미표시"}</p></div>
           </div>
           <div className="flex gap-2">
             <a href={viewerUrl + "?download=1"} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/15 px-3 text-xs font-bold hover:bg-white/10"><Download className="h-4 w-4" /> 해시 확인 PDF 다운로드</a>
-            <a href={document.sourcePageUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#df2444] px-3 text-xs font-black hover:bg-[#c71935]">보험사 출처 <ArrowUpRight className="h-4 w-4" /></a>
+            <a href={document.sourcePageUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#4f46e5] px-3 text-xs font-black hover:bg-[#4338ca]">보험사 출처 <ArrowUpRight className="h-4 w-4" /></a>
           </div>
         </div>
       </header>
