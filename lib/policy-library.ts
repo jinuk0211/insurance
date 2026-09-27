@@ -18,8 +18,8 @@ export interface OfficialPolicyDocument {
   sourceFileName: string | null
   sourcePageUrl: string
   byteLength: number | null
-  expectedSha256?: string
-  expectedPageCount?: number
+  expectedSha256: string
+  expectedPageCount: number
 }
 
 interface OfficialPolicyLibrary {

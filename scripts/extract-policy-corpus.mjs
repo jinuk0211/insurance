@@ -306,6 +306,8 @@ async function main() {
     if (document.expectedPageCount && document.expectedPageCount !== pages.length) {
       throw new Error(`원본 PDF 페이지 수가 변경되었습니다: ${document.id}`)
     }
+    document.expectedSha256 = sourceSha256
+    document.expectedPageCount = pages.length
     const outputPath = path.join(TEXT_DIRECTORY, `${document.id}.txt`)
     await writeFile(outputPath, serializeText(document, pages), "utf8")
     const analysis = analyzeDocument(document, pages, sourceSha256)
@@ -336,6 +338,7 @@ async function main() {
   }
 
   await writeFile(ANALYSIS_PATH, `${JSON.stringify(result, null, 2)}\n`, "utf8")
+  await writeFile(LIBRARY_PATH, `${JSON.stringify(library, null, 2)}\n`, "utf8")
   console.log(`완료: ${result.summary.documentCount}건 / ${result.summary.pageCount.toLocaleString("ko-KR")}쪽 / ${result.summary.characterCount.toLocaleString("ko-KR")}자`)
 }
 

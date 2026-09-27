@@ -6,18 +6,17 @@ interface RouteContext {
   params: Promise<{ id: string }>
 }
 
-async function proxyPolicy(request: Request, context: RouteContext, method: "GET" | "HEAD") {
+async function proxyPolicy(_request: Request, context: RouteContext, method: "GET" | "HEAD") {
   const { id } = await context.params
   const document = policyLibrary.documents.find((item) => item.id === id)
   if (!document) return new Response("약관을 찾을 수 없습니다.", { status: 404 })
 
   try {
-    const range = request.headers.get("range")
-    const expectedSha256 = "expectedSha256" in document ? document.expectedSha256 : null
-    const upstream = await fetch(document.pdfUrl, {
-      method,
-      headers: range && !expectedSha256 ? { range } : undefined,
-    })
+    const expectedSha256 = document.expectedSha256
+    if (!expectedSha256) {
+      return new Response("원본 PDF 해시 확인이 필요합니다.", { status: 503 })
+    }
+    const upstream = await fetch(document.pdfUrl, { method })
     if (!upstream.ok || (method === "GET" && !upstream.body)) {
       return new Response("약관 PDF를 불러오지 못했습니다.", { status: 502 })
     }
@@ -27,7 +26,7 @@ async function proxyPolicy(request: Request, context: RouteContext, method: "GET
       "content-disposition": 'inline; filename="' + id + '.pdf"',
       "content-type": "application/pdf",
     })
-    if (expectedSha256 && method === "GET") {
+    if (method === "GET") {
       const bytes = await upstream.arrayBuffer()
       const hash = Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)))
         .map((byte) => byte.toString(16).padStart(2, "0")).join("")
@@ -54,7 +53,7 @@ async function proxyPolicy(request: Request, context: RouteContext, method: "GET
       if (value) headers.set(name, value)
     }
 
-    return new Response(method === "HEAD" ? null : upstream.body, {
+    return new Response(null, {
       status: upstream.status,
       headers,
     })

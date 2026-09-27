@@ -8,6 +8,13 @@ const OUTPUT_PATH = new URL("../lib/generated/official-policy-library.json", imp
 const SUPPLEMENT_PATH = new URL("../lib/generated/verified-policy-supplement.json", import.meta.url)
 const SOURCE_PAGE_URL = "https://www.kbinsure.co.kr/CG802030001.ec"
 
+const previousLibrary = JSON.parse(await readFile(OUTPUT_PATH, "utf8"))
+const pinnedPdfByUrl = new Map(previousLibrary.documents
+  .filter((document) => document.expectedSha256)
+  .map((document) => [document.pdfUrl, {
+    expectedSha256: document.expectedSha256,
+    expectedPageCount: document.expectedPageCount,
+  }]))
 const documents = []
 const seenUrls = new Set()
 
@@ -40,6 +47,7 @@ for (const saleFilter of ["Y", "N"]) {
         sourceFileName: terms.fileName,
         sourcePageUrl: SOURCE_PAGE_URL,
         byteLength: metadata.byteLength,
+        ...(pinnedPdfByUrl.get(pdfUrl) ?? {}),
       })
       seenUrls.add(terms.url)
       if (documents.length === TARGET_COUNT) break
