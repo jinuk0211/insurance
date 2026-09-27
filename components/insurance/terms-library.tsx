@@ -18,6 +18,7 @@ import {
 } from "lucide-react"
 
 import { DB_POLICY_CHECKPOINTS, DB_POLICY_DOCUMENT_ID, DB_POLICY_SHA256 } from "@/lib/db-policy-checkpoints"
+import { HYUNDAI_POLICY_CHECKPOINTS, HYUNDAI_POLICY_DOCUMENT_ID, HYUNDAI_POLICY_SHA256 } from "@/lib/hyundai-policy-checkpoints"
 import { HANWHA_POLICY_CHECKPOINTS, HANWHA_POLICY_DOCUMENT_ID, HANWHA_POLICY_SHA256 } from "@/lib/hanwha-policy-checkpoints"
 import { KB_POLICY_CHECKPOINTS, KB_POLICY_DOCUMENT_ID, KB_POLICY_SHA256 } from "@/lib/kb-policy-checkpoints"
 import { SAMSUNGFIRE_POLICY_CHECKPOINTS, SAMSUNGFIRE_POLICY_DOCUMENT_ID, SAMSUNGFIRE_POLICY_SHA256 } from "@/lib/samsungfire-policy-checkpoints"
@@ -39,7 +40,7 @@ import {
 } from "@/lib/policy-library"
 
 type View = "analysis" | "compare" | "files"
-type SaleFilter = "all" | "on_sale" | "off_sale"
+type SaleFilter = "all" | "on_sale" | "off_sale" | "unknown"
 type FocusFilter = "all" | "coverage" | "riders" | "exclusions" | "reduction" | "waiting"
 
 interface PolicyRecord {
@@ -67,6 +68,7 @@ const REVIEWED_POLICIES = [
   { documentId: KB_POLICY_DOCUMENT_ID, sha256: KB_POLICY_SHA256, insurer: "KB손해보험", fileLabel: "2026.07 개정본", pageCount: 774, checkpoints: KB_POLICY_CHECKPOINTS },
   { documentId: SAMSUNGFIRE_POLICY_DOCUMENT_ID, sha256: SAMSUNGFIRE_POLICY_SHA256, insurer: "삼성화재", fileLabel: "2605.1 계약전환용", pageCount: 157, checkpoints: SAMSUNGFIRE_POLICY_CHECKPOINTS },
   { documentId: DB_POLICY_DOCUMENT_ID, sha256: DB_POLICY_SHA256, insurer: "DB손해보험", fileLabel: "2607 표기 파일", pageCount: 314, checkpoints: DB_POLICY_CHECKPOINTS },
+  { documentId: HYUNDAI_POLICY_DOCUMENT_ID, sha256: HYUNDAI_POLICY_SHA256, insurer: "현대해상", fileLabel: "Hi2504 · 2025.09.01 파일", pageCount: 215, checkpoints: HYUNDAI_POLICY_CHECKPOINTS },
 ]
 
 const analysisById = new Map(OFFICIAL_POLICY_ANALYSES.map((analysis) => [analysis.id, analysis]))
@@ -85,6 +87,12 @@ const ON_SALE_COUNT = POLICY_RECORDS.filter(({ document }) => document.saleStatu
 const PDF_ENTRY_COUNTS = new Map<string, number>()
 for (const analysis of OFFICIAL_POLICY_ANALYSES) {
   PDF_ENTRY_COUNTS.set(analysis.sourceSha256, (PDF_ENTRY_COUNTS.get(analysis.sourceSha256) ?? 0) + 1)
+}
+
+function saleStatusLabel(status: OfficialPolicyDocument["saleStatus"]): string {
+  if (status === "on_sale") return "수집 당시 판매"
+  if (status === "off_sale") return "수집 당시 판매 종료"
+  return "판매 상태 미확인"
 }
 
 function formatDate(value: string | null): string {
@@ -251,9 +259,9 @@ export function TermsLibrary() {
       <section className="overflow-hidden border-b border-[#d8d3c8] bg-[#17211f] text-white">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:py-16">
           <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f1b94c]">Four-insurer policy evidence</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f1b94c]">Five-insurer policy evidence</p>
             <h1 className="mt-4 max-w-3xl font-serif text-4xl font-bold leading-[1.12] tracking-[-0.035em] sm:text-5xl">공식 보험약관<br />{formatNumber(OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pageCount)}쪽 원문 탐색</h1>
-            <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">KB손해보험 50건, 한화생명 1건, 삼성화재 계약전환용 1건, DB손해보험 암보험 1건은 자료실 항목 수입니다. 서로 다른 PDF는 {OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pdfCount}개이며, 중복을 뺀 원문에서 언급 주제와 지급사유·특약·면책·감액·대기기간 후보 문구를 찾았습니다.</p>
+            <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">KB손해보험 50건, 한화생명 1건, 삼성화재 계약전환용 1건, DB손해보험 암보험 1건, 현대해상 과거 버전 1건은 자료실 항목 수입니다. 서로 다른 PDF는 {OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pdfCount}개이며, 중복을 뺀 원문에서 언급 주제와 지급사유·특약·면책·감액·대기기간 후보 문구를 찾았습니다.</p>
             <div className="mt-7 flex flex-wrap gap-2">
               {([
                 ["analysis", "약관 분석"],
@@ -290,12 +298,12 @@ export function TermsLibrary() {
             <label className="relative"><span className="sr-only">보험사, 상품명, 보장 주제, 특약 또는 원문 후보 문구 검색</span><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="상품명 · 보장 주제 · 후보 문구 검색" className="min-h-11 w-full rounded-xl border border-black/10 bg-[#f8f6ef] pl-10 pr-3 text-sm outline-none focus:border-[#c71935]" /></label>
             <select value={focus} onChange={(event) => setFocus(event.target.value as FocusFilter)} className="min-h-11 rounded-xl border border-black/10 bg-[#f8f6ef] px-3 text-xs font-bold" aria-label="분석 항목 필터">{FOCUS_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>
             <select value={category} onChange={(event) => setCategory(event.target.value)} className="min-h-11 rounded-xl border border-black/10 bg-[#f8f6ef] px-3 text-xs font-bold" aria-label="보장 분야 필터"><option value="all">전체 보장 분야</option>{categories.map((item) => <option key={item} value={item}>{item}</option>)}</select>
-            <select value={saleFilter} onChange={(event) => setSaleFilter(event.target.value as SaleFilter)} className="min-h-11 rounded-xl border border-black/10 bg-[#f8f6ef] px-3 text-xs font-bold" aria-label="판매 상태 필터"><option value="all">전체 판매 상태</option><option value="on_sale">수집 당시 판매</option><option value="off_sale">수집 당시 판매 종료</option></select>
+            <select value={saleFilter} onChange={(event) => setSaleFilter(event.target.value as SaleFilter)} className="min-h-11 rounded-xl border border-black/10 bg-[#f8f6ef] px-3 text-xs font-bold" aria-label="판매 상태 필터"><option value="all">전체 판매 상태</option><option value="on_sale">수집 당시 판매</option><option value="off_sale">수집 당시 판매 종료</option><option value="unknown">판매 상태 미확인</option></select>
           </div>
 
           <div className="mt-4 flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-950 sm:flex-row sm:items-start">
             <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0" />
-            <p className="text-[11px] leading-5"><strong className="block text-xs">‘자동 미탐지’는 ‘조항 없음’이 아닙니다.</strong>{OFFICIAL_POLICY_ANALYSIS_NOTICE} KB손해보험 50건은 {formatDate(OFFICIAL_POLICY_COLLECTED_AT.slice(0, 10))} 수집본이며, 한화생명 1건은 공식 상품 페이지의 2026.04.17 파일입니다. 한화생명 파일명의 날짜와 삼성화재 2605.1·DB손해보험 2607 표기는 계약 적용 시작일로 확인되지 않았습니다. 삼성화재 약관은 계약전환용입니다. DB손해보험은 PDF의 일반 안내 예시를 제외한 38쪽부터 자동 후보를 찾았습니다. 주제 배지는 분석 대상 페이지의 단어 출현만 뜻하며 가입 보장을 확인한 결과가 아닙니다. 상품 유형별 항목이 같은 PDF를 공유할 수 있습니다. 실제 가입 담보와 지급 판단은 가입설계서·증권·해당 시점 약관을 함께 봐야 합니다.</p>
+            <p className="text-[11px] leading-5"><strong className="block text-xs">‘자동 미탐지’는 ‘조항 없음’이 아닙니다.</strong>{OFFICIAL_POLICY_ANALYSIS_NOTICE} KB손해보험 50건은 {formatDate(OFFICIAL_POLICY_COLLECTED_AT.slice(0, 10))} 수집본이며, 한화생명 1건은 공식 상품 페이지의 2026.04.17 파일입니다. 한화생명 파일명의 날짜와 삼성화재 2605.1·DB손해보험 2607 표기는 계약 적용 시작일로 확인되지 않았습니다. 삼성화재 약관은 계약전환용입니다. DB손해보험은 PDF 38쪽, 현대해상 Hi2504는 39쪽부터 자동 후보를 찾았습니다. 현대해상 파일명의 2025.09.01은 계약 적용일로 확인되지 않았고 현재 판매 상태도 미확인입니다. 주제 배지는 분석 대상 페이지의 단어 출현만 뜻하며 가입 보장을 확인한 결과가 아닙니다. 상품 유형별 항목이 같은 PDF를 공유할 수 있습니다. 실제 가입 담보와 지급 판단은 가입설계서·증권·해당 시점 약관을 함께 봐야 합니다.</p>
           </div>
 
           <div className="mt-5 flex items-center justify-between text-xs"><span className="font-black">검색 결과 {filteredRecords.length}건</span><span className="text-neutral-500">카드 아래에서 원문 페이지 근거를 펼칠 수 있습니다</span></div>
@@ -337,13 +345,13 @@ export function TermsLibrary() {
                   <div className="p-5 sm:p-6">
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-2.5 py-1 text-[10px] font-black ${document.saleStatus === "on_sale" ? "bg-emerald-100 text-emerald-800" : "bg-neutral-100 text-neutral-600"}`}>{document.saleStatus === "on_sale" ? "수집 당시 판매" : "수집 당시 판매 종료"}</span><span className="text-[10px] font-black text-[#c71935]">{document.insurer}</span><span className="text-[10px] font-bold text-neutral-500">{formatDate(document.effectiveFrom)}</span>{(PDF_ENTRY_COUNTS.get(analysis.sourceSha256) ?? 0) > 1 && <span className="rounded-full bg-blue-50 px-2 py-1 text-[10px] font-bold text-blue-800">동일 PDF {PDF_ENTRY_COUNTS.get(analysis.sourceSha256)}항목</span>}</div>
+                        <div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-2.5 py-1 text-[10px] font-black ${document.saleStatus === "on_sale" ? "bg-emerald-100 text-emerald-800" : "bg-neutral-100 text-neutral-600"}`}>{saleStatusLabel(document.saleStatus)}</span><span className="text-[10px] font-black text-[#c71935]">{document.insurer}</span><span className="text-[10px] font-bold text-neutral-500">{formatDate(document.effectiveFrom)}</span>{(PDF_ENTRY_COUNTS.get(analysis.sourceSha256) ?? 0) > 1 && <span className="rounded-full bg-blue-50 px-2 py-1 text-[10px] font-bold text-blue-800">동일 PDF {PDF_ENTRY_COUNTS.get(analysis.sourceSha256)}항목</span>}</div>
                         <h3 className="mt-3 text-lg font-black leading-7">{document.productName}</h3>
                       </div>
                       <button onClick={() => toggleComparison(document.id)} aria-pressed={selected} className={`inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-xl border px-3 text-[10px] font-black ${selected ? "border-[#3155d9] bg-blue-50 text-[#3155d9]" : "border-black/10 bg-white hover:border-[#3155d9]"}`}>{selected ? <Check className="h-4 w-4" /> : <GitCompareArrows className="h-4 w-4" />}{selected ? "비교 선택됨" : "비교 담기"}</button>
                     </div>
 
-                    <div className="mt-4"><p className="mb-2 text-[10px] font-bold text-neutral-500">PDF 전체의 언급 주제 · 가입 보장 확인 아님</p><div className="flex flex-wrap gap-1.5">
+                    <div className="mt-4"><p className="mb-2 text-[10px] font-bold text-neutral-500">분석 대상 PDF 쪽의 언급 주제 · 가입 보장 확인 아님</p><div className="flex flex-wrap gap-1.5">
                       {analysis.coverage.topics.length ? analysis.coverage.topics.map((topic) => <span key={topic} className="rounded-lg bg-neutral-100 px-2.5 py-1.5 text-[10px] font-bold text-neutral-700">{topic}</span>) : <span className="rounded-lg bg-amber-100 px-2.5 py-1.5 text-[10px] font-bold text-amber-900">주제 단어 자동 미탐지</span>}
                     </div></div>
 
@@ -508,7 +516,7 @@ export function TermsLibrary() {
           <div className="mt-6 overflow-hidden rounded-2xl border border-black/10 bg-white">
             {POLICY_RECORDS.map(({ document, analysis }, index) => (
               <article key={document.id} className={`grid gap-4 p-4 sm:p-5 lg:grid-cols-[90px_minmax(0,1fr)_170px_auto] lg:items-center ${index ? "border-t border-black/10" : ""}`}>
-                <div><span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-black ${document.saleStatus === "on_sale" ? "bg-emerald-100 text-emerald-800" : "bg-neutral-100 text-neutral-600"}`}>{document.saleStatus === "on_sale" ? "수집 당시 판매" : "수집 당시 판매 종료"}</span><span className="mt-2 block text-[10px] font-bold text-neutral-500">{policyCategory(document.productName)}</span></div>
+                <div><span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-black ${document.saleStatus === "on_sale" ? "bg-emerald-100 text-emerald-800" : "bg-neutral-100 text-neutral-600"}`}>{saleStatusLabel(document.saleStatus)}</span><span className="mt-2 block text-[10px] font-bold text-neutral-500">{policyCategory(document.productName)}</span></div>
                 <div className="min-w-0"><p className="text-[10px] font-black text-[#c71935]">{document.insurer}</p><h3 className="mt-1 text-sm font-black leading-6">{document.productName}</h3><p className="mt-1 text-[10px] text-neutral-500">{document.sourceFileName}</p><a href={document.sourcePageUrl} target="_blank" rel="noreferrer" className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-[#3155d9] underline-offset-2 hover:underline">보험사 공식 출처 <ArrowUpRight className="h-3 w-3" /></a></div>
                 <dl className="grid grid-cols-2 gap-2 text-[10px] lg:block"><div><dt className="text-neutral-500">적용 시작</dt><dd className="mt-0.5 font-black tabular-nums">{formatDate(document.effectiveFrom)}</dd></div><div className="lg:mt-2"><dt className="text-neutral-500">추출 분량</dt><dd className="mt-0.5 font-black tabular-nums">{formatNumber(analysis.pageCount)}쪽 · {formatCharacters(analysis.characterCount)}</dd></div></dl>
                 <div className="grid grid-cols-2 gap-2"><Link href={`/insurance/terms/viewer/${document.id}`} target="_blank" className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[#17211f] px-3 text-[10px] font-black text-white hover:bg-[#c71935]"><BookOpen className="h-4 w-4" /> PDF</Link><a href={analysis.textPath} target="_blank" className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-black/10 bg-white px-3 text-[10px] font-black hover:border-black/25"><FileText className="h-4 w-4" /> TXT</a></div>

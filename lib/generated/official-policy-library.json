@@ -855,6 +855,23 @@
       "expectedSha256": "d9525158bda7f6f7a7cb44e68118a683c3813b86a548d8a0a23532e6a92e108e",
       "expectedPageCount": 314,
       "analysisStartPage": 38
+    },
+    {
+      "id": "hyundai-direct-repeat-cancer-hi2504-20250901",
+      "insurer": "현대해상",
+      "productName": "무배당 현대해상다이렉트 계속받는암보험(Hi2504)",
+      "productType": "암보험",
+      "saleStatus": "unknown",
+      "versionKey": "Hi2504-20250901-pdf",
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "pdfUrl": "https://direct.hi.co.kr/dhNAS/terms/CM171M_20250901.pdf",
+      "sourceFileName": "CM171M_20250901.pdf",
+      "sourcePageUrl": "https://direct.hi.co.kr/dhNAS/terms/CM171M_20250901.pdf",
+      "byteLength": 4554531,
+      "expectedSha256": "be85fdea7a50fc028c183a99835b5f734733113a2e3e19e5105cd0c2c01b1eee",
+      "expectedPageCount": 215,
+      "analysisStartPage": 39
     }
   ]
 }
