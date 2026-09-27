@@ -446,6 +446,7 @@ function PolicyFindingCard({ finding, model }: { finding: InsurancePolicyFinding
   const contract = model.contracts.find((item) => item.id === finding.contractId)
   const contractName = contract?.name || finding.contractName || "연결 계약 미표시"
   const companyName = contract?.company || "보험사 미표시"
+  const catalogCandidate = finding.id.startsWith(`${finding.contractId}-terms-`)
 
   return (
     <article className="result-surface overflow-hidden">
@@ -458,14 +459,15 @@ function PolicyFindingCard({ finding, model }: { finding: InsurancePolicyFinding
           <h3 className="mt-3 text-lg font-black text-neutral-950">{finding.coverage}</h3>
         </div>
         <div className="shrink-0 rounded-[16px] border border-blue-200 bg-blue-50 px-3 py-2 text-right">
-          <p className="text-[9px] font-bold text-blue-700">약관 매칭 신뢰도</p>
+          <p className="text-[9px] font-bold text-blue-700">{catalogCandidate ? "상품명 매칭 점수" : "약관 매칭 신뢰도"}</p>
           <p className="mt-0.5 text-lg font-black tabular-nums text-blue-950">
-            {finding.matchConfidence === null ? "미제공" : `${finding.matchConfidence}%`}
+            {finding.matchConfidence === null ? "미제공" : `${finding.matchConfidence}${catalogCandidate ? "점" : "%"}`}
           </p>
+          {catalogCandidate && <p className="mt-1 text-[9px] text-blue-700">확률·약관 버전 확인 아님</p>}
         </div>
       </div>
       <dl className="grid sm:grid-cols-2">
-        <div className="border-b border-black/10 p-4 sm:border-r"><dt className="text-[10px] font-bold text-[#c71935]">보험금 지급 조건</dt><dd className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{findingValue(finding.paymentTrigger)}</dd></div>
+        <div className="border-b border-black/10 p-4 sm:border-r"><dt className="text-[10px] font-bold text-[#c71935]">{catalogCandidate ? "원문 후보 문구" : "보험금 지급 조건"}</dt><dd className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{findingValue(finding.paymentTrigger)}</dd></div>
         <div className="border-b border-black/10 p-4"><dt className="text-[10px] font-bold text-neutral-500">지급 횟수</dt><dd className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{findingValue(finding.paymentFrequency)}</dd></div>
         <div className="border-b border-black/10 p-4 sm:border-b-0 sm:border-r"><dt className="text-[10px] font-bold text-neutral-500">면책 기간</dt><dd className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{findingValue(finding.waitingPeriod)}</dd></div>
         <div className="p-4"><dt className="text-[10px] font-bold text-neutral-500">감액 기간</dt><dd className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{findingValue(finding.reductionPeriod)}</dd></div>

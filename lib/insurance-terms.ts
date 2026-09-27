@@ -95,12 +95,11 @@ function versionStatus(
   contractStartDate: string,
 ): InsuranceTermsMatch["versionStatus"] {
   if (!document.versionCode || !document.effectiveFrom) return "unavailable"
-  if (normalizedProductName.includes(document.versionCode)) return "exact"
-
   const startDate = parseDate(contractStartDate)
-  const effectiveDate = parseDate(document.effectiveFrom.replace(/-/g, "") + "01")
+  const effectiveDate = parseDate(document.effectiveFrom.replace(/-/g, ""))
+  if (startDate && effectiveDate && startDate < effectiveDate) return "conflict"
+  if (normalizedProductName.includes(document.versionCode)) return "exact"
   if (!startDate || !effectiveDate) return "unavailable"
-  if (startDate < effectiveDate) return "conflict"
   return "inferred"
 }
 
@@ -215,12 +214,17 @@ function replacementRisk(contract: InsuranceDashboardContract, match: InsuranceT
     reduction?.years && reduction.ratePercent ? `${reduction.years}년 내 ${reduction.ratePercent}% 지급` : null,
   ].filter(Boolean).join(" · ")
   const source = waiting || reduction
+  const versionConfirmed = match.matchStatus === "exact" && match.versionStatus === "exact"
   return {
     id: `${contract.id}-replacement-waiting-risk`,
     contractIds: [contract.id],
-    severity: "high",
-    title: "신규 가입 시 면책·감액기간 재시작 가능",
-    description: `${contract.name}에서 ${conditions || "면책·감액 조건"}이 확인되었습니다. 기존계약 해지 전 신규안의 보장개시일과 감액기간을 대조해야 합니다.`,
+    severity: versionConfirmed ? "high" : "unknown",
+    title: versionConfirmed
+      ? "신규 가입 시 면책·감액기간 재시작 가능"
+      : "약관 버전 확인 후 면책·감액기간 대조",
+    description: versionConfirmed
+      ? `${contract.name}에서 ${conditions || "면책·감액 조건"}이 확인되었습니다. 기존계약 해지 전 신규안의 보장개시일과 감액기간을 대조해야 합니다.`
+      : `${contract.name}과 상품명이 유사한 문서에서 ${conditions || "면책·감액 조건"} 문구를 찾았습니다. 실제 가입 약관의 버전을 확인한 뒤 대조해야 합니다.`,
     reviewAction: "기존 계약 유지 상태에서 신규안 청약일·보장개시일·감액 종료일 비교",
     sourceDocument: match.document.sourceDocument,
     sourcePage: source?.page ?? null,
