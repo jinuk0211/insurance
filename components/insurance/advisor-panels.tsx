@@ -96,7 +96,7 @@ function CollectionView({ model }: { model: InsuranceDashboardModel }) {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[760px] border-collapse text-left text-xs">
             <thead className="bg-neutral-950 text-white">
-              <tr><th className="p-3">보험사·상품</th><th className="p-3">계약</th><th className="p-3">보험료</th><th className="p-3">담보</th><th className="p-3">가입금액</th><th className="p-3">약관 근거</th></tr>
+              <tr><th className="p-3">보험사·상품</th><th className="p-3">계약</th><th className="p-3">보험료</th><th className="p-3">담보</th><th className="p-3">가입금액</th><th className="p-3">약관 문구 후보</th></tr>
             </thead>
             <tbody className="divide-y divide-black/10 bg-[#fffdf8]">
               {model.contracts.map((contract) => {
@@ -249,7 +249,7 @@ export function DataQualityPanel({ model, demoMode = false }: { model: Insurance
             <DataQualityMetric label="계약 핵심정보" value={`${quality.coreCompleteCount}/${quality.contractCount}`} note="상태·기간·보험료 확인" tone="green" />
             <DataQualityMetric label="담보 수집" value={`${quality.coverageCount}건`} note="원본 담보명이 확인된 항목" tone="blue" />
             <DataQualityMetric label="가입금액 확인" value={`${quality.coverageAmountKnownCount}/${quality.coverageCount}`} note="미수집은 0원으로 계산하지 않음" tone={quality.coverageAmountMissingCount ? "rose" : "green"} />
-            <DataQualityMetric label="연결 완료 약관 근거" value={`${quality.termsEvidenceCount}건`} note="계약·문서명 일치 및 문서 연결 상태" tone="neutral" />
+            <DataQualityMetric label="검증된 약관 근거" value={`${quality.termsEvidenceCount}건`} note="원본 PDF·가입 계약 개정본 대조" tone="neutral" />
           </div>
         </div>
       </section>
@@ -269,7 +269,7 @@ export function DataQualityPanel({ model, demoMode = false }: { model: Insurance
   )
 }
 
-function ScenarioResult({ scenario, model }: { scenario: InsuranceDecisionScenario; model: InsuranceDashboardModel }) {
+function ScenarioResult({ scenario, model, demoMode }: { scenario: InsuranceDecisionScenario; model: InsuranceDashboardModel; demoMode: boolean }) {
   const [checked, setChecked] = useState<string[]>([])
   const findings = scenario.sourceFindingIds
     .map((id) => model.enrichment.policyFindings.find((finding) => finding.id === id))
@@ -292,10 +292,10 @@ function ScenarioResult({ scenario, model }: { scenario: InsuranceDecisionScenar
           <div className="mt-4 space-y-2">
             {scenario.checks.map((check) => <label key={check} className={`flex cursor-pointer items-center gap-3 rounded-[14px] p-3 ring-1 ${checked.includes(check) ? "bg-emerald-50 ring-emerald-200" : "bg-neutral-50 ring-neutral-200"}`}><input type="checkbox" checked={checked.includes(check)} onChange={() => setChecked((current) => current.includes(check) ? current.filter((item) => item !== check) : [...current, check])} className="h-4 w-4 accent-emerald-600" /><span className="text-xs font-bold">{check}</span></label>)}
           </div>
-          <div className={`mt-4 rounded-[14px] p-3 text-xs font-bold ${complete ? "bg-emerald-100 text-emerald-900" : "bg-amber-100 text-amber-950"}`}>{complete ? "필수 확인이 완료됐습니다. 설계사 검토 결과를 보고서에 반영할 수 있습니다." : `${scenario.checks.length - checked.length}개 항목을 더 확인해야 합니다.`}</div>
+          <div className={`mt-4 rounded-[14px] p-3 text-xs font-bold ${complete ? "bg-emerald-100 text-emerald-900" : "bg-amber-100 text-amber-950"}`}>{complete ? "체크리스트 표시를 마쳤습니다. 약관 원문·증권 대조 결과를 별도 기록하세요." : `${scenario.checks.length - checked.length}개 항목을 더 확인해야 합니다.`}</div>
         </div>
         <div className="p-5">
-          <h3 className="text-sm font-black">연결 근거</h3>
+          <h3 className="text-sm font-black">{demoMode ? "가상 문구 후보" : "검토할 문구 후보"}</h3>
           <div className="mt-4 space-y-3">
             {findings.map((finding) => finding && <div key={finding.id} className="rounded-[16px] bg-[#f3f0e8] p-4"><div className="flex items-center justify-between gap-2"><strong className="text-xs">{finding.coverage}</strong><span className="shrink-0 text-[10px] font-black text-[#c71935]">{finding.sourcePage === null ? "페이지 미제공" : `${finding.sourcePage}쪽`}</span></div><p className="mt-2 text-[10px] leading-4 text-neutral-600">{finding.sourceDocument || "문서명 미제공"}</p></div>)}
             {findings.length === 0 && <div className="rounded-[16px] border border-dashed border-amber-300 bg-amber-50 p-4 text-xs text-amber-950">연결된 약관 근거가 없습니다. 결과를 확정하지 말고 정식 약관을 요청하세요.</div>}
@@ -421,7 +421,7 @@ export function DecisionPanel({ model, demoMode }: { model: InsuranceDashboardMo
         <section className="space-y-2" aria-label="검토 시나리오">
           {scenarios.map((scenario) => <button key={scenario.id} onClick={() => setSelectedId(scenario.id)} aria-pressed={selected?.id === scenario.id} className={`flex min-h-[94px] w-full items-center gap-3 rounded-[18px] p-4 text-left ring-1 transition-all ${selected?.id === scenario.id ? "bg-[#17211f] text-white ring-[#17211f] shadow-[0_14px_35px_rgba(23,33,31,0.16)]" : "bg-[#fffdf8] text-neutral-950 ring-black/[0.07] hover:ring-black/20"}`}><span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${selected?.id === scenario.id ? "bg-white/10" : "bg-rose-50 text-[#c71935]"}`}><FlaskConical className="h-4 w-4" /></span><span className="min-w-0 flex-1"><span className="block text-[10px] font-bold opacity-60">{scenario.diagnosis} · {scenario.treatment}</span><span className="mt-1 block text-sm font-black leading-5">{scenario.question}</span></span><ChevronRight className="h-4 w-4 shrink-0 opacity-60" /></button>)}
         </section>
-        {selected && <ScenarioResult key={selected.id} scenario={selected} model={model} />}
+        {selected && <ScenarioResult key={selected.id} scenario={selected} model={model} demoMode={demoMode} />}
       </div> : <section className="result-surface p-10 text-center"><FileSearch className="mx-auto h-8 w-8 text-neutral-400" /><h2 className="mt-4 text-lg font-black">구조화된 질병·치료 시나리오가 없습니다</h2><p className="mx-auto mt-2 max-w-lg text-xs leading-5 text-neutral-500">CODEF 계약 정보만으로는 판정하지 않습니다. 담보·가입금액과 당시 약관이 연결되면 질문별 규칙 결과가 표시됩니다.</p></section>}
     </div>
   )
@@ -450,12 +450,12 @@ export function ProposalInputDialog({ open, onOpenChange, onAdd }: { open: boole
 }
 
 export function ReportApproval({ status, onChange, hasProposal, evidenceCount, demoMode }: { status: "draft" | "reviewed" | "approved"; onChange: (status: "draft" | "reviewed" | "approved") => void; hasProposal: boolean; evidenceCount: number; demoMode: boolean }) {
-  const canApprove = hasProposal && evidenceCount > 0
+  const canApprove = !demoMode && hasProposal && evidenceCount > 0
   return (
     <section className="result-surface overflow-hidden" aria-labelledby="report-approval-title">
       <div className="grid lg:grid-cols-[1fr_auto]">
-        <div className="p-5"><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#3155d9]">Advisor approval</p><h2 id="report-approval-title" className="mt-1 text-lg font-black">상담 보고서 시연 검토</h2><p className="mt-2 text-xs leading-5 text-neutral-500">검토 상태는 이 화면에서만 유지됩니다. 입력·약관·규칙이 바뀌면 다시 검토해야 합니다.</p><div className="mt-4 flex flex-wrap gap-2"><span className={`rounded-full px-3 py-2 text-[10px] font-black ${hasProposal ? "bg-emerald-100 text-emerald-900" : "bg-rose-100 text-rose-900"}`}>{hasProposal ? "신규 설계 연결" : "신규 설계 미입력"}</span><span className={`rounded-full px-3 py-2 text-[10px] font-black ${evidenceCount ? "bg-emerald-100 text-emerald-900" : "bg-rose-100 text-rose-900"}`}>{demoMode ? "가상 약관 근거" : "연결 확인 약관 근거"} {evidenceCount}건</span><span className="rounded-full bg-amber-100 px-3 py-2 text-[10px] font-black text-amber-950">설계사 설명 책임</span></div></div>
-        <div className="flex min-w-[260px] flex-col justify-center gap-2 border-t border-black/10 bg-[#f3f0e8] p-5 lg:border-l lg:border-t-0"><p className="text-[10px] font-bold text-neutral-500">현재 상태</p><p className="text-xl font-black">{status === "approved" ? "시연 승인 완료" : status === "reviewed" ? "시연 검토 완료" : "초안"}</p><div className="mt-2 flex gap-2">{status === "draft" && <button onClick={() => onChange("reviewed")} className="min-h-10 flex-1 rounded-xl bg-neutral-950 px-3 text-xs font-black text-white">검토 완료</button>}{status === "reviewed" && <button disabled={!canApprove} onClick={() => onChange("approved")} className="min-h-10 flex-1 rounded-xl bg-[#df2444] px-3 text-xs font-black text-white disabled:cursor-not-allowed disabled:opacity-40">시연 승인</button>}{status === "approved" && <button onClick={() => onChange("draft")} className="min-h-10 flex-1 rounded-xl border border-black/15 bg-white px-3 text-xs font-black">다시 검토</button>}</div>{status === "reviewed" && !canApprove && <p className="text-[10px] leading-4 text-rose-700">신규 설계와 연결 확인 약관 근거가 있어야 승인할 수 있습니다.</p>}</div>
+        <div className="p-5"><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#3155d9]">Advisor approval</p><h2 id="report-approval-title" className="mt-1 text-lg font-black">상담 보고서 시연 검토</h2><p className="mt-2 text-xs leading-5 text-neutral-500">검토 상태는 이 화면에서만 유지됩니다. 입력·약관·규칙이 바뀌면 다시 검토해야 합니다. 가상 문서나 문서명 일치는 승인 근거로 인정하지 않습니다.</p><div className="mt-4 flex flex-wrap gap-2"><span className={`rounded-full px-3 py-2 text-[10px] font-black ${hasProposal ? "bg-emerald-100 text-emerald-900" : "bg-rose-100 text-rose-900"}`}>{hasProposal ? "신규 설계 연결" : "신규 설계 미입력"}</span><span className={`rounded-full px-3 py-2 text-[10px] font-black ${evidenceCount ? "bg-emerald-100 text-emerald-900" : "bg-rose-100 text-rose-900"}`}>검증된 약관 근거 {evidenceCount}건</span><span className="rounded-full bg-amber-100 px-3 py-2 text-[10px] font-black text-amber-950">설계사 설명 책임</span></div></div>
+        <div className="flex min-w-[260px] flex-col justify-center gap-2 border-t border-black/10 bg-[#f3f0e8] p-5 lg:border-l lg:border-t-0"><p className="text-[10px] font-bold text-neutral-500">현재 상태</p><p className="text-xl font-black">{status === "approved" ? "시연 승인 완료" : status === "reviewed" ? "시연 검토 완료" : "초안"}</p><div className="mt-2 flex gap-2">{status === "draft" && <button onClick={() => onChange("reviewed")} className="min-h-10 flex-1 rounded-xl bg-neutral-950 px-3 text-xs font-black text-white">검토 완료</button>}{status === "reviewed" && <button disabled={!canApprove} onClick={() => onChange("approved")} className="min-h-10 flex-1 rounded-xl bg-[#df2444] px-3 text-xs font-black text-white disabled:cursor-not-allowed disabled:opacity-40">시연 승인</button>}{status === "approved" && <button onClick={() => onChange("draft")} className="min-h-10 flex-1 rounded-xl border border-black/15 bg-white px-3 text-xs font-black">다시 검토</button>}</div>{status === "reviewed" && !canApprove && <p className="text-[10px] leading-4 text-rose-700">{demoMode ? "합성 시연에서는 보고서 승인을 제공하지 않습니다. 실제 계약·약관 개정본 대조가 필요합니다." : "가입 계약과 공식 PDF 개정본을 대조한 약관 근거가 있어야 승인할 수 있습니다."}</p>}</div>
       </div>
     </section>
   )

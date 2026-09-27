@@ -443,7 +443,7 @@ function findingValue(value: string): string {
   return value || "분석 데이터에 미제공"
 }
 
-function PolicyFindingCard({ finding, model }: { finding: InsurancePolicyFinding; model: InsuranceDashboardModel }) {
+function PolicyFindingCard({ finding, model, demoMode }: { finding: InsurancePolicyFinding; model: InsuranceDashboardModel; demoMode: boolean }) {
   const contract = model.contracts.find((item) => item.id === finding.contractId)
   const contractName = contract?.name || finding.contractName || "연결 계약 미표시"
   const companyName = contract?.company || "보험사 미표시"
@@ -460,25 +460,25 @@ function PolicyFindingCard({ finding, model }: { finding: InsurancePolicyFinding
           <h3 className="mt-3 text-lg font-black text-neutral-950">{finding.coverage}</h3>
         </div>
         <div className="shrink-0 rounded-[16px] border border-blue-200 bg-blue-50 px-3 py-2 text-right">
-          <p className="text-[9px] font-bold text-blue-700">{catalogCandidate ? "상품명 매칭 점수" : "약관 매칭 신뢰도"}</p>
+          <p className="text-[9px] font-bold text-blue-700">{demoMode ? "가상 예시 점수" : catalogCandidate ? "상품명 매칭 점수" : "제공된 매칭 점수"}</p>
           <p className="mt-0.5 text-lg font-black tabular-nums text-blue-950">
-            {finding.matchConfidence === null ? "미제공" : `${finding.matchConfidence}${catalogCandidate ? "점" : "%"}`}
+            {finding.matchConfidence === null ? "미제공" : `${finding.matchConfidence}점`}
           </p>
-          {catalogCandidate && <p className="mt-1 text-[9px] text-blue-700">확률·약관 버전 확인 아님</p>}
+          <p className="mt-1 text-[9px] text-blue-700">확률·약관 버전 확인 아님</p>
         </div>
       </div>
       <dl className="grid sm:grid-cols-2">
-        <div className="border-b border-black/10 p-4 sm:border-r"><dt className="text-[10px] font-bold text-[#c71935]">{catalogCandidate ? "원문 후보 문구" : "보험금 지급 조건"}</dt><dd className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{findingValue(finding.paymentTrigger)}</dd></div>
-        <div className="border-b border-black/10 p-4"><dt className="text-[10px] font-bold text-neutral-500">지급 횟수</dt><dd className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{findingValue(finding.paymentFrequency)}</dd></div>
-        <div className="border-b border-black/10 p-4 sm:border-b-0 sm:border-r"><dt className="text-[10px] font-bold text-neutral-500">{catalogCandidate ? "면책기간 추출 후보" : "면책 기간"}</dt><dd className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{findingValue(finding.waitingPeriod)}</dd></div>
-        <div className="p-4"><dt className="text-[10px] font-bold text-neutral-500">{catalogCandidate ? "감액기간 추출 후보" : "감액 기간"}</dt><dd className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{findingValue(finding.reductionPeriod)}</dd></div>
+        <div className="border-b border-black/10 p-4 sm:border-r"><dt className="text-[10px] font-bold text-[#c71935]">{demoMode ? "가상 지급 조건" : catalogCandidate ? "원문 후보 문구" : "제공된 지급 조건 후보"}</dt><dd className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{findingValue(finding.paymentTrigger)}</dd></div>
+        <div className="border-b border-black/10 p-4"><dt className="text-[10px] font-bold text-neutral-500">지급 횟수 후보</dt><dd className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{findingValue(finding.paymentFrequency)}</dd></div>
+        <div className="border-b border-black/10 p-4 sm:border-b-0 sm:border-r"><dt className="text-[10px] font-bold text-neutral-500">{demoMode ? "가상 면책 기간" : catalogCandidate ? "면책기간 추출 후보" : "제공된 면책 기간 후보"}</dt><dd className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{findingValue(finding.waitingPeriod)}</dd></div>
+        <div className="p-4"><dt className="text-[10px] font-bold text-neutral-500">{demoMode ? "가상 감액 기간" : catalogCandidate ? "감액기간 추출 후보" : "제공된 감액 기간 후보"}</dt><dd className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{findingValue(finding.reductionPeriod)}</dd></div>
       </dl>
       <div className="flex flex-col gap-2 border-t border-black/10 bg-[#f3f0e8] px-4 py-3 text-[10px] sm:flex-row sm:items-center sm:justify-between">
         <span className="min-w-0 truncate font-semibold text-neutral-600" title={finding.sourceDocument || undefined}>
-          {catalogCandidate ? "로컬 추출 문서 · 원본 PDF 미제공 · " : "근거 문서 · "}{finding.sourceDocument || "문서명 미제공"}
+          {demoMode ? "가상 샘플 문서 · " : catalogCandidate ? "로컬 추출 문서 · 원본 PDF 미제공 · " : "제공 문서 후보 · "}{finding.sourceDocument || "문서명 미제공"}
         </span>
         <span className={`shrink-0 px-2 py-1 font-black ${finding.sourcePage === null ? "bg-neutral-200 text-neutral-600" : "bg-[#df2444] text-white"}`}>
-          {finding.sourcePage === null ? "페이지 미제공" : `${catalogCandidate ? "추출본" : "원문"} ${finding.sourcePage}쪽`}
+          {finding.sourcePage === null ? "페이지 미제공" : `${demoMode ? "가상" : catalogCandidate ? "추출본" : "제공 문서"} ${finding.sourcePage}쪽`}
         </span>
       </div>
     </article>
@@ -492,7 +492,7 @@ function riskTone(risk: InsuranceChangeRisk): string {
   return "bg-amber-50 text-amber-950 ring-1 ring-amber-200/80"
 }
 
-function RiskWarningCard({ risk, model }: { risk: InsuranceChangeRisk; model: InsuranceDashboardModel }) {
+function RiskWarningCard({ risk, model, demoMode }: { risk: InsuranceChangeRisk; model: InsuranceDashboardModel; demoMode: boolean }) {
   const relatedContracts = risk.contractIds
     .map((id) => model.contracts.find((contract) => contract.id === id)?.name)
     .filter((name): name is string => Boolean(name))
@@ -510,7 +510,7 @@ function RiskWarningCard({ risk, model }: { risk: InsuranceChangeRisk; model: In
           <p className="mt-2 text-xs leading-5 opacity-80">{risk.description || "세부 설명이 제공되지 않았습니다."}</p>
           {risk.reviewAction && <div className="mt-3 border-l-2 border-current pl-3 text-xs font-bold leading-5">검토 행동 · {risk.reviewAction}</div>}
           <p className="mt-3 text-[10px] opacity-65">
-            근거 · {risk.sourceDocument || "문서명 미제공"}{risk.sourcePage === null ? " · 페이지 미제공" : ` · ${risk.sourcePage}쪽`}
+            {demoMode ? "가상 근거" : "근거 후보"} · {risk.sourceDocument || "문서명 미제공"}{risk.sourcePage === null ? " · 페이지 미제공" : ` · ${risk.sourcePage}쪽`}
           </p>
         </div>
       </div>
@@ -560,7 +560,7 @@ function TermsRiskPanel({ model, demoMode }: { model: InsuranceDashboardModel; d
           <span className="rounded-full border border-black/10 bg-white px-3 py-2 text-xs font-bold">{demoMode ? "가상 근거" : "문구 후보"} {policyFindings.length}건</span>
         </div>
         <div className="grid gap-4 xl:grid-cols-2">
-          {policyFindings.map((finding) => <PolicyFindingCard key={finding.id} finding={finding} model={model} />)}
+          {policyFindings.map((finding) => <PolicyFindingCard key={finding.id} finding={finding} model={model} demoMode={demoMode} />)}
           {policyFindings.length === 0 && <div className="col-span-full border border-dashed border-black/20 bg-[#fffdf8] p-8 text-center text-sm text-neutral-500">구조화된 지급조건은 제공되지 않았습니다.</div>}
         </div>
       </section>
@@ -568,7 +568,7 @@ function TermsRiskPanel({ model, demoMode }: { model: InsuranceDashboardModel; d
       <section className="result-open-section" aria-labelledby="change-risk-title">
         <div className="mb-4"><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#c71935]">Replacement risk</p><h2 id="change-risk-title" className="mt-1 text-xl font-black text-neutral-950">해지·승환·계약 변경 전 경고</h2><p className="mt-1 text-xs text-neutral-500">신규 가입 권유가 아니라 기존 권리와 보장 공백을 점검하기 위한 검토 항목입니다.</p></div>
         <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
-          {changeRisks.map((risk) => <RiskWarningCard key={risk.id} risk={risk} model={model} />)}
+          {changeRisks.map((risk) => <RiskWarningCard key={risk.id} risk={risk} model={model} demoMode={demoMode} />)}
           {changeRisks.length === 0 && <div className="col-span-full border border-dashed border-black/20 p-8 text-center text-sm text-neutral-500">구조화된 계약 변경 위험 경고는 제공되지 않았습니다.</div>}
         </div>
       </section>

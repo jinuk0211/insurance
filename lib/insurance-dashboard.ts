@@ -982,15 +982,10 @@ export function buildInsuranceDashboardModel(data: unknown): InsuranceDashboardM
   const coreRatio = contracts.length ? coreCompleteCount / contracts.length : 0
   const coverageRatio = activeContracts.length ? Math.min(1, coverageItems.length / activeContracts.length) : 0
   const amountRatio = coverageItems.length ? coverageAmountKnownCount / coverageItems.length : 0
-  const linkedTermFindingCount = enrichment.policyFindings.filter((finding) =>
-    enrichment.documents.some((document) =>
-      document.type === "terms" && document.status === "connected" &&
-      document.contractId === finding.contractId && document.name === finding.sourceDocument,
-    ),
-  ).length
-  const termsRatio = coverageItems.length
-    ? Math.min(1, linkedTermFindingCount / coverageItems.length)
-    : linkedTermFindingCount > 0 ? 1 : 0
+  // Document names and a "connected" flag do not establish the PDF revision used by a contract.
+  // No contract-to-official-PDF verification is implemented yet, so this gate stays closed.
+  const verifiedTermFindingCount = 0
+  const termsRatio = 0
   const overallScore = Math.round(coreRatio * 40 + coverageRatio * 20 + amountRatio * 25 + termsRatio * 15)
   const dataQuality: InsuranceDataQuality = {
     contractCount: contracts.length,
@@ -998,8 +993,8 @@ export function buildInsuranceDashboardModel(data: unknown): InsuranceDashboardM
     coverageCount: coverageItems.length,
     coverageAmountKnownCount,
     coverageAmountMissingCount,
-    termsEvidenceCount: linkedTermFindingCount,
-    unresolvedCount: (contracts.length - coreCompleteCount) + coverageAmountMissingCount + Math.max(0, coverageItems.length - linkedTermFindingCount),
+    termsEvidenceCount: verifiedTermFindingCount,
+    unresolvedCount: (contracts.length - coreCompleteCount) + coverageAmountMissingCount + Math.max(0, coverageItems.length - verifiedTermFindingCount),
     overallScore,
   }
 
