@@ -35,7 +35,19 @@ async function proxyPolicy(request: Request, context: RouteContext, method: "GET
         return new Response("공식 PDF가 수집본과 달라 원문 표시를 중단했습니다.", { status: 502 })
       }
       headers.set("content-length", String(bytes.byteLength))
-      return new Response(bytes, { status: 200, headers })
+      let offset = 0
+      const body = new ReadableStream<Uint8Array>({
+        pull(controller) {
+          if (offset >= bytes.byteLength) {
+            controller.close()
+            return
+          }
+          const length = Math.min(256 * 1024, bytes.byteLength - offset)
+          controller.enqueue(new Uint8Array(bytes, offset, length))
+          offset += length
+        },
+      })
+      return new Response(body, { status: 200, headers })
     }
     for (const name of ["accept-ranges", "content-length", "content-range", "etag", "last-modified"]) {
       const value = upstream.headers.get(name)

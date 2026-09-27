@@ -46,9 +46,8 @@ interface PolicyRecord {
 }
 
 const DEFAULT_COMPARISON_IDS = [
-  "kb-25290-2026-07-01",
-  "kb-25303-2026-07-01",
-  "kb-25334-2026-07-01",
+  HANWHA_POLICY_DOCUMENT_ID,
+  KB_POLICY_DOCUMENT_ID,
 ]
 
 const FOCUS_OPTIONS: Array<{ value: FocusFilter; label: string }> = [
