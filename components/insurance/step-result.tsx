@@ -398,8 +398,9 @@ function ChartsNeedsPanel({ model, configuredTargets, onOpenTargets }: { model: 
   )
 }
 
-function ConsultingPanel({ model, selectedIds, onToggle, onOpenAdditional, proposals, onOpenProposal, reportStatus, onReportStatusChange }: {
+function ConsultingPanel({ model, demoMode, selectedIds, onToggle, onOpenAdditional, proposals, onOpenProposal, reportStatus, onReportStatusChange }: {
   model: InsuranceDashboardModel
+  demoMode: boolean
   selectedIds: string[]
   onToggle: (id: string) => void
   onOpenAdditional: () => void
@@ -433,7 +434,7 @@ function ConsultingPanel({ model, selectedIds, onToggle, onOpenAdditional, propo
         <div className="border-b border-black/10 p-5"><h2 id="compare-title" className="text-lg font-black">컨설팅 비교 요약</h2><p className="mt-1 text-xs text-neutral-500">확인된 금액과 입력된 설계만 비교하며, 면책·감액·정의 차이는 약관 탭에서 별도 검토합니다.</p></div>
         <div className="overflow-x-auto"><table className="w-full min-w-[680px] border-collapse text-sm"><thead><tr className="bg-neutral-950 text-left text-white"><th className="p-4">비교 항목</th><th className="p-4">현재 조회 전체</th><th className="bg-[#df2444] p-4">상담 선택</th><th className="p-4">{primaryProposal?.productName || "신규 설계"}</th></tr></thead><tbody className="divide-y divide-black/10"><tr><th className="p-4 text-left">계약·설계 수</th><td className="p-4">{model.contracts.length}건</td><td className="p-4 font-bold">{selected.length}건</td><td className="p-4">{primaryProposal ? "1건" : "미입력"}</td></tr><tr><th className="p-4 text-left">표시 보험료</th><td className="p-4">{model.premiumKnownCount ? formatWon(model.totalPremium) : "미표시"}</td><td className="p-4 font-bold">{selectedPremiums.length ? formatWon(premiumTotal) : "미표시"}</td><td className="p-4">{primaryProposal ? formatWon(primaryProposal.monthlyPremium) : "미입력"}</td></tr><tr><th className="p-4 text-left">확인 담보·항목</th><td className="p-4">{model.coverageItems.length}개 담보</td><td className="p-4 font-bold">{relatedSignals}개 표준항목</td><td className="p-4">{primaryProposal ? `${primaryProposal.coverages.length}개 담보` : "미입력"}</td></tr><tr><th className="p-4 text-left">표시 가입금액 합계</th><td className="p-4">항목별 확인 필요</td><td className="p-4 font-bold">미수집 금액 제외</td><td className="p-4">{primaryProposal && proposalAmount !== null ? formatWon(proposalAmount) : "미입력"}</td></tr></tbody></table></div>
       </section>
-      <ReportApproval status={reportStatus} onChange={onReportStatusChange} hasProposal={proposals.length > 0} evidenceCount={model.enrichment.policyFindings.length} />
+      <ReportApproval status={reportStatus} onChange={onReportStatusChange} hasProposal={proposals.length > 0} evidenceCount={model.dataQuality.termsEvidenceCount} demoMode={demoMode} />
     </div>
   )
 }
@@ -469,8 +470,8 @@ function PolicyFindingCard({ finding, model }: { finding: InsurancePolicyFinding
       <dl className="grid sm:grid-cols-2">
         <div className="border-b border-black/10 p-4 sm:border-r"><dt className="text-[10px] font-bold text-[#c71935]">{catalogCandidate ? "원문 후보 문구" : "보험금 지급 조건"}</dt><dd className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{findingValue(finding.paymentTrigger)}</dd></div>
         <div className="border-b border-black/10 p-4"><dt className="text-[10px] font-bold text-neutral-500">지급 횟수</dt><dd className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{findingValue(finding.paymentFrequency)}</dd></div>
-        <div className="border-b border-black/10 p-4 sm:border-b-0 sm:border-r"><dt className="text-[10px] font-bold text-neutral-500">면책 기간</dt><dd className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{findingValue(finding.waitingPeriod)}</dd></div>
-        <div className="p-4"><dt className="text-[10px] font-bold text-neutral-500">감액 기간</dt><dd className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{findingValue(finding.reductionPeriod)}</dd></div>
+        <div className="border-b border-black/10 p-4 sm:border-b-0 sm:border-r"><dt className="text-[10px] font-bold text-neutral-500">{catalogCandidate ? "면책기간 추출 후보" : "면책 기간"}</dt><dd className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{findingValue(finding.waitingPeriod)}</dd></div>
+        <div className="p-4"><dt className="text-[10px] font-bold text-neutral-500">{catalogCandidate ? "감액기간 추출 후보" : "감액 기간"}</dt><dd className="mt-2 text-sm font-semibold leading-6 text-neutral-900">{findingValue(finding.reductionPeriod)}</dd></div>
       </dl>
       <div className="flex flex-col gap-2 border-t border-black/10 bg-[#f3f0e8] px-4 py-3 text-[10px] sm:flex-row sm:items-center sm:justify-between">
         <span className="min-w-0 truncate font-semibold text-neutral-600" title={finding.sourceDocument || undefined}>
@@ -555,8 +556,8 @@ function TermsRiskPanel({ model, demoMode }: { model: InsuranceDashboardModel; d
 
       <section aria-labelledby="policy-findings-title">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#3155d9]">Policy evidence</p><h2 id="policy-findings-title" className="mt-1 text-xl font-black text-neutral-950">특약별 지급조건과 원문 근거</h2></div>
-          <span className="rounded-full border border-black/10 bg-white px-3 py-2 text-xs font-bold">근거 {policyFindings.length}건</span>
+          <div><p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#3155d9]">Policy evidence</p><h2 id="policy-findings-title" className="mt-1 text-xl font-black text-neutral-950">{demoMode ? "시연용 약관 조건" : "계약 관련 약관 문구 후보"}</h2></div>
+          <span className="rounded-full border border-black/10 bg-white px-3 py-2 text-xs font-bold">{demoMode ? "가상 근거" : "문구 후보"} {policyFindings.length}건</span>
         </div>
         <div className="grid gap-4 xl:grid-cols-2">
           {policyFindings.map((finding) => <PolicyFindingCard key={finding.id} finding={finding} model={model} />)}
@@ -704,7 +705,7 @@ export function StepResult({ data, onReset, onLogout, userName, demoMode = false
             {tab === "medical" && <MedicalDataPanel initialProfile={connectionProfile} />}
             {tab === "decision" && <DecisionPanel model={model} demoMode={demoMode} />}
             {tab === "charts" && <ChartsNeedsPanel model={model} configuredTargets={Object.values(targetValues).filter(Boolean).length} onOpenTargets={() => setTargetsOpen(true)} />}
-            {tab === "consulting" && <ConsultingPanel model={model} selectedIds={selectedIds} onToggle={toggleSelected} onOpenAdditional={() => setAdditionalOpen(true)} proposals={proposals} onOpenProposal={() => setProposalOpen(true)} reportStatus={reportStatus} onReportStatusChange={setReportStatus} />}
+            {tab === "consulting" && <ConsultingPanel model={model} demoMode={demoMode} selectedIds={selectedIds} onToggle={toggleSelected} onOpenAdditional={() => setAdditionalOpen(true)} proposals={proposals} onOpenProposal={() => setProposalOpen(true)} reportStatus={reportStatus} onReportStatusChange={setReportStatus} />}
             {tab === "terms" && <TermsRiskPanel model={model} demoMode={demoMode} />}
           </main>
           </section>
