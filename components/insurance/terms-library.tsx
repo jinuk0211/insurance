@@ -62,6 +62,7 @@ const POLICY_RECORDS = OFFICIAL_POLICY_DOCUMENTS.flatMap((document) => {
   const analysis = analysisById.get(document.id)
   return analysis ? [{ document, analysis }] : []
 })
+const ON_SALE_COUNT = POLICY_RECORDS.filter(({ document }) => document.saleStatus === "on_sale").length
 
 function formatDate(value: string | null): string {
   return value ? value.replaceAll("-", ".") : "일자 미표시"
@@ -225,7 +226,7 @@ export function TermsLibrary() {
           <div>
             <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f1b94c]">KB insurance policy evidence</p>
             <h1 className="mt-4 max-w-3xl font-serif text-4xl font-bold leading-[1.12] tracking-[-0.035em] sm:text-5xl">KB손해보험 약관<br />{formatNumber(OFFICIAL_POLICY_ANALYSIS_SUMMARY.pageCount)}쪽을 탐색합니다.</h1>
-            <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">KB손해보험 질병보험 공시 PDF {OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}건을 문서별 TXT로 보존하고, 보장 범위·특약·면책·감액·대기기간의 후보 문구를 페이지별로 찾았습니다.</p>
+            <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">KB손해보험 질병보험 공시 PDF {OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}건 중 수집 당시 판매 문서는 {ON_SALE_COUNT}건입니다. 문서별 TXT를 보존하고 보장 범위·특약·면책·감액·대기기간의 후보 문구를 페이지별로 찾았습니다.</p>
             <div className="mt-7 flex flex-wrap gap-2">
               {([
                 ["analysis", "약관 분석"],
@@ -238,7 +239,7 @@ export function TermsLibrary() {
           </div>
 
           <div className="grid grid-cols-2 gap-3 self-end">
-            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}</p><p className="mt-1 text-xs text-neutral-300">KB 공식 약관</p></div>
+            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}</p><p className="mt-1 text-xs text-neutral-300">KB 공식 약관 · 수집 당시 판매 {ON_SALE_COUNT}건</p></div>
             <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{formatNumber(OFFICIAL_POLICY_ANALYSIS_SUMMARY.pageCount)}</p><p className="mt-1 text-xs text-neutral-300">전체 추출 페이지</p></div>
             <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{(OFFICIAL_POLICY_ANALYSIS_SUMMARY.characterCount / 10_000_000).toFixed(2)}천만</p><p className="mt-1 text-xs text-neutral-300">원문 텍스트 글자</p></div>
             <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{formatNumber(OFFICIAL_POLICY_ANALYSIS_SUMMARY.evidenceCount)}</p><p className="mt-1 text-xs text-neutral-300">자동 탐지 문구</p></div>
