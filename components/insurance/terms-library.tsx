@@ -415,18 +415,18 @@ export function TermsLibrary() {
             </div>
           )}
 
-          <div className="mt-5 flex items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-blue-950"><Sparkles className="mt-0.5 h-5 w-5 shrink-0" /><p className="text-[11px] leading-5"><strong className="block text-xs">왼쪽 항목, 위쪽 문서 기준의 표로 비교합니다.</strong>문서 분량부터 언급 주제, 특약명 후보, 면책·감액·보장개시 문구까지 같은 행에서 볼 수 있습니다. ‘자동 미탐지’는 해당 조항이 없다는 판정이 아닙니다.</p></div>
+          <div className="mt-5 flex items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-blue-950"><Sparkles className="mt-0.5 h-5 w-5 shrink-0" /><p className="text-[11px] leading-5"><strong className="block text-xs">왼쪽 항목, 위쪽 문서 기준의 표로 비교합니다.</strong>문서 분량부터 언급 주제, 특약명 후보, 면책·감액·보장개시 문구까지 같은 행에서 볼 수 있습니다. ‘자동 미탐지’는 해당 조항이 없다는 판정이 아닙니다.<span className="mt-1 block lg:hidden">좁은 화면에서는 표를 좌우로 스크롤하세요.</span></p></div>
 
           {selectedRecords.length ? (
-            <div className="mt-5 overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm">
-              <table className="w-full table-fixed border-collapse text-left text-[10px] leading-4 sm:text-[13px] sm:leading-5">
+            <div className="mt-5 overflow-x-auto rounded-2xl border border-black/10 bg-white shadow-sm" role="region" aria-label="약관 비교표" tabIndex={0}>
+              <table className="w-full min-w-[940px] table-fixed border-collapse text-left text-[10px] leading-4 sm:text-[13px] sm:leading-5 lg:min-w-0">
                 <colgroup>
                   <col className="w-[92px] sm:w-[150px]" />
                   {selectedRecords.map(({ document }) => <col key={document.id} />)}
                 </colgroup>
                 <thead className="bg-[#17243b] text-white">
                   <tr>
-                    <th scope="col" className="p-2 font-semibold sm:p-4">비교 항목</th>
+                    <th scope="col" className="sticky left-0 z-10 bg-[#17243b] p-2 font-semibold sm:p-4">비교 항목</th>
                     {selectedRecords.map(({ document }, index) => (
                       <th key={document.id} scope="col" className="border-l border-white/15 p-2 align-top sm:p-4">
                         <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -441,7 +441,7 @@ export function TermsLibrary() {
                 </thead>
                 <tbody className="divide-y divide-black/10">
                   <tr>
-                    <th scope="row" className="bg-[#f1f5f9] p-2 align-top font-semibold sm:p-4">문서 분량</th>
+                    <th scope="row" className="sticky left-0 z-10 bg-[#f1f5f9] p-2 align-top font-semibold sm:p-4">문서 분량</th>
                     {selectedRecords.map(({ document, analysis }) => (
                       <td key={document.id} className="min-w-0 border-l border-black/10 p-2 align-top sm:p-4">
                         <div className="grid gap-2 lg:grid-cols-2">
@@ -452,7 +452,39 @@ export function TermsLibrary() {
                     ))}
                   </tr>
                   <tr>
-                    <th scope="row" className="bg-blue-50 p-2 align-top font-semibold text-blue-950 sm:p-4">PDF 언급 주제<br /><span className="text-[9px] font-medium">가입 보장 미확인</span></th>
+                    <th scope="row" className="sticky left-0 z-10 bg-indigo-50 p-2 align-top font-semibold text-indigo-950 sm:p-4">설계사 원문 검토<br /><span className="text-[9px] font-medium">해당 PDF 개정본</span></th>
+                    {selectedRecords.map(({ document, analysis }) => {
+                      const reviewed = REVIEWED_POLICIES.find((policy) =>
+                        policy.documentId === document.id && policy.sha256 === analysis.sourceSha256)
+                      return (
+                        <td key={document.id} className="min-w-0 border-l border-black/10 p-2 align-top sm:p-4">
+                          {reviewed ? (
+                            <div>
+                              <p className="text-[10px] font-semibold text-indigo-800">원문 검토 {reviewed.checkpoints.length}개 · 가입증권 대조 전</p>
+                              <ol className="mt-2 space-y-2">
+                                {reviewed.checkpoints.map((item) => (
+                                  <li key={item.title} className="rounded-lg border border-black/10 bg-white p-2 sm:p-3">
+                                    <strong className="block text-[10px] leading-4 text-[#17243b] sm:text-xs">{item.title}</strong>
+                                    <p className="mt-1 text-[10px] leading-4 text-neutral-700 sm:text-[11px] sm:leading-5">{item.summary}</p>
+                                    <p className="mt-1 text-[9px] leading-4 text-neutral-600 sm:text-[10px]">확인: {item.advisorCheck}</p>
+                                    <div className="mt-2 flex flex-wrap gap-1">
+                                      {item.evidence.map((entry) => (
+                                        <Link key={entry.article + entry.page + entry.anchor} href={"/insurance/terms/viewer/" + document.id + "?page=" + entry.page} target="_blank" rel="noopener noreferrer" className="rounded bg-[#f1f5f9] px-1.5 py-1 text-[9px] font-semibold text-[#4338ca] underline-offset-2 hover:underline">{entry.article} · PDF {entry.page}쪽 ↗</Link>
+                                      ))}
+                                    </div>
+                                  </li>
+                                ))}
+                              </ol>
+                            </div>
+                          ) : (
+                            <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-[10px] leading-5 text-amber-950">설계사 원문 검토 체크포인트가 없습니다. 아래 자동 후보와 PDF 원문을 직접 확인하세요.</p>
+                          )}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                  <tr>
+                    <th scope="row" className="sticky left-0 z-10 bg-blue-50 p-2 align-top font-semibold text-blue-950 sm:p-4">PDF 언급 주제<br /><span className="text-[9px] font-medium">가입 보장 미확인</span></th>
                     {selectedRecords.map(({ document, analysis }) => (
                       <td key={document.id} className="min-w-0 border-l border-black/10 p-2 align-top sm:p-4">
                         <div className="flex flex-wrap gap-1.5">{analysis.coverage.topics.length ? analysis.coverage.topics.map((topic) => <span key={topic} className="rounded-md bg-blue-100 px-2 py-1 text-[9px] font-semibold text-blue-900 sm:text-[10px]">{topic}</span>) : <span className="font-bold text-amber-900">자동 미탐지 · 원문 확인 필요</span>}</div>
@@ -460,7 +492,7 @@ export function TermsLibrary() {
                     ))}
                   </tr>
                   <tr>
-                    <th scope="row" className="bg-violet-50 p-2 align-top font-semibold text-violet-950 sm:p-4">특약 후보</th>
+                    <th scope="row" className="sticky left-0 z-10 bg-violet-50 p-2 align-top font-semibold text-violet-950 sm:p-4">특약 후보</th>
                     {selectedRecords.map(({ document, analysis }) => (
                       <td key={document.id} className="min-w-0 border-l border-black/10 p-2 align-top sm:p-4">
                         <strong className="mb-2 inline-flex rounded-full bg-violet-100 px-2 py-1 text-[9px] text-violet-900 sm:text-[10px]">{analysis.riders.detectedCount}개 감지</strong>
@@ -469,19 +501,19 @@ export function TermsLibrary() {
                     ))}
                   </tr>
                   <tr>
-                    <th scope="row" className="bg-red-50 p-2 align-top font-semibold text-red-950 sm:p-4">면책 · 보상 제외</th>
+                    <th scope="row" className="sticky left-0 z-10 bg-red-50 p-2 align-top font-semibold text-red-950 sm:p-4">면책 · 보상 제외</th>
                     {selectedRecords.map(({ document, analysis }) => <td key={document.id} className="min-w-0 border-l border-black/10 p-2 align-top sm:p-4"><EvidenceSummary section={analysis.exclusions} tone="red" documentId={document.id} /></td>)}
                   </tr>
                   <tr>
-                    <th scope="row" className="bg-amber-50 p-2 align-top font-semibold text-amber-950 sm:p-4">초기 감액</th>
+                    <th scope="row" className="sticky left-0 z-10 bg-amber-50 p-2 align-top font-semibold text-amber-950 sm:p-4">초기 감액</th>
                     {selectedRecords.map(({ document, analysis }) => <td key={document.id} className="min-w-0 border-l border-black/10 p-2 align-top sm:p-4"><EvidenceSummary section={analysis.reduction} tone="amber" documentId={document.id} /></td>)}
                   </tr>
                   <tr>
-                    <th scope="row" className="bg-blue-50 p-2 align-top font-semibold text-blue-950 sm:p-4">면책기간 · 보장개시</th>
+                    <th scope="row" className="sticky left-0 z-10 bg-blue-50 p-2 align-top font-semibold text-blue-950 sm:p-4">면책기간 · 보장개시</th>
                     {selectedRecords.map(({ document, analysis }) => <td key={document.id} className="min-w-0 border-l border-black/10 p-2 align-top sm:p-4"><EvidenceSummary section={analysis.waiting} tone="blue" documentId={document.id} /></td>)}
                   </tr>
                   <tr>
-                    <th scope="row" className="bg-[#f1f5f9] p-2 align-top font-semibold sm:p-4">원문 확인</th>
+                    <th scope="row" className="sticky left-0 z-10 bg-[#f1f5f9] p-2 align-top font-semibold sm:p-4">원문 확인</th>
                     {selectedRecords.map(({ document, analysis }) => (
                       <td key={document.id} className="min-w-0 border-l border-black/10 p-2 align-top sm:p-4">
                         <div className="grid gap-2 sm:grid-cols-2"><Link href={`/insurance/terms/viewer/${document.id}`} target="_blank" className="inline-flex min-h-9 items-center justify-center rounded-lg bg-[#17243b] px-2 text-[9px] font-semibold text-white sm:text-xs">PDF 보기</Link><a href={analysis.textPath} target="_blank" className="inline-flex min-h-9 items-center justify-center rounded-lg border border-black/10 px-2 text-[9px] font-semibold sm:text-xs">TXT 보기</a></div>
