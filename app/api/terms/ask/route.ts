@@ -45,7 +45,7 @@ async function loadPages(document: QaDocument) {
   return pages
 }
 export function GET() {
-  return json({ available: Boolean(process.env.OPENAI_API_KEY && process.env.DATABASE_URL && process.env.USER_KEY_SECRET) })
+  return json({ available: Boolean(process.env.OPENAI_API_KEY && process.env.BLOB_READ_WRITE_TOKEN && process.env.USER_KEY_SECRET) })
 }
 export async function POST(request: Request) {
   const origin = request.headers.get("origin")
@@ -112,6 +112,3 @@ export async function POST(request: Request) {
     return json({ error: "원문 검색 또는 이용량 확인에 실패했습니다. 잠시 후 다시 시도해 주세요." }, 503)
   }
 }
-
-
-
