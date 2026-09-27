@@ -117,6 +117,23 @@
       "expectedSha256": "eef7bb8c3810e1078d81716eee1511183c2d9f686da10a3287b6a9a1d6bbdb88",
       "expectedPageCount": 328,
       "analysisStartPage": 39
+    },
+    {
+      "id": "nhlife-new-ansimcare-realloss-2605",
+      "insurer": "NH농협생명",
+      "productName": "New안심케어NH실손의료비보험(갱신형,무배당)_2605",
+      "productType": "실손의료비보험",
+      "saleStatus": "on_sale",
+      "versionKey": "2605-2026-05-sale-pdf",
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "pdfUrl": "https://www.nhlife.co.kr/ho/zz/FileDwld.nhl?apdFlid=FILE_000000000024178&fileSeqn=2",
+      "sourceFileName": "New안심케어NH실손의료비보험_2605_약관.pdf",
+      "sourcePageUrl": "https://m.nhlife.co.kr/mo/pr/10/30/MOPR1030M00?source=P3075002",
+      "byteLength": 9729509,
+      "expectedSha256": "42ce81976809453b8e3d80ba893c75ef2872897847c2412d1cf24518de95b955",
+      "expectedPageCount": 176,
+      "analysisStartPage": 28
     }
   ]
 }

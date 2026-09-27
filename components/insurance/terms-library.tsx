@@ -23,6 +23,7 @@ import { HANWHA_POLICY_CHECKPOINTS, HANWHA_POLICY_DOCUMENT_ID, HANWHA_POLICY_SHA
 import { KB_POLICY_CHECKPOINTS, KB_POLICY_DOCUMENT_ID, KB_POLICY_SHA256 } from "@/lib/kb-policy-checkpoints"
 import { KDB_RENEWAL_POLICY_CHECKPOINTS, KDB_RENEWAL_POLICY_DOCUMENT_ID, KDB_RENEWAL_POLICY_SHA256, KDB_STANDARD_POLICY_CHECKPOINTS, KDB_STANDARD_POLICY_DOCUMENT_ID, KDB_STANDARD_POLICY_SHA256 } from "@/lib/kdb-policy-checkpoints"
 import { NHLIFE_POLICY_CHECKPOINTS, NHLIFE_POLICY_DOCUMENT_ID, NHLIFE_POLICY_SHA256 } from "@/lib/nhlife-policy-checkpoints"
+import { NHLIFE_REALLOSS_CHECKPOINTS, NHLIFE_REALLOSS_DOCUMENT_ID, NHLIFE_REALLOSS_SHA256 } from "@/lib/nhlife-realloss-policy-checkpoints"
 import { SAMSUNGFIRE_POLICY_CHECKPOINTS, SAMSUNGFIRE_POLICY_DOCUMENT_ID, SAMSUNGFIRE_POLICY_SHA256 } from "@/lib/samsungfire-policy-checkpoints"
 import {
   OFFICIAL_POLICY_ANALYSES,
@@ -72,6 +73,7 @@ const REVIEWED_POLICIES = [
   { documentId: KDB_RENEWAL_POLICY_DOCUMENT_ID, sha256: KDB_RENEWAL_POLICY_SHA256, insurer: "KDB생명", fileLabel: "2026.04.01 판매일자 · 갱신형", pageCount: 258, checkpoints: KDB_RENEWAL_POLICY_CHECKPOINTS },
   { documentId: KDB_STANDARD_POLICY_DOCUMENT_ID, sha256: KDB_STANDARD_POLICY_SHA256, insurer: "KDB생명", fileLabel: "2026.04.01 판매일자 · 표준형/해약환급금 미지급형Ⅲ", pageCount: 256, checkpoints: KDB_STANDARD_POLICY_CHECKPOINTS },
   { documentId: NHLIFE_POLICY_DOCUMENT_ID, sha256: NHLIFE_POLICY_SHA256, insurer: "NH농협생명", fileLabel: "2605 · 2026.07 판매월", pageCount: 328, checkpoints: NHLIFE_POLICY_CHECKPOINTS },
+  { documentId: NHLIFE_REALLOSS_DOCUMENT_ID, sha256: NHLIFE_REALLOSS_SHA256, insurer: "NH농협생명", fileLabel: "2605 · 2026.05 판매월 · 일반 실손", pageCount: 176, checkpoints: NHLIFE_REALLOSS_CHECKPOINTS },
 ]
 
 const analysisById = new Map(OFFICIAL_POLICY_ANALYSES.map((analysis) => [analysis.id, analysis]))
