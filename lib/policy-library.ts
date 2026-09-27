@@ -121,7 +121,8 @@ export function policyCategory(productName: string): string {
   if (/간병|요양|치매/.test(productName)) return "간병"
   if (/어린이|자녀|태아/.test(productName)) return "어린이"
   if (/실손|의료비/.test(productName)) return "실손"
-  return "건강"
+  if (/건강|의료|상해/.test(productName)) return "건강"
+  return "기타"
 }
 
 export function officialPolicyProxyPath(document: OfficialPolicyDocument): string {

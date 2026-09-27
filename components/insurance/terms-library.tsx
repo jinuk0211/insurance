@@ -128,7 +128,7 @@ function matchesPolicyQuery(document: OfficialPolicyDocument, analysis: Official
   const reviewed = REVIEWED_POLICIES.find((policy) =>
     policy.documentId === document.id && policy.sha256 === analysis.sourceSha256)
   const reviewedText = reviewed?.checkpoints.flatMap((item) => [item.title, item.summary, item.advisorCheck]).join(" ") ?? ""
-  const searchable = [document.insurer, document.productName, ...analysis.coverage.topics, ...analysis.riders.names, reviewedText]
+  const searchable = [document.insurer, document.productName, reviewedText]
     .join(" ").toLocaleLowerCase("ko-KR")
   return searchable.includes(query) || matchingEvidence(analysis, query).length > 0
 }
@@ -297,15 +297,15 @@ export function TermsLibrary() {
           </div>
 
           <div className="mt-6 grid gap-3 rounded-2xl border border-black/10 bg-white p-3 lg:grid-cols-[1fr_160px_150px_150px]">
-            <label className="relative"><span className="sr-only">보험사, 상품명, 보장 주제, 특약 또는 원문 후보 문구 검색</span><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="상품명 · 보장 주제 · 후보 문구 검색" className="min-h-11 w-full rounded-xl border border-black/10 bg-[#f8fafc] pl-10 pr-3 text-sm outline-none focus:border-[#4338ca]" /></label>
+            <label className="relative"><span className="sr-only">보험사, 상품명 또는 원문 후보 문구 검색</span><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="보험사 · 상품명 · 원문 후보 검색" className="min-h-11 w-full rounded-xl border border-black/10 bg-[#f8fafc] pl-10 pr-3 text-sm outline-none focus:border-[#4338ca]" /></label>
             <select value={focus} onChange={(event) => setFocus(event.target.value as FocusFilter)} className="min-h-11 rounded-xl border border-black/10 bg-[#f8fafc] px-3 text-xs font-bold" aria-label="분석 항목 필터">{FOCUS_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>
-            <select value={category} onChange={(event) => setCategory(event.target.value)} className="min-h-11 rounded-xl border border-black/10 bg-[#f8fafc] px-3 text-xs font-bold" aria-label="보장 분야 필터"><option value="all">전체 보장 분야</option>{categories.map((item) => <option key={item} value={item}>{item}</option>)}</select>
+            <select value={category} onChange={(event) => setCategory(event.target.value)} className="min-h-11 rounded-xl border border-black/10 bg-[#f8fafc] px-3 text-xs font-bold" aria-label="상품명 기준 분야 필터"><option value="all">전체 상품명 분야</option>{categories.map((item) => <option key={item} value={item}>{item}</option>)}</select>
             <select value={saleFilter} onChange={(event) => setSaleFilter(event.target.value as SaleFilter)} className="min-h-11 rounded-xl border border-black/10 bg-[#f8fafc] px-3 text-xs font-bold" aria-label="판매 상태 필터"><option value="all">전체 판매 상태</option><option value="on_sale">수집 당시 판매</option><option value="off_sale">수집 당시 판매 종료</option><option value="unknown">판매 상태 미확인</option></select>
           </div>
 
           <div className="mt-4 flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-950 sm:flex-row sm:items-start">
             <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0" />
-            <p className="text-[11px] leading-5"><strong className="block text-xs">‘자동 미탐지’는 ‘조항 없음’이 아닙니다.</strong>{OFFICIAL_POLICY_ANALYSIS_NOTICE} 주제 배지는 PDF의 단어 출현이며 가입 보장을 확인한 결과가 아닙니다. 실제 가입 담보와 지급 판단은 가입설계서·증권·해당 시점 약관을 함께 봐야 합니다.</p>
+            <p className="text-[11px] leading-5"><strong className="block text-xs">‘자동 미탐지’는 ‘조항 없음’이 아닙니다.</strong>{OFFICIAL_POLICY_ANALYSIS_NOTICE} 상품명 기준 분야는 가입 보장을 확인한 결과가 아닙니다. 실제 가입 담보와 지급 판단은 가입설계서·증권·해당 시점 약관을 함께 봐야 합니다.</p>
           </div>
 
           <div className="mt-5 flex items-center justify-between text-xs"><span className="font-semibold">검색 결과 {filteredRecords.length}건</span><span className="text-neutral-500">카드 아래에서 원문 페이지 근거를 펼칠 수 있습니다</span></div>
@@ -320,15 +320,13 @@ export function TermsLibrary() {
                   <div className="p-5 sm:p-6">
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${document.saleStatus === "on_sale" ? "bg-emerald-100 text-emerald-800" : "bg-neutral-100 text-neutral-600"}`}>{saleStatusLabel(document.saleStatus)}</span><span className="text-[10px] font-semibold text-[#4338ca]">{document.insurer}</span><span className="text-[10px] font-bold text-neutral-500">{formatDate(document.effectiveFrom)}</span>{(PDF_ENTRY_COUNTS.get(analysis.sourceSha256) ?? 0) > 1 && <span className="rounded-full bg-blue-50 px-2 py-1 text-[10px] font-bold text-blue-800">동일 PDF {PDF_ENTRY_COUNTS.get(analysis.sourceSha256)}항목</span>}</div>
+                        <div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${document.saleStatus === "on_sale" ? "bg-emerald-100 text-emerald-800" : "bg-neutral-100 text-neutral-600"}`}>{saleStatusLabel(document.saleStatus)}</span><span className="text-[10px] font-semibold text-[#4338ca]">{document.insurer}</span><span className="text-[10px] font-bold text-neutral-500">{formatDate(document.effectiveFrom)}</span>{(PDF_ENTRY_COUNTS.get(analysis.sourceSha256) ?? 0) > 1 && <span className="rounded-full bg-blue-50 px-2 py-1 text-[10px] font-bold text-blue-800">동일 PDF {PDF_ENTRY_COUNTS.get(analysis.sourceSha256)}항목</span>}{reviewed ? <span className="rounded-full bg-indigo-50 px-2 py-1 text-[10px] font-bold text-indigo-800">원문 검토 {reviewed.checkpoints.length}개</span> : <span className="rounded-full bg-amber-50 px-2 py-1 text-[10px] font-bold text-amber-900">자동 후보만</span>}</div>
                         <h3 className="mt-3 text-lg font-semibold leading-7">{document.productName}</h3>
                       </div>
                       <button onClick={() => toggleComparison(document.id)} aria-pressed={selected} className={`inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-xl border px-3 text-[10px] font-semibold ${selected ? "border-[#4f46e5] bg-blue-50 text-[#4f46e5]" : "border-black/10 bg-white hover:border-[#4f46e5]"}`}>{selected ? <Check className="h-4 w-4" /> : <GitCompareArrows className="h-4 w-4" />}{selected ? "비교 선택됨" : "비교 담기"}</button>
                     </div>
 
-                    <div className="mt-4"><p className="mb-2 text-[10px] font-bold text-neutral-500">분석 대상 PDF 쪽의 언급 주제 · 가입 보장 확인 아님</p><div className="flex flex-wrap gap-1.5">
-                      {analysis.coverage.topics.length ? analysis.coverage.topics.map((topic) => <span key={topic} className="rounded-lg bg-[#17243b] px-2.5 py-1.5 text-[10px] font-bold text-white">{topic}</span>) : <span className="rounded-lg bg-amber-100 px-2.5 py-1.5 text-[10px] font-bold text-amber-900">주제 단어 자동 미탐지</span>}
-                    </div></div>
+                    <div className="mt-4"><p className="mb-2 text-[10px] font-bold text-neutral-500">상품명 기준 분야 · 가입 보장 확인 아님</p><span className="inline-flex rounded-lg bg-[#17243b] px-2.5 py-1.5 text-[10px] font-bold text-white">{policyCategory(document.productName)}</span></div>
 
                     <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
                       <Metric label="특약 후보" value={`${analysis.riders.detectedCount}개`} attention={!analysis.riders.evidence.length} />
@@ -488,10 +486,10 @@ export function TermsLibrary() {
                     })}
                   </tr>
                   <tr>
-                    <th scope="row" className="sticky left-0 z-10 bg-blue-50 p-2 align-top font-semibold text-blue-950 sm:p-4">PDF 언급 주제<br /><span className="text-[9px] font-medium">가입 보장 미확인</span></th>
-                    {selectedRecords.map(({ document, analysis }) => (
+                    <th scope="row" className="sticky left-0 z-10 bg-blue-50 p-2 align-top font-semibold text-blue-950 sm:p-4">상품명 기준 분야<br /><span className="text-[9px] font-medium">가입 보장 미확인</span></th>
+                    {selectedRecords.map(({ document }) => (
                       <td key={document.id} className="min-w-0 border-l border-black/10 p-2 align-top sm:p-4">
-                        <div className="flex flex-wrap gap-1.5">{analysis.coverage.topics.length ? analysis.coverage.topics.map((topic) => <span key={topic} className="rounded-md bg-blue-100 px-2 py-1 text-[9px] font-semibold text-blue-900 sm:text-[10px]">{topic}</span>) : <span className="font-bold text-amber-900">자동 미탐지 · 원문 확인 필요</span>}</div>
+                        <span className="inline-flex rounded-md bg-blue-100 px-2 py-1 text-[9px] font-semibold text-blue-900 sm:text-[10px]">{policyCategory(document.productName)}</span>
                       </td>
                     ))}
                   </tr>
