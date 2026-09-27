@@ -1,6 +1,7 @@
 import policyLibrary from "@/lib/generated/official-policy-library.json"
 
-export const runtime = "edge"
+// Vercel Edge returned different bytes for a pinned Hanwha PDF; Node served the verified original.
+export const runtime = "nodejs"
 
 interface RouteContext {
   params: Promise<{ id: string }>
