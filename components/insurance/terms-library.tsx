@@ -260,7 +260,7 @@ export function TermsLibrary() {
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:py-16">
           <div>
             <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f1b94c]">Five-insurer policy evidence</p>
-            <h1 className="mt-4 max-w-3xl font-serif text-4xl font-bold leading-[1.12] tracking-[-0.035em] sm:text-5xl">공식 보험약관<br />{formatNumber(OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pageCount)}쪽 원문 탐색</h1>
+            <h1 className="mt-4 max-w-3xl font-serif text-4xl font-bold leading-[1.4] tracking-[-0.035em] sm:text-5xl">공식 보험약관<br />{formatNumber(OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pageCount)}쪽 원문 탐색</h1>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">KB손해보험 50건, 한화생명 1건, 삼성화재 계약전환용 1건, DB손해보험 암보험 1건, 현대해상 과거 버전 1건은 자료실 항목 수입니다. 서로 다른 PDF는 {OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pdfCount}개이며, 중복을 뺀 원문에서 언급 주제와 지급사유·특약·면책·감액·대기기간 후보 문구를 찾았습니다.</p>
             <div className="mt-7 flex flex-wrap gap-2">
               {([
