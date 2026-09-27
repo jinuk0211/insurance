@@ -100,6 +100,23 @@
       "expectedSha256": "0bb88e7957e9b29d3e3f963dc44012f6255067c1e55da51cf395d24c5761b1ae",
       "expectedPageCount": 256,
       "analysisStartPage": 26
+    },
+    {
+      "id": "nhlife-wonderful-memory-dementia-2605",
+      "insurer": "NH농협생명",
+      "productName": "NH올원더풀기억안심치매보험(해약환급금일부지급형,무배당)_2605",
+      "productType": "치매보험",
+      "saleStatus": "on_sale",
+      "versionKey": "2605-2026-07-sale-pdf",
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "pdfUrl": "https://www.nhlife.co.kr/ho/zz/FileDwld.nhl?apdFlid=FILE_000000000024354&fileSeqn=2",
+      "sourceFileName": "NH올원더풀기억안심치매보험_2605_약관.pdf",
+      "sourcePageUrl": "https://m.nhlife.co.kr/mo/pr/10/30/MOPR1030M00?source=P3040513",
+      "byteLength": 13235671,
+      "expectedSha256": "eef7bb8c3810e1078d81716eee1511183c2d9f686da10a3287b6a9a1d6bbdb88",
+      "expectedPageCount": 328,
+      "analysisStartPage": 39
     }
   ]
 }
