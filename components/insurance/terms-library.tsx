@@ -53,7 +53,7 @@ const DEFAULT_COMPARISON_IDS = [
 
 const FOCUS_OPTIONS: Array<{ value: FocusFilter; label: string }> = [
   { value: "all", label: "전체 분석" },
-  { value: "coverage", label: "보장 범위" },
+  { value: "coverage", label: "지급사유 문구" },
   { value: "riders", label: "특약" },
   { value: "exclusions", label: "면책" },
   { value: "reduction", label: "감액" },
@@ -250,7 +250,7 @@ export function TermsLibrary() {
           <div>
             <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f1b94c]">Three-insurer policy evidence</p>
             <h1 className="mt-4 max-w-3xl font-serif text-4xl font-bold leading-[1.12] tracking-[-0.035em] sm:text-5xl">공식 보험약관<br />{formatNumber(OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pageCount)}쪽 원문 탐색</h1>
-            <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">KB손해보험 50건, 한화생명 1건, 삼성화재 계약전환용 1건은 자료실 항목 수입니다. 서로 다른 PDF는 {OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pdfCount}개이며, 중복을 뺀 원문에서 보장 범위·특약·면책·감액·대기기간 후보 문구를 찾았습니다.</p>
+            <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">KB손해보험 50건, 한화생명 1건, 삼성화재 계약전환용 1건은 자료실 항목 수입니다. 서로 다른 PDF는 {OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pdfCount}개이며, 중복을 뺀 원문에서 언급 주제와 지급사유·특약·면책·감액·대기기간 후보 문구를 찾았습니다.</p>
             <div className="mt-7 flex flex-wrap gap-2">
               {([
                 ["analysis", "약관 분석"],
@@ -292,7 +292,7 @@ export function TermsLibrary() {
 
           <div className="mt-4 flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-950 sm:flex-row sm:items-start">
             <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0" />
-            <p className="text-[11px] leading-5"><strong className="block text-xs">‘자동 미탐지’는 ‘조항 없음’이 아닙니다.</strong>{OFFICIAL_POLICY_ANALYSIS_NOTICE} KB손해보험 50건은 {formatDate(OFFICIAL_POLICY_COLLECTED_AT.slice(0, 10))} 수집본이며, 한화생명 1건은 공식 상품 페이지의 2026.04.17 파일입니다. 한화생명 파일명의 날짜와 삼성화재 2605.1 표기는 계약 적용 시작일로 확인되지 않았습니다. 삼성화재 약관은 계약전환용입니다. 상품 유형별 항목이 같은 PDF를 공유할 수 있습니다. 실제 가입 담보와 지급 판단은 가입설계서·증권·해당 시점 약관을 함께 봐야 합니다.</p>
+            <p className="text-[11px] leading-5"><strong className="block text-xs">‘자동 미탐지’는 ‘조항 없음’이 아닙니다.</strong>{OFFICIAL_POLICY_ANALYSIS_NOTICE} KB손해보험 50건은 {formatDate(OFFICIAL_POLICY_COLLECTED_AT.slice(0, 10))} 수집본이며, 한화생명 1건은 공식 상품 페이지의 2026.04.17 파일입니다. 한화생명 파일명의 날짜와 삼성화재 2605.1 표기는 계약 적용 시작일로 확인되지 않았습니다. 삼성화재 약관은 계약전환용입니다. 주제 배지는 PDF 전체의 단어 출현만 뜻하며 가입 보장을 확인한 결과가 아닙니다. 상품 유형별 항목이 같은 PDF를 공유할 수 있습니다. 실제 가입 담보와 지급 판단은 가입설계서·증권·해당 시점 약관을 함께 봐야 합니다.</p>
           </div>
 
           <div className="mt-5 flex items-center justify-between text-xs"><span className="font-black">검색 결과 {filteredRecords.length}건</span><span className="text-neutral-500">카드 아래에서 원문 페이지 근거를 펼칠 수 있습니다</span></div>
@@ -340,9 +340,9 @@ export function TermsLibrary() {
                       <button onClick={() => toggleComparison(document.id)} aria-pressed={selected} className={`inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-xl border px-3 text-[10px] font-black ${selected ? "border-[#3155d9] bg-blue-50 text-[#3155d9]" : "border-black/10 bg-white hover:border-[#3155d9]"}`}>{selected ? <Check className="h-4 w-4" /> : <GitCompareArrows className="h-4 w-4" />}{selected ? "비교 선택됨" : "비교 담기"}</button>
                     </div>
 
-                    <div className="mt-4 flex flex-wrap gap-1.5">
-                      {analysis.coverage.topics.length ? analysis.coverage.topics.map((topic) => <span key={topic} className="rounded-lg bg-[#17211f] px-2.5 py-1.5 text-[10px] font-bold text-white">{topic}</span>) : <span className="rounded-lg bg-amber-100 px-2.5 py-1.5 text-[10px] font-bold text-amber-900">보장 주제 자동 미탐지</span>}
-                    </div>
+                    <div className="mt-4"><p className="mb-2 text-[10px] font-bold text-neutral-500">PDF 전체의 언급 주제 · 가입 보장 확인 아님</p><div className="flex flex-wrap gap-1.5">
+                      {analysis.coverage.topics.length ? analysis.coverage.topics.map((topic) => <span key={topic} className="rounded-lg bg-neutral-100 px-2.5 py-1.5 text-[10px] font-bold text-neutral-700">{topic}</span>) : <span className="rounded-lg bg-amber-100 px-2.5 py-1.5 text-[10px] font-bold text-amber-900">주제 단어 자동 미탐지</span>}
+                    </div></div>
 
                     <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
                       <Metric label="특약 후보" value={`${analysis.riders.detectedCount}개`} attention={!analysis.riders.evidence.length} />
@@ -351,7 +351,7 @@ export function TermsLibrary() {
                       <Metric label="대기 문구" value={sectionStatus(analysis.waiting)} attention={!analysis.waiting.evidence.length} />
                     </div>
 
-                    {analysis.riders.names.length > 0 && <p className="mt-4 text-[11px] leading-5 text-neutral-600"><strong className="text-[#17211f]">감지 특약</strong> · {analysis.riders.names.slice(0, 5).join(" / ")}{analysis.riders.names.length > 5 ? ` 외 ${analysis.riders.names.length - 5}개` : ""}</p>}
+                    {analysis.riders.names.length > 0 && <p className="mt-4 text-[11px] leading-5 text-neutral-600"><strong className="text-[#17211f]">원문 내 특약명 후보</strong> · {analysis.riders.names.slice(0, 5).join(" / ")}{analysis.riders.names.length > 5 ? ` 외 ${analysis.riders.names.length - 5}개` : ""}</p>}
 
                     {matches.length > 0 && (
                       <div className="mt-4 rounded-xl border border-[#3155d9]/20 bg-blue-50 p-3">
@@ -376,7 +376,7 @@ export function TermsLibrary() {
                   <details className="group border-t border-black/10 bg-[#f8f6ef]">
                     <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between px-5 text-xs font-black sm:px-6">페이지별 원문 후보 펼치기 <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" /></summary>
                     <div className="grid gap-3 border-t border-black/10 p-4 sm:p-5 lg:grid-cols-2">
-                      <EvidencePanel label="보장 범위" section={analysis.coverage} documentId={document.id} tone="blue" />
+                      <EvidencePanel label="지급사유·보장내용 문구" section={analysis.coverage} documentId={document.id} tone="blue" />
                       <EvidencePanel label="특약" section={analysis.riders} documentId={document.id} />
                       <EvidencePanel label="면책 · 보상 제외" section={analysis.exclusions} documentId={document.id} tone="red" />
                       <EvidencePanel label="초기 감액" section={analysis.reduction} documentId={document.id} tone="amber" />
@@ -419,7 +419,7 @@ export function TermsLibrary() {
             </div>
           )}
 
-          <div className="mt-5 flex items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-blue-950"><Sparkles className="mt-0.5 h-5 w-5 shrink-0" /><p className="text-[11px] leading-5"><strong className="block text-xs">왼쪽 항목, 위쪽 상품 기준의 표로 비교합니다.</strong>문서 분량부터 보장 범위, 특약, 면책, 감액, 보장개시까지 같은 행에서 바로 비교할 수 있습니다. ‘자동 미탐지’는 해당 조항이 없다는 판정이 아닙니다.</p></div>
+          <div className="mt-5 flex items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-blue-950"><Sparkles className="mt-0.5 h-5 w-5 shrink-0" /><p className="text-[11px] leading-5"><strong className="block text-xs">왼쪽 항목, 위쪽 문서 기준의 표로 비교합니다.</strong>문서 분량부터 언급 주제, 특약명 후보, 면책·감액·보장개시 문구까지 같은 행에서 볼 수 있습니다. ‘자동 미탐지’는 해당 조항이 없다는 판정이 아닙니다.</p></div>
 
           {selectedRecords.length ? (
             <div className="mt-5 overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm">
@@ -456,7 +456,7 @@ export function TermsLibrary() {
                     ))}
                   </tr>
                   <tr>
-                    <th scope="row" className="bg-blue-50 p-2 align-top font-black text-blue-950 sm:p-4">감지 보장 범위</th>
+                    <th scope="row" className="bg-blue-50 p-2 align-top font-black text-blue-950 sm:p-4">PDF 언급 주제<br /><span className="text-[9px] font-medium">가입 보장 미확인</span></th>
                     {selectedRecords.map(({ document, analysis }) => (
                       <td key={document.id} className="min-w-0 border-l border-black/10 p-2 align-top sm:p-4">
                         <div className="flex flex-wrap gap-1.5">{analysis.coverage.topics.length ? analysis.coverage.topics.map((topic) => <span key={topic} className="rounded-md bg-blue-100 px-2 py-1 text-[9px] font-black text-blue-900 sm:text-[10px]">{topic}</span>) : <span className="font-bold text-amber-900">자동 미탐지 · 원문 확인 필요</span>}</div>

@@ -6,7 +6,7 @@ interface RouteContext {
   params: Promise<{ id: string }>
 }
 
-async function proxyPolicy(_request: Request, context: RouteContext, method: "GET" | "HEAD") {
+async function proxyPolicy(request: Request, context: RouteContext, method: "GET" | "HEAD") {
   const { id } = await context.params
   const document = policyLibrary.documents.find((item) => item.id === id)
   if (!document) return new Response("약관을 찾을 수 없습니다.", { status: 404 })
@@ -23,7 +23,7 @@ async function proxyPolicy(_request: Request, context: RouteContext, method: "GE
 
     const headers = new Headers({
       "cache-control": "public, max-age=86400, s-maxage=604800",
-      "content-disposition": 'inline; filename="' + id + '.pdf"',
+      "content-disposition": `${new URL(request.url).searchParams.get("download") === "1" ? "attachment" : "inline"}; filename="${id}.pdf"`,
       "content-type": "application/pdf",
     })
     if (method === "GET") {

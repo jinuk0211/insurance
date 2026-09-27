@@ -47,13 +47,13 @@ export default async function PolicyViewerPage({ params, searchParams }: PagePro
             <div className="min-w-0"><p className="text-[10px] font-black text-[#f1b94c]">{document.insurer} · 공식 보험약관</p><h1 className="mt-1 truncate text-sm font-black sm:text-base" title={document.productName}>{document.productName}</h1><p className="mt-1 text-[10px] text-neutral-400">적용 시작 {document.effectiveFrom?.replaceAll("-", ".") ?? "일자 미표시"}</p></div>
           </div>
           <div className="flex gap-2">
-            <a href={document.pdfUrl} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/15 px-3 text-xs font-bold hover:bg-white/10"><Download className="h-4 w-4" /> 원본 다운로드</a>
+            <a href={viewerUrl + "?download=1"} className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/15 px-3 text-xs font-bold hover:bg-white/10"><Download className="h-4 w-4" /> 해시 확인 PDF 다운로드</a>
             <a href={document.sourcePageUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#df2444] px-3 text-xs font-black hover:bg-[#c71935]">보험사 출처 <ArrowUpRight className="h-4 w-4" /></a>
           </div>
         </div>
       </header>
       <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col p-2 sm:p-4">
-        <div className="mb-2 rounded-xl bg-amber-100 px-3 py-2 text-[10px] font-bold leading-4 text-amber-950 sm:text-xs">공식 PDF를 사이트에서 불러온 뒤 브라우저의 PDF 뷰어로 표시합니다. 파일 크기에 따라 처음 열 때 몇 초 걸릴 수 있습니다.</div>
+        <div className="mb-2 rounded-xl bg-amber-100 px-3 py-2 text-[10px] font-bold leading-4 text-amber-950 sm:text-xs">공식 PDF의 SHA-256을 확인한 뒤 표시·다운로드합니다. 파일 크기에 따라 처음 열 때 몇 초 걸릴 수 있습니다.</div>
         <PolicyPdfFrame source={viewerUrl} page={page} title={`${document.productName} 보험약관 PDF`} />
       </div>
     </main>
