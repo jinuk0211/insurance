@@ -38,7 +38,6 @@ import {
   type CancerRuleAssessment,
 } from "@/lib/insurance-rule-engine"
 import { SyntheticPolicyProofCard } from "@/components/insurance/synthetic-policy-proof-card"
-import { INSURANCE_TERMS_DOCUMENT_COUNT } from "@/lib/insurance-terms"
 
 type QualityView = "collection" | "coverages" | "documents"
 
@@ -212,7 +211,6 @@ function DocumentsView({ model, demoMode }: { model: InsuranceDashboardModel; de
 
   return (
     <div className="space-y-5">
-      {demoMode && <SyntheticPolicyProofCard />}
       <div className="grid gap-5 xl:grid-cols-[0.75fr_1.25fr]">
       <section className="result-surface p-5">
         <div className="flex h-full min-h-[300px] flex-col items-center justify-center border border-dashed border-black/20 bg-white/40 p-6 text-center">
@@ -234,6 +232,10 @@ function DocumentsView({ model, demoMode }: { model: InsuranceDashboardModel; de
         </div>
       </section>
       </div>
+      {demoMode && <details className="group">
+        <summary className="result-surface flex min-h-14 cursor-pointer list-none items-center justify-between px-5 text-xs font-black">가상 가입증빙 · 공식 약관 대조 연습 펼치기 <ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" /></summary>
+        <div className="mt-3"><SyntheticPolicyProofCard /></div>
+      </details>}
     </div>
   )
 }
@@ -341,8 +343,8 @@ function CancerScenarioCalculator({ model }: { model: InsuranceDashboardModel })
       <div className="grid gap-5 border-b border-black/10 p-5 xl:grid-cols-[1fr_420px] xl:items-end">
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.18em] text-emerald-700">Deterministic cancer rule</p>
-          <h2 id="cancer-scenario-title" className="mt-1 text-xl font-black">암종·진단일 약관 계산</h2>
-          <p className="mt-2 max-w-2xl text-xs leading-5 text-neutral-500">합성 계약일·특약명·가입금액을 검증 규칙 5개와 보유 문서 {INSURANCE_TERMS_DOCUMENT_COUNT}개에 대입합니다. 자동 추출 문서는 원문 검토 전에는 후보금액을 확정하지 않습니다.</p>
+          <h2 id="cancer-scenario-title" className="mt-1 text-xl font-black">암종·진단일 검토 연습</h2>
+          <p className="mt-2 max-w-2xl text-xs leading-5 text-neutral-500">가상 계약의 상품명은 실제 가입 약관 개정본과 연결되지 않았습니다. 암종과 진단일을 입력해 계약별 검토 대기 사유를 확인하며, 후보금액은 산정하지 않습니다.</p>
         </div>
         <form onSubmit={(event) => { event.preventDefault(); setSubmitted(true) }} className="grid gap-2 sm:grid-cols-[1fr_150px_auto] xl:grid-cols-[1fr_150px]">
           <label className="text-[10px] font-black text-neutral-600">진단 암종
@@ -353,11 +355,11 @@ function CancerScenarioCalculator({ model }: { model: InsuranceDashboardModel })
           <label className="text-[10px] font-black text-neutral-600">진단일
             <input required type="date" value={diagnosisDate} onChange={(event) => { setDiagnosisDate(event.target.value); setSubmitted(false) }} className="mt-1 min-h-11 w-full rounded-xl border border-black/15 bg-white px-3 text-sm font-bold outline-none focus:border-emerald-600" />
           </label>
-          <button className="min-h-11 rounded-xl bg-emerald-700 px-5 text-xs font-black text-white sm:self-end xl:col-span-2">계약별 계산</button>
+          <button className="min-h-11 rounded-xl bg-emerald-700 px-5 text-xs font-black text-white sm:self-end xl:col-span-2">검토 대기 이유 보기</button>
         </form>
       </div>
 
-      {!submitted && <div className="p-6 text-center text-xs text-neutral-500">암종과 진단일을 선택하면 정상 상태의 암 관련 계약 {cancerContracts.length}건을 계산합니다.</div>}
+      {!submitted && <div className="p-6 text-center text-xs text-neutral-500">암종과 진단일을 선택하면 정상 상태의 암 관련 가상 계약 {cancerContracts.length}건에서 추가 확인할 내용을 표시합니다.</div>}
       {submitted && cancerContracts.length === 0 && <div className="p-8 text-center text-sm font-bold text-amber-900">합성 자료에서 암 관련 계약이나 담보를 찾지 못했습니다.</div>}
       {submitted && assessments.length > 0 && <div className="divide-y divide-black/10">
         {assessments.map((assessment) => {

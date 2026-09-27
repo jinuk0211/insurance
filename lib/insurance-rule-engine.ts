@@ -306,42 +306,46 @@ function includesType(types: readonly CancerDiagnosisType[], diagnosisType: Canc
 function coverageKeywords(diagnosisType: CancerDiagnosisType): readonly string[] {
   const keywords: Record<CancerDiagnosisType, readonly string[]> = {
     general_cancer: ["일반암", "암진단", "암진단급여", "암진단보험"],
-    thyroid_cancer: ["중증이외갑상선암", "갑상선암", "소액암"],
+    thyroid_cancer: ["중증이외갑상선암", "갑상선암"],
     severe_thyroid_cancer: ["중증갑상선암"],
-    other_skin_cancer: ["기타피부암", "소액암"],
-    in_situ_carcinoma: ["제자리암", "소액암"],
-    borderline_tumor: ["경계성종양", "소액암"],
-    colorectal_mucosal_cancer: ["대장점막내암", "소액암"],
-    noninvasive_bladder_cancer: ["비침습방광암", "소액암"],
-    prostate_cancer: ["전립선암", "소액암"],
-    early_breast_cancer: ["초기유방암", "소액암"],
+    other_skin_cancer: ["기타피부암"],
+    in_situ_carcinoma: ["제자리암"],
+    borderline_tumor: ["경계성종양"],
+    colorectal_mucosal_cancer: ["대장점막내암"],
+    noninvasive_bladder_cancer: ["비침습방광암"],
+    prostate_cancer: ["전립선암"],
+    early_breast_cancer: ["초기유방암"],
   }
   return keywords[diagnosisType]
 }
 
 function candidateCancerCoverages(contract: InsuranceDashboardContract): InsuranceCoverageItem[] {
   return contract.coverageItems.filter((coverage) => {
+    const name = normalizeMatchText(coverage.rawName)
+    if (["치료", "수술", "입원", "사망"].some((keyword) => name.includes(keyword))) return false
     if (coverage.standardCategoryId === "cancer") return true
     if (coverage.standardCategoryId !== null) return false
-    const name = normalizeMatchText(coverage.rawName)
-    return name.includes("암") && !["치료", "수술", "입원", "사망"].some((keyword) => name.includes(keyword))
+    return name.includes("암")
   })
 }
 
 function findCoverage(contract: InsuranceDashboardContract, diagnosisType: CancerDiagnosisType, classification: CancerClassification): InsuranceCoverageItem | null {
   const coverages = candidateCancerCoverages(contract)
   const keywords = coverageKeywords(diagnosisType).map(normalizeMatchText)
+  const nonGeneralKeywords = ["갑상선", "피부암", "제자리", "경계성", "대장점막", "비침습", "전립선", "유방암", "소액암", "유사암", "재진단암", "고액암", "특정암"]
+  const isNonGeneral = (name: string) => nonGeneralKeywords.some((keyword) => name.includes(normalizeMatchText(keyword)))
   const exact = coverages.find((coverage) => {
     const name = normalizeMatchText(coverage.rawName)
+    if (diagnosisType === "general_cancer" && isNonGeneral(name)) return false
+    if (diagnosisType === "thyroid_cancer" && name.includes("중증갑상선암")) return false
     return keywords.some((keyword) => name.includes(keyword))
   })
   if (exact) return exact
   if (classification === "separate_benefit") return null
 
-  const separateKeywords = ["갑상선", "피부암", "제자리", "경계성", "대장점막", "비침습", "전립선", "유방암"]
   return coverages.find((coverage) => {
     const name = normalizeMatchText(coverage.rawName)
-    return !separateKeywords.some((keyword) => name.includes(normalizeMatchText(keyword)))
+    return !isNonGeneral(name)
   }) ?? null
 }
 

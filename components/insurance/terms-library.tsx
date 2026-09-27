@@ -29,7 +29,6 @@ import {
   OFFICIAL_POLICY_ANALYSIS_NOTICE,
   OFFICIAL_POLICY_ANALYSIS_SUMMARY,
   OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY,
-  OFFICIAL_POLICY_COLLECTED_AT,
   OFFICIAL_POLICY_DOCUMENTS,
   OFFICIAL_POLICY_SOURCE,
   policyCategory,
@@ -83,7 +82,6 @@ const POLICY_RECORDS = OFFICIAL_POLICY_DOCUMENTS.flatMap((document) => {
   }
   return rank(left) - rank(right)
 })
-const ON_SALE_COUNT = POLICY_RECORDS.filter(({ document }) => document.saleStatus === "on_sale").length
 const PDF_ENTRY_COUNTS = new Map<string, number>()
 for (const analysis of OFFICIAL_POLICY_ANALYSES) {
   PDF_ENTRY_COUNTS.set(analysis.sourceSha256, (PDF_ENTRY_COUNTS.get(analysis.sourceSha256) ?? 0) + 1)
@@ -259,9 +257,9 @@ export function TermsLibrary() {
       <section className="overflow-hidden border-b border-[#d8d3c8] bg-[#17211f] text-white">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:py-16">
           <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f1b94c]">Five-insurer policy evidence</p>
-            <h1 className="mt-4 max-w-3xl font-serif text-4xl font-bold leading-[1.4] tracking-[-0.035em] sm:text-5xl">공식 보험약관<br />{formatNumber(OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pageCount)}쪽 원문 탐색</h1>
-            <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">KB손해보험 50건, 한화생명 1건, 삼성화재 계약전환용 1건, DB손해보험 암보험 1건, 현대해상 과거 버전 1건은 자료실 항목 수입니다. 서로 다른 PDF는 {OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pdfCount}개이며, 중복을 뺀 원문에서 언급 주제와 지급사유·특약·면책·감액·대기기간 후보 문구를 찾았습니다.</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f1b94c]">Full-text policy intelligence</p>
+            <h1 className="mt-4 max-w-3xl font-serif text-4xl font-bold leading-[1.4] tracking-[-0.035em] sm:text-5xl">약관 {formatNumber(OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pageCount)}쪽을<br />근거 단위로 <span className="inline-block">꺼냈습니다.</span></h1>
+            <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">공식 약관 {OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}건(고유 PDF {OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pdfCount}개)의 전체 텍스트를 문서별 TXT로 보존하고, 지급사유·특약·면책·감액·대기기간의 후보 문구를 원문 페이지와 함께 구조화했습니다.</p>
             <div className="mt-7 flex flex-wrap gap-2">
               {([
                 ["analysis", "약관 분석"],
@@ -274,10 +272,10 @@ export function TermsLibrary() {
           </div>
 
           <div className="grid grid-cols-2 gap-3 self-end">
-            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}</p><p className="mt-1 text-xs text-neutral-300">공시 문서 항목 · 확인 당시 판매 {ON_SALE_COUNT}건</p></div>
-            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pdfCount}</p><p className="mt-1 text-xs text-neutral-300">해시가 서로 다른 PDF</p></div>
-            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{formatNumber(OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pageCount)}</p><p className="mt-1 text-xs text-neutral-300">중복 제외 분석 페이지</p></div>
-            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{formatNumber(OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.evidenceCount)}</p><p className="mt-1 text-xs text-neutral-300">PDF·범주 중복 제외 인용</p></div>
+            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}</p><p className="mt-1 text-xs text-neutral-300">PDF · TXT 문서 항목</p></div>
+            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{formatNumber(OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pageCount)}</p><p className="mt-1 text-xs text-neutral-300">중복 제외 원문 페이지</p></div>
+            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{(OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.characterCount / 10_000_000).toFixed(2)}천만</p><p className="mt-1 text-xs text-neutral-300">원문 텍스트 글자 · 중복 제외</p></div>
+            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{formatNumber(OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.evidenceCount)}</p><p className="mt-1 text-xs text-neutral-300">중복 제외 페이지 인용</p></div>
             <div className="col-span-2 flex items-start gap-3 rounded-2xl bg-[#f1b94c] p-4 text-[#17211f]"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /><p className="text-[11px] font-bold leading-5">{formatDate(OFFICIAL_POLICY_ANALYSIS_GENERATED_AT.slice(0, 10))} 전체 텍스트 추출 완료 · 모든 TXT에 페이지 구분선과 원본 PDF 주소 포함</p></div>
           </div>
         </div>
@@ -288,7 +286,7 @@ export function TermsLibrary() {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#c71935]">Page-backed extraction</p>
-              <h2 id="analysis-title" className="mt-1 text-2xl font-black">조항 후보와 원문 페이지</h2>
+              <h2 id="analysis-title" className="mt-1 text-2xl font-black">조항별 자동 구조화</h2>
               <p className="mt-2 text-xs leading-5 text-neutral-500">{OFFICIAL_POLICY_ANALYSIS_METHOD}. 이는 검토할 문구의 위치를 찾는 기능이며 가입 담보·지급조건의 확정 결과가 아닙니다.</p>
             </div>
             <a href={OFFICIAL_POLICY_SOURCE.url} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center gap-2 self-start rounded-xl border border-black/10 bg-white px-4 text-xs font-black hover:border-black/25">KB 공식 공시 <ArrowUpRight className="h-4 w-4" /></a>
@@ -303,43 +301,16 @@ export function TermsLibrary() {
 
           <div className="mt-4 flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-950 sm:flex-row sm:items-start">
             <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0" />
-            <p className="text-[11px] leading-5"><strong className="block text-xs">‘자동 미탐지’는 ‘조항 없음’이 아닙니다.</strong>{OFFICIAL_POLICY_ANALYSIS_NOTICE} KB손해보험 50건은 {formatDate(OFFICIAL_POLICY_COLLECTED_AT.slice(0, 10))} 수집본이며, 한화생명 1건은 공식 상품 페이지의 2026.04.17 파일입니다. 한화생명 파일명의 날짜와 삼성화재 2605.1·DB손해보험 2607 표기는 계약 적용 시작일로 확인되지 않았습니다. 삼성화재 약관은 계약전환용입니다. DB손해보험은 PDF 38쪽, 현대해상 Hi2504는 39쪽부터 자동 후보를 찾았습니다. 현대해상 파일명의 2025.09.01은 계약 적용일로 확인되지 않았고 현재 판매 상태도 미확인입니다. 주제 배지는 분석 대상 페이지의 단어 출현만 뜻하며 가입 보장을 확인한 결과가 아닙니다. 상품 유형별 항목이 같은 PDF를 공유할 수 있습니다. 실제 가입 담보와 지급 판단은 가입설계서·증권·해당 시점 약관을 함께 봐야 합니다.</p>
+            <p className="text-[11px] leading-5"><strong className="block text-xs">‘자동 미탐지’는 ‘조항 없음’이 아닙니다.</strong>{OFFICIAL_POLICY_ANALYSIS_NOTICE} 주제 배지는 PDF의 단어 출현이며 가입 보장을 확인한 결과가 아닙니다. 실제 가입 담보와 지급 판단은 가입설계서·증권·해당 시점 약관을 함께 봐야 합니다.</p>
           </div>
 
           <div className="mt-5 flex items-center justify-between text-xs"><span className="font-black">검색 결과 {filteredRecords.length}건</span><span className="text-neutral-500">카드 아래에서 원문 페이지 근거를 펼칠 수 있습니다</span></div>
-
-          {REVIEWED_POLICIES.filter((policy) => filteredRecords.some(({ document, analysis }) =>
-            document.id === policy.documentId && analysis.sourceSha256 === policy.sha256)).map((policy) => (
-            <section key={policy.documentId} className="mt-4 rounded-3xl border border-emerald-200 bg-emerald-50/70 p-5 sm:p-6" aria-label={policy.insurer + " 원문 검토 체크포인트"}>
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                  <p className="text-[10px] font-black tracking-[0.14em] text-emerald-800">{policy.insurer} 원문 검토 · {policy.checkpoints.length}개</p>
-                  <h3 className="mt-1 text-lg font-black text-[#17211f]">설계사가 확인할 약관 조건</h3>
-                  <p className="mt-2 max-w-3xl text-[11px] leading-5 text-emerald-950">{policy.fileLabel}에서 확인한 조항입니다. 실제 가입 계약의 약관 버전이 일치하기 전에는 지급 여부나 금액을 판단하지 않습니다.</p>
-                </div>
-                <Link href={"/insurance/terms/viewer/" + policy.documentId} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-900 px-4 text-xs font-black text-white hover:bg-emerald-800"><BookOpen className="h-4 w-4" /> {policy.pageCount}쪽 원문 보기</Link>
-              </div>
-              <ol className="mt-5 grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
-                {policy.checkpoints.map((item, index) => (
-                  <li key={item.title} className="rounded-xl border border-emerald-100 bg-white p-4">
-                    <h4 className="text-xs font-black text-[#17211f]">{index + 1}. {item.title}</h4>
-                    <p className="mt-2 text-[11px] leading-5 text-neutral-700">{item.summary}</p>
-                    <p className="mt-2 text-[10px] font-bold leading-5 text-emerald-900">확인: {item.advisorCheck}</p>
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {item.evidence.map((entry) => (
-                        <Link key={entry.article + entry.page + entry.anchor} href={"/insurance/terms/viewer/" + policy.documentId + "?page=" + entry.page} target="_blank" rel="noopener noreferrer" className="rounded-md bg-emerald-100 px-2 py-1 text-[10px] font-bold text-emerald-900 underline-offset-2 hover:underline">{entry.article} · PDF {entry.page}쪽 ↗</Link>
-                      ))}
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </section>
-          ))}
 
           <div className="mt-3 grid items-start gap-4 xl:grid-cols-2">
             {filteredRecords.map(({ document, analysis }) => {
               const selected = selectedIds.includes(document.id)
               const matches = matchingEvidence(analysis, normalizedQuery)
+              const reviewed = REVIEWED_POLICIES.find((policy) => policy.documentId === document.id && policy.sha256 === analysis.sourceSha256)
               return (
                 <article key={document.id} className="overflow-hidden rounded-3xl border border-black/10 bg-[#fffdf8] shadow-[0_12px_35px_rgba(23,33,31,0.06)]">
                   <div className="p-5 sm:p-6">
@@ -352,7 +323,7 @@ export function TermsLibrary() {
                     </div>
 
                     <div className="mt-4"><p className="mb-2 text-[10px] font-bold text-neutral-500">분석 대상 PDF 쪽의 언급 주제 · 가입 보장 확인 아님</p><div className="flex flex-wrap gap-1.5">
-                      {analysis.coverage.topics.length ? analysis.coverage.topics.map((topic) => <span key={topic} className="rounded-lg bg-neutral-100 px-2.5 py-1.5 text-[10px] font-bold text-neutral-700">{topic}</span>) : <span className="rounded-lg bg-amber-100 px-2.5 py-1.5 text-[10px] font-bold text-amber-900">주제 단어 자동 미탐지</span>}
+                      {analysis.coverage.topics.length ? analysis.coverage.topics.map((topic) => <span key={topic} className="rounded-lg bg-[#17211f] px-2.5 py-1.5 text-[10px] font-bold text-white">{topic}</span>) : <span className="rounded-lg bg-amber-100 px-2.5 py-1.5 text-[10px] font-bold text-amber-900">주제 단어 자동 미탐지</span>}
                     </div></div>
 
                     <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -394,6 +365,20 @@ export function TermsLibrary() {
                       <div className="lg:col-span-2"><EvidencePanel label="면책기간 · 보장개시" section={analysis.waiting} documentId={document.id} tone="blue" /></div>
                     </div>
                   </details>
+                  {reviewed && <details className="group border-t border-black/10 bg-[#f8f6ef]">
+                    <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between px-5 text-xs font-black sm:px-6">설계사 원문 검토 · {reviewed.checkpoints.length}개 체크포인트 <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" /></summary>
+                    <div className="border-t border-black/10 p-4 sm:p-5">
+                      <p className="text-[11px] leading-5 text-neutral-600">{reviewed.insurer} {reviewed.fileLabel}의 원문 확인 순서입니다. 실제 계약의 약관 버전이 일치하기 전에는 지급 여부나 금액을 판단하지 않습니다.</p>
+                      <ol className="mt-4 grid gap-3 lg:grid-cols-2">
+                        {reviewed.checkpoints.map((item, index) => <li key={item.title} className="rounded-xl border border-black/10 bg-white p-4">
+                          <h4 className="text-xs font-black">{index + 1}. {item.title}</h4>
+                          <p className="mt-2 text-[11px] leading-5 text-neutral-700">{item.summary}</p>
+                          <p className="mt-2 text-[10px] font-bold leading-5 text-neutral-600">확인: {item.advisorCheck}</p>
+                          <div className="mt-3 flex flex-wrap gap-1.5">{item.evidence.map((entry) => <Link key={entry.article + entry.page + entry.anchor} href={"/insurance/terms/viewer/" + document.id + "?page=" + entry.page} target="_blank" rel="noopener noreferrer" className="rounded-md bg-[#e8e5dc] px-2 py-1 text-[10px] font-bold underline-offset-2 hover:underline">{entry.article} · PDF {entry.page}쪽 ↗</Link>)}</div>
+                        </li>)}
+                      </ol>
+                    </div>
+                  </details>}
                 </article>
               )
             })}
