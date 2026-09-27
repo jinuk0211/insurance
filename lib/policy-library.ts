@@ -20,6 +20,7 @@ export interface OfficialPolicyDocument {
   byteLength: number | null
   expectedSha256: string
   expectedPageCount: number
+  analysisStartPage?: number
 }
 
 interface OfficialPolicyLibrary {

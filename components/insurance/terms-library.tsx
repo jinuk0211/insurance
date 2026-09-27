@@ -17,6 +17,7 @@ import {
   Sparkles,
 } from "lucide-react"
 
+import { DB_POLICY_CHECKPOINTS, DB_POLICY_DOCUMENT_ID, DB_POLICY_SHA256 } from "@/lib/db-policy-checkpoints"
 import { HANWHA_POLICY_CHECKPOINTS, HANWHA_POLICY_DOCUMENT_ID, HANWHA_POLICY_SHA256 } from "@/lib/hanwha-policy-checkpoints"
 import { KB_POLICY_CHECKPOINTS, KB_POLICY_DOCUMENT_ID, KB_POLICY_SHA256 } from "@/lib/kb-policy-checkpoints"
 import { SAMSUNGFIRE_POLICY_CHECKPOINTS, SAMSUNGFIRE_POLICY_DOCUMENT_ID, SAMSUNGFIRE_POLICY_SHA256 } from "@/lib/samsungfire-policy-checkpoints"
@@ -49,6 +50,7 @@ interface PolicyRecord {
 const DEFAULT_COMPARISON_IDS = [
   HANWHA_POLICY_DOCUMENT_ID,
   KB_POLICY_DOCUMENT_ID,
+  DB_POLICY_DOCUMENT_ID,
 ]
 
 const FOCUS_OPTIONS: Array<{ value: FocusFilter; label: string }> = [
@@ -64,6 +66,7 @@ const REVIEWED_POLICIES = [
   { documentId: HANWHA_POLICY_DOCUMENT_ID, sha256: HANWHA_POLICY_SHA256, insurer: "한화생명", fileLabel: "2026.04.17 파일", pageCount: 181, checkpoints: HANWHA_POLICY_CHECKPOINTS },
   { documentId: KB_POLICY_DOCUMENT_ID, sha256: KB_POLICY_SHA256, insurer: "KB손해보험", fileLabel: "2026.07 개정본", pageCount: 774, checkpoints: KB_POLICY_CHECKPOINTS },
   { documentId: SAMSUNGFIRE_POLICY_DOCUMENT_ID, sha256: SAMSUNGFIRE_POLICY_SHA256, insurer: "삼성화재", fileLabel: "2605.1 계약전환용", pageCount: 157, checkpoints: SAMSUNGFIRE_POLICY_CHECKPOINTS },
+  { documentId: DB_POLICY_DOCUMENT_ID, sha256: DB_POLICY_SHA256, insurer: "DB손해보험", fileLabel: "2607 표기 파일", pageCount: 314, checkpoints: DB_POLICY_CHECKPOINTS },
 ]
 
 const analysisById = new Map(OFFICIAL_POLICY_ANALYSES.map((analysis) => [analysis.id, analysis]))
@@ -248,9 +251,9 @@ export function TermsLibrary() {
       <section className="overflow-hidden border-b border-[#d8d3c8] bg-[#17211f] text-white">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:py-16">
           <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f1b94c]">Three-insurer policy evidence</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f1b94c]">Four-insurer policy evidence</p>
             <h1 className="mt-4 max-w-3xl font-serif text-4xl font-bold leading-[1.12] tracking-[-0.035em] sm:text-5xl">공식 보험약관<br />{formatNumber(OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pageCount)}쪽 원문 탐색</h1>
-            <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">KB손해보험 50건, 한화생명 1건, 삼성화재 계약전환용 1건은 자료실 항목 수입니다. 서로 다른 PDF는 {OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pdfCount}개이며, 중복을 뺀 원문에서 언급 주제와 지급사유·특약·면책·감액·대기기간 후보 문구를 찾았습니다.</p>
+            <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">KB손해보험 50건, 한화생명 1건, 삼성화재 계약전환용 1건, DB손해보험 암보험 1건은 자료실 항목 수입니다. 서로 다른 PDF는 {OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pdfCount}개이며, 중복을 뺀 원문에서 언급 주제와 지급사유·특약·면책·감액·대기기간 후보 문구를 찾았습니다.</p>
             <div className="mt-7 flex flex-wrap gap-2">
               {([
                 ["analysis", "약관 분석"],
@@ -292,7 +295,7 @@ export function TermsLibrary() {
 
           <div className="mt-4 flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-950 sm:flex-row sm:items-start">
             <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0" />
-            <p className="text-[11px] leading-5"><strong className="block text-xs">‘자동 미탐지’는 ‘조항 없음’이 아닙니다.</strong>{OFFICIAL_POLICY_ANALYSIS_NOTICE} KB손해보험 50건은 {formatDate(OFFICIAL_POLICY_COLLECTED_AT.slice(0, 10))} 수집본이며, 한화생명 1건은 공식 상품 페이지의 2026.04.17 파일입니다. 한화생명 파일명의 날짜와 삼성화재 2605.1 표기는 계약 적용 시작일로 확인되지 않았습니다. 삼성화재 약관은 계약전환용입니다. 주제 배지는 PDF 전체의 단어 출현만 뜻하며 가입 보장을 확인한 결과가 아닙니다. 상품 유형별 항목이 같은 PDF를 공유할 수 있습니다. 실제 가입 담보와 지급 판단은 가입설계서·증권·해당 시점 약관을 함께 봐야 합니다.</p>
+            <p className="text-[11px] leading-5"><strong className="block text-xs">‘자동 미탐지’는 ‘조항 없음’이 아닙니다.</strong>{OFFICIAL_POLICY_ANALYSIS_NOTICE} KB손해보험 50건은 {formatDate(OFFICIAL_POLICY_COLLECTED_AT.slice(0, 10))} 수집본이며, 한화생명 1건은 공식 상품 페이지의 2026.04.17 파일입니다. 한화생명 파일명의 날짜와 삼성화재 2605.1·DB손해보험 2607 표기는 계약 적용 시작일로 확인되지 않았습니다. 삼성화재 약관은 계약전환용입니다. DB손해보험은 PDF의 일반 안내 예시를 제외한 38쪽부터 자동 후보를 찾았습니다. 주제 배지는 분석 대상 페이지의 단어 출현만 뜻하며 가입 보장을 확인한 결과가 아닙니다. 상품 유형별 항목이 같은 PDF를 공유할 수 있습니다. 실제 가입 담보와 지급 판단은 가입설계서·증권·해당 시점 약관을 함께 봐야 합니다.</p>
           </div>
 
           <div className="mt-5 flex items-center justify-between text-xs"><span className="font-black">검색 결과 {filteredRecords.length}건</span><span className="text-neutral-500">카드 아래에서 원문 페이지 근거를 펼칠 수 있습니다</span></div>

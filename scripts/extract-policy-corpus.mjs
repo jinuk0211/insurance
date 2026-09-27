@@ -215,12 +215,13 @@ function confidenceFor(evidence) {
 }
 
 function analyzeDocument(document, pages, sourceSha256) {
-  const coverageEvidence = collectEvidence(pages, SECTION_PATTERNS.coverage, 6)
-  const riderEvidence = collectEvidence(pages, SECTION_PATTERNS.riders, 5)
-  const exclusionEvidence = collectEvidence(pages, SECTION_PATTERNS.exclusions, 6)
-  const reductionEvidence = collectEvidence(pages, SECTION_PATTERNS.reduction, 6)
-  const waitingEvidence = collectEvidence(pages, SECTION_PATTERNS.waiting, 6)
-  const riderNames = detectRiderNames(pages)
+  const searchPages = pages.map((page, index) => index + 1 < (document.analysisStartPage ?? 1) ? "" : page)
+  const coverageEvidence = collectEvidence(searchPages, SECTION_PATTERNS.coverage, 6)
+  const riderEvidence = collectEvidence(searchPages, SECTION_PATTERNS.riders, 5)
+  const exclusionEvidence = collectEvidence(searchPages, SECTION_PATTERNS.exclusions, 6)
+  const reductionEvidence = collectEvidence(searchPages, SECTION_PATTERNS.reduction, 6)
+  const waitingEvidence = collectEvidence(searchPages, SECTION_PATTERNS.waiting, 6)
+  const riderNames = detectRiderNames(searchPages)
   const characterCount = pages.reduce((total, page) => total + page.length, 0)
   const charactersPerPage = Math.round(characterCount / Math.max(1, pages.length))
 
@@ -233,7 +234,7 @@ function analyzeDocument(document, pages, sourceSha256) {
     charactersPerPage,
     sourceSha256,
     coverage: {
-      topics: detectCoverageTopics(pages),
+      topics: detectCoverageTopics(searchPages),
       confidence: confidenceFor(coverageEvidence),
       evidence: coverageEvidence,
     },
@@ -248,14 +249,14 @@ function analyzeDocument(document, pages, sourceSha256) {
       evidence: exclusionEvidence,
     },
     reduction: {
-      ratesPercent: findNumericSignals(pages, /(\d{1,3})\s*%/g).filter((value) => value <= 100),
-      periodsMonths: findNumericSignals(pages, /(\d{1,3})\s*개월\s*(?:미만|이내|동안)/g),
-      periodsYears: findNumericSignals(pages, /(\d{1,2})\s*년\s*(?:미만|이내|동안)/g),
+      ratesPercent: findNumericSignals(searchPages, /(\d{1,3})\s*%/g).filter((value) => value <= 100),
+      periodsMonths: findNumericSignals(searchPages, /(\d{1,3})\s*개월\s*(?:미만|이내|동안)/g),
+      periodsYears: findNumericSignals(searchPages, /(\d{1,2})\s*년\s*(?:미만|이내|동안)/g),
       confidence: confidenceFor(reductionEvidence),
       evidence: reductionEvidence,
     },
     waiting: {
-      days: findNumericSignals(pages, /(\d{1,3})\s*일(?:이|이 되는|이 지난|째|간| 동안| 이후)/g),
+      days: findNumericSignals(searchPages, /(\d{1,3})\s*일(?:이|이 되는|이 지난|째|간| 동안| 이후)/g),
       confidence: confidenceFor(waitingEvidence),
       evidence: waitingEvidence,
     },
