@@ -190,7 +190,7 @@ function CoverageReviewView({ model }: { model: InsuranceDashboardModel }) {
   )
 }
 
-function DocumentsView({ model }: { model: InsuranceDashboardModel }) {
+function DocumentsView({ model, demoMode }: { model: InsuranceDashboardModel; demoMode: boolean }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploaded, setUploaded] = useState<InsuranceDocumentRecord[]>([])
   const documents = [...model.enrichment.documents, ...uploaded]
@@ -204,7 +204,7 @@ function DocumentsView({ model }: { model: InsuranceDashboardModel }) {
       name: file.name,
       status: "needs_review",
       source: "manual",
-      note: "업로드 완료 · OCR 및 설계사 확인 대기",
+      note: "파일명만 임시 표시 · 내용 미전송 · OCR 미실행",
     }))
     setUploaded((current) => [...current, ...additions])
   }
@@ -214,11 +214,13 @@ function DocumentsView({ model }: { model: InsuranceDashboardModel }) {
       <section className="result-surface p-5">
         <div className="flex h-full min-h-[300px] flex-col items-center justify-center border border-dashed border-black/20 bg-white/40 p-6 text-center">
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#17211f] text-white"><Upload className="h-6 w-6" /></span>
-          <h2 className="mt-4 text-lg font-black">증권·약관·가입설계서 추가</h2>
-          <p className="mt-2 max-w-sm text-xs leading-5 text-neutral-500">CODEF에서 누락된 특약과 가입금액을 보완합니다. 업로드만으로 확정하지 않고 OCR 결과를 설계사가 검토합니다.</p>
-          <input ref={inputRef} type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.xlsx,.xls" className="sr-only" onChange={(event) => handleFiles(event.target.files)} />
-          <button onClick={() => inputRef.current?.click()} className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#df2444] px-5 text-xs font-black text-white"><FilePlus2 className="h-4 w-4" />파일 선택</button>
-          <p className="mt-3 text-[10px] text-neutral-400">PDF, 이미지, 엑셀 · 데모에서는 파일명이 검토대기 목록에 추가됩니다.</p>
+          <h2 className="mt-4 text-lg font-black">{demoMode ? "가상 증권·약관·설계서" : "문서 파일명 임시 추가"}</h2>
+          <p className="mt-2 max-w-sm text-xs leading-5 text-neutral-500">{demoMode ? "합성 시연에서는 아래 가상 문서의 검토 상태만 보여줍니다. 실제 고객 문서를 선택하지 마세요." : "선택한 파일의 이름만 이 화면에 임시 표시합니다. 파일 내용은 읽거나 서버에 전송하지 않으며 OCR도 실행하지 않습니다."}</p>
+          {!demoMode && <>
+            <input ref={inputRef} type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.xlsx,.xls" className="sr-only" onChange={(event) => handleFiles(event.target.files)} />
+            <button onClick={() => inputRef.current?.click()} className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#df2444] px-5 text-xs font-black text-white"><FilePlus2 className="h-4 w-4" />파일명만 기록</button>
+            <p className="mt-3 text-[10px] text-neutral-400">화면을 벗어나면 선택한 파일명은 사라집니다.</p>
+          </>}
         </div>
       </section>
       <section className="result-surface overflow-hidden">
@@ -232,7 +234,7 @@ function DocumentsView({ model }: { model: InsuranceDashboardModel }) {
   )
 }
 
-export function DataQualityPanel({ model }: { model: InsuranceDashboardModel }) {
+export function DataQualityPanel({ model, demoMode = false }: { model: InsuranceDashboardModel; demoMode?: boolean }) {
   const [view, setView] = useState<QualityView>("collection")
   const quality = model.dataQuality
   return (
@@ -262,7 +264,7 @@ export function DataQualityPanel({ model }: { model: InsuranceDashboardModel }) 
 
       {view === "collection" && <CollectionView model={model} />}
       {view === "coverages" && <CoverageReviewView model={model} />}
-      {view === "documents" && <DocumentsView model={model} />}
+      {view === "documents" && <DocumentsView model={model} demoMode={demoMode} />}
     </div>
   )
 }

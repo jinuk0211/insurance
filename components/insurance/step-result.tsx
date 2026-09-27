@@ -92,7 +92,7 @@ const TABS: readonly TabDefinition[] = [
   { id: "contracts", label: "가입현황", shortLabel: "계약", description: "보험 계약 목록", icon: FileText },
   { id: "quality", label: "수집·검증", shortLabel: "검증", description: "데이터 품질과 담보 검토", icon: Database },
   { id: "diagnosis", label: "진단·상세", shortLabel: "진단", description: "상품명 연관 신호", icon: FileSearch },
-  { id: "medical", label: "진료·투약", shortLabel: "의료", description: "건강보험공단 실조회", icon: Stethoscope },
+  { id: "medical", label: "진료·투약", shortLabel: "의료", description: "진료·투약 자료 검토", icon: Stethoscope },
   { id: "decision", label: "질병·치료", shortLabel: "판정", description: "약관 기준 질문 검토", icon: Stethoscope },
   { id: "charts", label: "그래프·니즈", shortLabel: "그래프", description: "검토 우선순위", icon: BarChart3 },
   { id: "consulting", label: "컨설팅", shortLabel: "비교", description: "계약 비교 워크시트", icon: ClipboardCheck },
@@ -427,7 +427,7 @@ function ConsultingPanel({ model, demoMode, selectedIds, onToggle, onOpenAdditio
         <div className="mb-4 flex items-center justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#3155d9]">New proposals</p><h2 id="proposal-title" className="mt-1 text-lg font-black">신규 가입설계</h2></div><span className="text-xs font-bold text-neutral-500">{proposals.length}건</span></div>
         <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
           {proposals.map((proposal) => <article key={proposal.id} className="result-surface overflow-hidden"><div className="border-b border-black/10 p-4"><div className="flex items-center justify-between gap-2"><span className="text-xs font-black text-[#3155d9]">{proposal.insurer}</span><span className="rounded-full bg-neutral-100 px-2 py-1 text-[9px] font-bold">{proposal.source === "manual" ? "직접 입력" : "가입설계서"}</span></div><h3 className="mt-2 line-clamp-2 text-sm font-black">{proposal.productName}</h3><p className="mt-1 text-[10px] text-neutral-500">{proposal.planType || "설계 조건 확인 필요"}</p></div><div className="p-4"><p className="text-xl font-black tabular-nums">{formatWon(proposal.monthlyPremium)}</p><p className="mt-1 text-[10px] text-neutral-500">월 보험료</p><div className="mt-3 space-y-2">{proposal.coverages.map((coverage, index) => <div key={`${proposal.id}-${coverage.categoryId}-${index}`} className="flex items-center justify-between gap-3 text-xs"><span className="truncate text-neutral-600">{coverage.label}</span><strong className="shrink-0 tabular-nums">{formatWon(coverage.amount)}</strong></div>)}{proposal.coverages.length === 0 && <p className="text-xs text-amber-800">담보 내역 확인 필요</p>}</div></div></article>)}
-          {proposals.length === 0 && <button onClick={onOpenProposal} className="flex min-h-[180px] flex-col items-center justify-center rounded-[22px] border border-dashed border-blue-300 bg-blue-50/50 p-5 text-blue-800"><Plus className="h-6 w-6" /><span className="mt-3 text-sm font-black">신규 설계 추가</span><span className="mt-1 text-[10px]">가입설계서 또는 수기 입력</span></button>}
+          {proposals.length === 0 && <button onClick={onOpenProposal} className="flex min-h-[180px] flex-col items-center justify-center rounded-[22px] border border-dashed border-blue-300 bg-blue-50/50 p-5 text-blue-800"><Plus className="h-6 w-6" /><span className="mt-3 text-sm font-black">신규 설계 추가</span><span className="mt-1 text-[10px]">설계사 수기 입력</span></button>}
         </div>
       </section>
       <section className="result-surface overflow-hidden" aria-labelledby="compare-title">
@@ -700,9 +700,9 @@ export function StepResult({ data, onReset, onLogout, userName, demoMode = false
           <main id={`panel-${tab}`} aria-label={activeTab.label} className="dashboard-panel p-4 sm:p-6 lg:p-8">
             {tab === "overview" && <OverviewPanel model={model} onNavigate={setTab} demoMode={demoMode} />}
             {tab === "contracts" && <ContractsPanel model={model} onOpenAdditional={() => setAdditionalOpen(true)} />}
-            {tab === "quality" && <DataQualityPanel model={model} />}
+            {tab === "quality" && <DataQualityPanel model={model} demoMode={demoMode} />}
             {tab === "diagnosis" && <DiagnosisPanel model={model} onOpenTargets={() => setTargetsOpen(true)} />}
-            {tab === "medical" && <MedicalDataPanel initialProfile={connectionProfile} />}
+            {tab === "medical" && <MedicalDataPanel initialProfile={connectionProfile} demoMode={demoMode} />}
             {tab === "decision" && <DecisionPanel model={model} demoMode={demoMode} />}
             {tab === "charts" && <ChartsNeedsPanel model={model} configuredTargets={Object.values(targetValues).filter(Boolean).length} onOpenTargets={() => setTargetsOpen(true)} />}
             {tab === "consulting" && <ConsultingPanel model={model} demoMode={demoMode} selectedIds={selectedIds} onToggle={toggleSelected} onOpenAdditional={() => setAdditionalOpen(true)} proposals={proposals} onOpenProposal={() => setProposalOpen(true)} reportStatus={reportStatus} onReportStatusChange={setReportStatus} />}
