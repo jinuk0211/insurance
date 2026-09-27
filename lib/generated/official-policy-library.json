@@ -61,7 +61,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=25290_1_1.pdf",
       "sourceFileName": "25290_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 13182991
+      "byteLength": 13182991,
+      "expectedSha256": "e97dcee90b7a978792672666bc0813cf40b94805253548761113780f631b2ee5",
+      "expectedPageCount": 774
     },
     {
       "id": "kb-25291-2026-07-01",

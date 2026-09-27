@@ -18,12 +18,14 @@ import {
 } from "lucide-react"
 
 import { HANWHA_POLICY_CHECKPOINTS, HANWHA_POLICY_DOCUMENT_ID, HANWHA_POLICY_SHA256 } from "@/lib/hanwha-policy-checkpoints"
+import { KB_POLICY_CHECKPOINTS, KB_POLICY_DOCUMENT_ID, KB_POLICY_SHA256 } from "@/lib/kb-policy-checkpoints"
 import {
   OFFICIAL_POLICY_ANALYSES,
   OFFICIAL_POLICY_ANALYSIS_GENERATED_AT,
   OFFICIAL_POLICY_ANALYSIS_METHOD,
   OFFICIAL_POLICY_ANALYSIS_NOTICE,
   OFFICIAL_POLICY_ANALYSIS_SUMMARY,
+  OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY,
   OFFICIAL_POLICY_COLLECTED_AT,
   OFFICIAL_POLICY_DOCUMENTS,
   OFFICIAL_POLICY_SOURCE,
@@ -58,14 +60,28 @@ const FOCUS_OPTIONS: Array<{ value: FocusFilter; label: string }> = [
   { value: "waiting", label: "대기기간" },
 ]
 
+const REVIEWED_POLICIES = [
+  { documentId: HANWHA_POLICY_DOCUMENT_ID, sha256: HANWHA_POLICY_SHA256, insurer: "한화생명", fileLabel: "2026.04.17 파일", pageCount: 181, checkpoints: HANWHA_POLICY_CHECKPOINTS },
+  { documentId: KB_POLICY_DOCUMENT_ID, sha256: KB_POLICY_SHA256, insurer: "KB손해보험", fileLabel: "2026.07 개정본", pageCount: 774, checkpoints: KB_POLICY_CHECKPOINTS },
+]
+
 const analysisById = new Map(OFFICIAL_POLICY_ANALYSES.map((analysis) => [analysis.id, analysis]))
 const POLICY_RECORDS = OFFICIAL_POLICY_DOCUMENTS.flatMap((document) => {
   const analysis = analysisById.get(document.id)
   return analysis ? [{ document, analysis }] : []
-}).sort((left, right) =>
-  Number(right.document.id === HANWHA_POLICY_DOCUMENT_ID && right.analysis.sourceSha256 === HANWHA_POLICY_SHA256)
-  - Number(left.document.id === HANWHA_POLICY_DOCUMENT_ID && left.analysis.sourceSha256 === HANWHA_POLICY_SHA256))
+}).sort((left, right) => {
+  const rank = ({ document, analysis }: PolicyRecord) => {
+    const index = REVIEWED_POLICIES.findIndex((policy) =>
+      policy.documentId === document.id && policy.sha256 === analysis.sourceSha256)
+    return index < 0 ? REVIEWED_POLICIES.length : index
+  }
+  return rank(left) - rank(right)
+})
 const ON_SALE_COUNT = POLICY_RECORDS.filter(({ document }) => document.saleStatus === "on_sale").length
+const PDF_ENTRY_COUNTS = new Map<string, number>()
+for (const analysis of OFFICIAL_POLICY_ANALYSES) {
+  PDF_ENTRY_COUNTS.set(analysis.sourceSha256, (PDF_ENTRY_COUNTS.get(analysis.sourceSha256) ?? 0) + 1)
+}
 
 function formatDate(value: string | null): string {
   return value ? value.replaceAll("-", ".") : "일자 미표시"
@@ -93,9 +109,9 @@ function matchingEvidence(analysis: OfficialPolicyAnalysisDocument, query: strin
 
 function matchesPolicyQuery(document: OfficialPolicyDocument, analysis: OfficialPolicyAnalysisDocument, query: string): boolean {
   if (!query) return true
-  const reviewedText = document.id === HANWHA_POLICY_DOCUMENT_ID && analysis.sourceSha256 === HANWHA_POLICY_SHA256
-    ? HANWHA_POLICY_CHECKPOINTS.flatMap((item) => [item.title, item.summary, item.advisorCheck]).join(" ")
-    : ""
+  const reviewed = REVIEWED_POLICIES.find((policy) =>
+    policy.documentId === document.id && policy.sha256 === analysis.sourceSha256)
+  const reviewedText = reviewed?.checkpoints.flatMap((item) => [item.title, item.summary, item.advisorCheck]).join(" ") ?? ""
   const searchable = [document.insurer, document.productName, ...analysis.coverage.topics, ...analysis.riders.names, reviewedText]
     .join(" ").toLocaleLowerCase("ko-KR")
   return searchable.includes(query) || matchingEvidence(analysis, query).length > 0
@@ -197,6 +213,7 @@ export function TermsLibrary() {
   const selectedRecords = selectedIds
     .map((id) => POLICY_RECORDS.find(({ document }) => document.id === id))
     .filter((record): record is PolicyRecord => Boolean(record))
+  const selectedPdfCount = new Set(selectedRecords.map(({ analysis }) => analysis.sourceSha256)).size
 
   function toggleComparison(id: string) {
     setSelectedIds((current) => {
@@ -231,8 +248,8 @@ export function TermsLibrary() {
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:py-16">
           <div>
             <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#f1b94c]">Two-insurer policy evidence</p>
-            <h1 className="mt-4 max-w-3xl font-serif text-4xl font-bold leading-[1.12] tracking-[-0.035em] sm:text-5xl">공식 보험약관<br />{formatNumber(OFFICIAL_POLICY_ANALYSIS_SUMMARY.pageCount)}쪽 원문 탐색</h1>
-            <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">KB손해보험 50건과 한화생명 1건, 총 {OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}건 중 확인 당시 판매 문서는 {ON_SALE_COUNT}건입니다. 문서별 TXT를 보존하고 보장 범위·특약·면책·감액·대기기간의 후보 문구를 페이지별로 찾았습니다.</p>
+            <h1 className="mt-4 max-w-3xl font-serif text-4xl font-bold leading-[1.12] tracking-[-0.035em] sm:text-5xl">공식 보험약관<br />{formatNumber(OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pageCount)}쪽 원문 탐색</h1>
+            <p className="mt-5 max-w-2xl text-sm leading-7 text-neutral-300">KB손해보험 50건과 한화생명 1건은 공시 항목 수입니다. 서로 다른 PDF는 {OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pdfCount}개이며, 중복을 뺀 원문에서 보장 범위·특약·면책·감액·대기기간 후보 문구를 찾았습니다.</p>
             <div className="mt-7 flex flex-wrap gap-2">
               {([
                 ["analysis", "약관 분석"],
@@ -245,10 +262,10 @@ export function TermsLibrary() {
           </div>
 
           <div className="grid grid-cols-2 gap-3 self-end">
-            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}</p><p className="mt-1 text-xs text-neutral-300">2개 보험사 공식 약관 · 확인 당시 판매 {ON_SALE_COUNT}건</p></div>
-            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{formatNumber(OFFICIAL_POLICY_ANALYSIS_SUMMARY.pageCount)}</p><p className="mt-1 text-xs text-neutral-300">전체 추출 페이지</p></div>
-            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{(OFFICIAL_POLICY_ANALYSIS_SUMMARY.characterCount / 10_000_000).toFixed(2)}천만</p><p className="mt-1 text-xs text-neutral-300">원문 텍스트 글자</p></div>
-            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{formatNumber(OFFICIAL_POLICY_ANALYSIS_SUMMARY.evidenceCount)}</p><p className="mt-1 text-xs text-neutral-300">자동 탐지 문구</p></div>
+            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{OFFICIAL_POLICY_ANALYSIS_SUMMARY.documentCount}</p><p className="mt-1 text-xs text-neutral-300">공시 문서 항목 · 확인 당시 판매 {ON_SALE_COUNT}건</p></div>
+            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pdfCount}</p><p className="mt-1 text-xs text-neutral-300">해시가 서로 다른 PDF</p></div>
+            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{formatNumber(OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.pageCount)}</p><p className="mt-1 text-xs text-neutral-300">중복 제외 분석 페이지</p></div>
+            <div className="rounded-2xl border border-white/15 bg-white/5 p-5"><p className="text-3xl font-black tabular-nums">{formatNumber(OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY.evidenceCount)}</p><p className="mt-1 text-xs text-neutral-300">PDF·범주 중복 제외 인용</p></div>
             <div className="col-span-2 flex items-start gap-3 rounded-2xl bg-[#f1b94c] p-4 text-[#17211f]"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /><p className="text-[11px] font-bold leading-5">{formatDate(OFFICIAL_POLICY_ANALYSIS_GENERATED_AT.slice(0, 10))} 전체 텍스트 추출 완료 · 모든 TXT에 페이지 구분선과 원본 PDF 주소 포함</p></div>
           </div>
         </div>
@@ -274,38 +291,38 @@ export function TermsLibrary() {
 
           <div className="mt-4 flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-950 sm:flex-row sm:items-start">
             <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0" />
-            <p className="text-[11px] leading-5"><strong className="block text-xs">‘자동 미탐지’는 ‘조항 없음’이 아닙니다.</strong>{OFFICIAL_POLICY_ANALYSIS_NOTICE} KB손해보험 50건은 {formatDate(OFFICIAL_POLICY_COLLECTED_AT.slice(0, 10))} 수집본이며, 한화생명 1건은 공식 상품 페이지의 2026.04.17 파일입니다. 한화생명 파일명의 날짜는 계약 적용일로 확인되지 않았습니다. 실제 가입 담보와 지급 판단은 가입설계서·증권·해당 시점 약관을 함께 봐야 합니다.</p>
+            <p className="text-[11px] leading-5"><strong className="block text-xs">‘자동 미탐지’는 ‘조항 없음’이 아닙니다.</strong>{OFFICIAL_POLICY_ANALYSIS_NOTICE} KB손해보험 50건은 {formatDate(OFFICIAL_POLICY_COLLECTED_AT.slice(0, 10))} 수집본이며, 한화생명 1건은 공식 상품 페이지의 2026.04.17 파일입니다. 한화생명 파일명의 날짜는 계약 적용일로 확인되지 않았습니다. 상품 유형별 항목이 같은 PDF를 공유할 수 있습니다. 실제 가입 담보와 지급 판단은 가입설계서·증권·해당 시점 약관을 함께 봐야 합니다.</p>
           </div>
 
           <div className="mt-5 flex items-center justify-between text-xs"><span className="font-black">검색 결과 {filteredRecords.length}건</span><span className="text-neutral-500">카드 아래에서 원문 페이지 근거를 펼칠 수 있습니다</span></div>
 
-          {filteredRecords.some(({ document, analysis }) =>
-            document.id === HANWHA_POLICY_DOCUMENT_ID && analysis.sourceSha256 === HANWHA_POLICY_SHA256) && (
-            <section className="mt-4 rounded-3xl border border-emerald-200 bg-emerald-50/70 p-5 sm:p-6" aria-label="한화생명 원문 검토 체크포인트">
+          {REVIEWED_POLICIES.filter((policy) => filteredRecords.some(({ document, analysis }) =>
+            document.id === policy.documentId && analysis.sourceSha256 === policy.sha256)).map((policy) => (
+            <section key={policy.documentId} className="mt-4 rounded-3xl border border-emerald-200 bg-emerald-50/70 p-5 sm:p-6" aria-label={policy.insurer + " 원문 검토 체크포인트"}>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <p className="text-[10px] font-black tracking-[0.14em] text-emerald-800">한화생명 원문 검토 · {HANWHA_POLICY_CHECKPOINTS.length}개</p>
+                  <p className="text-[10px] font-black tracking-[0.14em] text-emerald-800">{policy.insurer} 원문 검토 · {policy.checkpoints.length}개</p>
                   <h3 className="mt-1 text-lg font-black text-[#17211f]">설계사가 확인할 약관 조건</h3>
-                  <p className="mt-2 max-w-3xl text-[11px] leading-5 text-emerald-950">2026.04.17 파일에서 확인한 조항입니다. 실제 가입 계약의 약관 버전이 일치하기 전에는 지급 여부나 금액을 판단하지 않습니다.</p>
+                  <p className="mt-2 max-w-3xl text-[11px] leading-5 text-emerald-950">{policy.fileLabel}에서 확인한 조항입니다. 실제 가입 계약의 약관 버전이 일치하기 전에는 지급 여부나 금액을 판단하지 않습니다.</p>
                 </div>
-                <Link href={`/insurance/terms/viewer/${HANWHA_POLICY_DOCUMENT_ID}`} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-900 px-4 text-xs font-black text-white hover:bg-emerald-800"><BookOpen className="h-4 w-4" /> 181쪽 원문 보기</Link>
+                <Link href={"/insurance/terms/viewer/" + policy.documentId} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-900 px-4 text-xs font-black text-white hover:bg-emerald-800"><BookOpen className="h-4 w-4" /> {policy.pageCount}쪽 원문 보기</Link>
               </div>
               <ol className="mt-5 grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
-                {HANWHA_POLICY_CHECKPOINTS.map((item, index) => (
+                {policy.checkpoints.map((item, index) => (
                   <li key={item.title} className="rounded-xl border border-emerald-100 bg-white p-4">
                     <h4 className="text-xs font-black text-[#17211f]">{index + 1}. {item.title}</h4>
                     <p className="mt-2 text-[11px] leading-5 text-neutral-700">{item.summary}</p>
                     <p className="mt-2 text-[10px] font-bold leading-5 text-emerald-900">확인: {item.advisorCheck}</p>
                     <div className="mt-3 flex flex-wrap gap-1.5">
                       {item.evidence.map((entry) => (
-                        <Link key={entry.article + entry.page + entry.anchor} href={`/insurance/terms/viewer/${HANWHA_POLICY_DOCUMENT_ID}?page=${entry.page}`} target="_blank" rel="noopener noreferrer" className="rounded-md bg-emerald-100 px-2 py-1 text-[10px] font-bold text-emerald-900 underline-offset-2 hover:underline">{entry.article} · PDF {entry.page}쪽 ↗</Link>
+                        <Link key={entry.article + entry.page + entry.anchor} href={"/insurance/terms/viewer/" + policy.documentId + "?page=" + entry.page} target="_blank" rel="noopener noreferrer" className="rounded-md bg-emerald-100 px-2 py-1 text-[10px] font-bold text-emerald-900 underline-offset-2 hover:underline">{entry.article} · PDF {entry.page}쪽 ↗</Link>
                       ))}
                     </div>
                   </li>
                 ))}
               </ol>
             </section>
-          )}
+          ))}
 
           <div className="mt-3 grid items-start gap-4 xl:grid-cols-2">
             {filteredRecords.map(({ document, analysis }) => {
@@ -316,7 +333,7 @@ export function TermsLibrary() {
                   <div className="p-5 sm:p-6">
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-2.5 py-1 text-[10px] font-black ${document.saleStatus === "on_sale" ? "bg-emerald-100 text-emerald-800" : "bg-neutral-100 text-neutral-600"}`}>{document.saleStatus === "on_sale" ? "수집 당시 판매" : "수집 당시 판매 종료"}</span><span className="text-[10px] font-black text-[#c71935]">{document.insurer}</span><span className="text-[10px] font-bold text-neutral-500">{formatDate(document.effectiveFrom)}</span></div>
+                        <div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-2.5 py-1 text-[10px] font-black ${document.saleStatus === "on_sale" ? "bg-emerald-100 text-emerald-800" : "bg-neutral-100 text-neutral-600"}`}>{document.saleStatus === "on_sale" ? "수집 당시 판매" : "수집 당시 판매 종료"}</span><span className="text-[10px] font-black text-[#c71935]">{document.insurer}</span><span className="text-[10px] font-bold text-neutral-500">{formatDate(document.effectiveFrom)}</span>{(PDF_ENTRY_COUNTS.get(analysis.sourceSha256) ?? 0) > 1 && <span className="rounded-full bg-blue-50 px-2 py-1 text-[10px] font-bold text-blue-800">동일 PDF {PDF_ENTRY_COUNTS.get(analysis.sourceSha256)}항목</span>}</div>
                         <h3 className="mt-3 text-lg font-black leading-7">{document.productName}</h3>
                       </div>
                       <button onClick={() => toggleComparison(document.id)} aria-pressed={selected} className={`inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-xl border px-3 text-[10px] font-black ${selected ? "border-[#3155d9] bg-blue-50 text-[#3155d9]" : "border-black/10 bg-white hover:border-[#3155d9]"}`}>{selected ? <Check className="h-4 w-4" /> : <GitCompareArrows className="h-4 w-4" />}{selected ? "비교 선택됨" : "비교 담기"}</button>
@@ -394,6 +411,12 @@ export function TermsLibrary() {
               </div>
             </div>
           </details>
+
+          {selectedPdfCount < selectedRecords.length && (
+            <div className="mt-5 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-[11px] leading-5 text-amber-950">
+              선택한 항목 중 동일한 PDF 원문을 공유하는 상품 유형이 있습니다. 같은 원문의 후보 문구를 나란히 보여주므로 이 표에서 상품 유형별 가입조건이나 보장 차이를 확인할 수 없습니다.
+            </div>
+          )}
 
           <div className="mt-5 flex items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-blue-950"><Sparkles className="mt-0.5 h-5 w-5 shrink-0" /><p className="text-[11px] leading-5"><strong className="block text-xs">왼쪽 항목, 위쪽 상품 기준의 표로 비교합니다.</strong>문서 분량부터 보장 범위, 특약, 면책, 감액, 보장개시까지 같은 행에서 바로 비교할 수 있습니다. ‘자동 미탐지’는 해당 조항이 없다는 판정이 아닙니다.</p></div>
 
