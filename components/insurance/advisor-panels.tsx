@@ -37,6 +37,7 @@ import {
   type CancerDiagnosisType,
   type CancerRuleAssessment,
 } from "@/lib/insurance-rule-engine"
+import { SyntheticPolicyProofCard } from "@/components/insurance/synthetic-policy-proof-card"
 import { INSURANCE_TERMS_DOCUMENT_COUNT } from "@/lib/insurance-terms"
 
 type QualityView = "collection" | "coverages" | "documents"
@@ -210,7 +211,9 @@ function DocumentsView({ model, demoMode }: { model: InsuranceDashboardModel; de
   }
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[0.75fr_1.25fr]">
+    <div className="space-y-5">
+      {demoMode && <SyntheticPolicyProofCard />}
+      <div className="grid gap-5 xl:grid-cols-[0.75fr_1.25fr]">
       <section className="result-surface p-5">
         <div className="flex h-full min-h-[300px] flex-col items-center justify-center border border-dashed border-black/20 bg-white/40 p-6 text-center">
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#17211f] text-white"><Upload className="h-6 w-6" /></span>
@@ -230,6 +233,7 @@ function DocumentsView({ model, demoMode }: { model: InsuranceDashboardModel; de
           {documents.length === 0 && <div className="p-12 text-center text-sm text-neutral-500">연결된 문서가 없습니다.</div>}
         </div>
       </section>
+      </div>
     </div>
   )
 }
