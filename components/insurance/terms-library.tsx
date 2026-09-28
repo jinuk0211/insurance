@@ -41,11 +41,13 @@ import {
   type PolicyEvidence,
 } from "@/lib/policy-library"
 
-const SummaryLibrary = dynamic(() => import("@/components/insurance/summary-library").then((module) => module.SummaryLibrary), { ssr: false })
+import { SummaryLibrary } from "@/components/insurance/summary-library"
+import { POLICY_CORPUS_DOCUMENT_COUNT, POLICY_CORPUS_INSURER_COUNT } from "@/lib/policy-corpus"
+import type { TermsView } from "@/lib/terms-navigation"
 
 const TermsQa = dynamic(() => import("@/components/insurance/terms-qa").then((module) => module.TermsQa), { ssr: false })
 
-type View = "analysis" | "riders" | "compare" | "files" | "summaries" | "questions"
+type View = TermsView
 type SaleFilter = "all" | "on_sale" | "off_sale" | "unknown"
 type FocusFilter = "all" | "reviewed" | "coverage" | "riders" | "exclusions" | "reduction" | "waiting"
 
@@ -223,9 +225,9 @@ function EvidenceSummary({ section, tone, documentId }: {
   )
 }
 
-export function TermsLibrary() {
-  const [view, setView] = useState<View>("questions")
-  const [selectedQaId, setSelectedQaId] = useState<string | null>(null)
+export function TermsLibrary({ initialView = "summaries", initialDocumentId = null }: { initialView?: View; initialDocumentId?: string | null }) {
+  const [view, setView] = useState<View>(initialView)
+  const [selectedQaId, setSelectedQaId] = useState<string | null>(initialDocumentId)
   const [query, setQuery] = useState("")
   const [category, setCategory] = useState("all")
   const [saleFilter, setSaleFilter] = useState<SaleFilter>("all")
@@ -295,17 +297,17 @@ export function TermsLibrary() {
             <div>
               <p className="text-xs font-medium tracking-wide text-indigo-600">POLICY LIBRARY</p>
               <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">약관의 근거를 더 명확하게.</h1>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500">상품과 특약의 보장 조건을 확인하고, 상담에 필요한 조항을 PDF 원문과 대조하세요.</p>
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-500">{POLICY_CORPUS_INSURER_COUNT}개 보험사의 PDF {formatNumber(POLICY_CORPUS_DOCUMENT_COUNT)}건을 검색하고 원문을 확인하세요. 상품요약서·공시자료를 포함하며, 조항 분석이 있는 약관 {formatNumber(POLICY_RECORDS.length)}건도 별도로 탐색할 수 있습니다.</p>
             </div>
           </div>
           <div className="mt-8 flex gap-6 overflow-x-auto" aria-label="약관 자료실 보기">
             {([
+              ["summaries", `전체 PDF ${formatNumber(POLICY_CORPUS_DOCUMENT_COUNT)}건`],
               ["questions", "약관에 질문"],
-              ["analysis", "약관 탐색"],
+              ["analysis", `분석 약관 ${formatNumber(POLICY_RECORDS.length)}건`],
               ["riders", "특약 살펴보기"],
               ["compare", `상품 비교 ${selectedIds.length}/3`],
-              ["files", "원문 자료실"],
-              ["summaries", "상품요약서 · 공시자료"],
+              ["files", "분석 약관 원문"],
             ] as const).map(([value, label]) => (
               <button key={value} onClick={() => setView(value)} aria-pressed={view === value} className={`min-h-14 shrink-0 border-b-2 px-1 text-base font-medium transition-colors ${view === value ? "border-indigo-600 text-indigo-600" : "border-transparent text-slate-500 hover:text-slate-900"}`}>{label}</button>
             ))}
@@ -314,7 +316,7 @@ export function TermsLibrary() {
       </section>
 
       {view === "questions" && <TermsQa initialDocumentId={selectedQaId} />}
-      {view === "summaries" && <SummaryLibrary />}
+      {view === "summaries" && <SummaryLibrary onAsk={(id) => { setSelectedQaId(id); setView("questions") }} />}
 
       {view === "analysis" && (
         <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6" aria-labelledby="analysis-title">
