@@ -37,3 +37,9 @@ pnpm build
 - 기존 INSURANCE_PREVIEW_USER 및 INSURANCE_PREVIEW_PASSWORD는 실데이터 API 접근 권한이 아닙니다.
 
 자세한 제품 범위는 [PRODUCT.md](./PRODUCT.md)를 참고하세요.
+
+## 전체 PDF 자료실
+
+- `/insurance/terms`는 `lib/generated/product-summary-catalog.json`의 전체 PDF 목록을 기본으로 표시합니다. 건수와 보험사 수는 데이터에서 계산합니다.
+- 보험사·상품명 검색과 분야·보험사·문서 유형 필터를 함께 사용할 수 있습니다. 각 자료의 **이 문서에 질문**은 동일한 문서 ID의 질문 자료를 선택합니다.
+- 조항 분석이 있는 약관은 **분석 약관** 탭 또는 `/insurance/terms?view=analysis`에서 확인합니다. `/insurance/corpus`의 기존 전체 목록도 계속 사용할 수 있습니다.
