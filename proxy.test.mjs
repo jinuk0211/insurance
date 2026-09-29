@@ -4,61 +4,40 @@ import { NextRequest } from "next/server.js"
 
 import { config, proxy } from "./proxy.ts"
 
-const original = {
-  NODE_ENV: process.env.NODE_ENV,
-  VERCEL: process.env.VERCEL,
-  user: process.env.INSURANCE_PREVIEW_USER,
-  password: process.env.INSURANCE_PREVIEW_PASSWORD,
-  demoOnly: process.env.INSURANCE_DEMO_ONLY,
-  codefClientId: process.env.CODEF_CLIENT_ID,
-  codefClientSecret: process.env.CODEF_CLIENT_SECRET,
-  codefPublicKey: process.env.CODEF_PUBLIC_KEY,
-}
+const envKeys = [
+  "NODE_ENV",
+  "VERCEL",
+  "INSURANCE_LOCAL_LIVE_TEST",
+  "INSURANCE_DEMO_ONLY",
+  "INSURANCE_PREVIEW_USER",
+  "INSURANCE_PREVIEW_PASSWORD",
+  "CODEF_CLIENT_ID",
+  "CODEF_CLIENT_SECRET",
+  "CODEF_PUBLIC_KEY",
+]
+const original = Object.fromEntries(envKeys.map((key) => [key, process.env[key]]))
 
 afterEach(() => {
-  for (const [key, value] of [
-    ["NODE_ENV", original.NODE_ENV],
-    ["VERCEL", original.VERCEL],
-    ["INSURANCE_PREVIEW_USER", original.user],
-    ["INSURANCE_PREVIEW_PASSWORD", original.password],
-    ["INSURANCE_DEMO_ONLY", original.demoOnly],
-    ["CODEF_CLIENT_ID", original.codefClientId],
-    ["CODEF_CLIENT_SECRET", original.codefClientSecret],
-    ["CODEF_PUBLIC_KEY", original.codefPublicKey],
-  ]) {
-    if (value === undefined) delete process.env[key]
-    else process.env[key] = value
+  for (const key of envKeys) {
+    if (original[key] === undefined) delete process.env[key]
+    else process.env[key] = original[key]
   }
 })
 
-function request(authorization) {
-  const headers = authorization ? { authorization } : undefined
-  return new NextRequest("https://insurance.example/api/insurance/history", { headers })
+function request(path, authorization) {
+  return new NextRequest("https://insurance.example" + path, {
+    headers: authorization ? { authorization } : undefined,
+  })
 }
 
-function uiRequest() {
-  return new NextRequest("https://insurance.example/insurance")
-}
-
-function pensionUiRequest() {
-  return new NextRequest("https://insurance.example/pension")
-}
-
-function datasetRequest() {
-  return new NextRequest("https://insurance.example/api/codef-datasets/start")
-}
-
-function configurePreview() {
-  process.env.VERCEL = "1"
-  process.env.INSURANCE_PREVIEW_USER = "reviewer"
-  process.env.INSURANCE_PREVIEW_PASSWORD = "a-long-preview-password"
+function credentials() {
   process.env.CODEF_CLIENT_ID = "sandbox-client"
   process.env.CODEF_CLIENT_SECRET = "sandbox-secret"
   process.env.CODEF_PUBLIC_KEY = "sandbox-public-key"
   delete process.env.INSURANCE_DEMO_ONLY
 }
 
-test("applies the proxy security boundary to both the public UI and live API", () => {
+test("covers both public pages and all live insurance and CODEF dataset APIs", () => {
   assert.deepEqual(config.matcher, [
     "/insurance/:path*",
     "/pension/:path*",
@@ -67,147 +46,83 @@ test("applies the proxy security boundary to both the public UI and live API", (
   ])
 })
 
-test("passes the public insurance UI without auth while preserving security headers", () => {
-  process.env.INSURANCE_DEMO_ONLY = "true"
-
-  const response = proxy(uiRequest())
-
-  assert.equal(response.status, 200)
-  assert.equal(response.headers.get("x-middleware-next"), "1")
-  assert.equal(response.headers.get("www-authenticate"), null)
-  assert.equal(response.headers.get("cache-control"), "private, no-store")
-  assert.equal(response.headers.get("x-frame-options"), "DENY")
-})
-
-test("shows the live demo-first UI without a browser login", () => {
-  configurePreview()
-
-  const response = proxy(uiRequest())
-
-  assert.equal(response.status, 200)
-  assert.equal(response.headers.get("x-middleware-next"), "1")
-  assert.equal(response.headers.get("www-authenticate"), null)
-})
-
-test("passes the public pension UI without auth while preserving security headers", () => {
-  process.env.INSURANCE_DEMO_ONLY = "true"
-
-  const response = proxy(pensionUiRequest())
-
-  assert.equal(response.status, 200)
-  assert.equal(response.headers.get("x-middleware-next"), "1")
-  assert.equal(response.headers.get("www-authenticate"), null)
-  assert.equal(response.headers.get("cache-control"), "private, no-store")
-})
-
-test("never challenges the browser before exposing the live insurance UI", () => {
-  configurePreview()
-
-  const response = proxy(uiRequest())
-
-  assert.equal(response.status, 200)
-  assert.equal(response.headers.get("www-authenticate"), null)
-  assert.equal(response.headers.get("cache-control"), "private, no-store")
-})
-
-test("passes the live insurance UI with exact preview credentials", () => {
-  configurePreview()
-  const authorization = `Basic ${Buffer.from("reviewer:a-long-preview-password").toString("base64")}`
-  const response = proxy(new NextRequest("https://insurance.example/insurance", {
-    headers: { authorization },
-  }))
-
-  assert.equal(response.status, 200)
-  assert.equal(response.headers.get("x-middleware-next"), "1")
-  assert.equal(response.headers.get("cache-control"), "private, no-store")
-})
-
-test("passes the live API without a browser login challenge", async () => {
-  configurePreview()
-  const response = proxy(request())
-
-  assert.equal(response.status, 200)
-  assert.equal(response.headers.get("www-authenticate"), null)
-  assert.equal(response.headers.get("x-middleware-next"), "1")
-  assert.equal(response.headers.get("cache-control"), "private, no-store")
-  assert.equal(response.headers.get("x-frame-options"), "DENY")
-})
-
-test("passes the selected CODEF dataset API only when live credentials are configured", () => {
-  configurePreview()
-
-  const response = proxy(datasetRequest())
-
-  assert.equal(response.status, 200)
-  assert.equal(response.headers.get("x-middleware-next"), "1")
-  assert.equal(response.headers.get("cache-control"), "private, no-store")
-})
-
-test("fails closed in public demo mode without opening a browser login prompt", async () => {
+test("keeps the synthetic insurance and pension pages public with security headers", () => {
   process.env.VERCEL = "1"
-  process.env.INSURANCE_DEMO_ONLY = "true"
-  delete process.env.CODEF_CLIENT_ID
-  delete process.env.CODEF_CLIENT_SECRET
-  delete process.env.CODEF_PUBLIC_KEY
-
-  const response = proxy(request())
-
-  assert.equal(response.status, 503)
-  assert.equal(response.headers.get("www-authenticate"), null)
-  assert.match((await response.json()).error, /데모 모드/)
-  assert.equal(response.headers.get("cache-control"), "private, no-store")
+  for (const path of ["/insurance", "/insurance/terms", "/pension"]) {
+    const response = proxy(request(path))
+    assert.equal(response.status, 200)
+    assert.equal(response.headers.get("x-middleware-next"), "1")
+    assert.equal(response.headers.get("www-authenticate"), null)
+    assert.equal(response.headers.get("cache-control"), "private, no-store")
+    assert.equal(response.headers.get("x-frame-options"), "DENY")
+  }
 })
 
-test("fails the selected CODEF dataset API closed in demo-only mode", async () => {
-  process.env.INSURANCE_DEMO_ONLY = "true"
-  delete process.env.CODEF_CLIENT_ID
-  delete process.env.CODEF_CLIENT_SECRET
-  delete process.env.CODEF_PUBLIC_KEY
-
-  const response = proxy(datasetRequest())
-
-  assert.equal(response.status, 503)
-  assert.match((await response.json()).error, /실데이터 조회/)
-  assert.equal(response.headers.get("cache-control"), "private, no-store")
+test("blocks every deployed live API even when CODEF and preview credentials exist", async () => {
+  process.env.VERCEL = "1"
+  process.env.NODE_ENV = "production"
+  process.env.INSURANCE_LOCAL_LIVE_TEST = "true"
+  process.env.INSURANCE_PREVIEW_USER = "reviewer"
+  process.env.INSURANCE_PREVIEW_PASSWORD = "a-long-preview-password"
+  credentials()
+  const authorization = "Basic " + Buffer.from("reviewer:a-long-preview-password").toString("base64")
+  for (const path of [
+    "/api/insurance/check-user",
+    "/api/insurance/history",
+    "/api/insurance/query",
+    "/api/insurance/register/start",
+    "/api/codef-datasets/start",
+  ]) {
+    const response = proxy(request(path, authorization))
+    assert.equal(response.status, 503, path)
+    assert.equal(response.headers.get("www-authenticate"), null)
+    assert.equal(response.headers.get("cache-control"), "private, no-store")
+    assert.match((await response.json()).error, /GA 접근 인증/)
+  }
 })
 
-test("passes exact credentials without forwarding the Authorization header", () => {
-  configurePreview()
-  const authorization = `Basic ${Buffer.from("reviewer:a-long-preview-password").toString("base64")}`
-  const response = proxy(request(authorization))
+test("blocks production live APIs outside Vercel", () => {
+  process.env.NODE_ENV = "production"
+  delete process.env.VERCEL
+  process.env.INSURANCE_LOCAL_LIVE_TEST = "true"
+  credentials()
+  assert.equal(proxy(request("/api/insurance/history")).status, 503)
+})
 
+test("blocks local development unless live testing is explicitly enabled", () => {
+  process.env.NODE_ENV = "development"
+  delete process.env.VERCEL
+  credentials()
+  delete process.env.INSURANCE_LOCAL_LIVE_TEST
+  assert.equal(proxy(request("/api/insurance/history")).status, 503)
+})
+
+test("keeps demo-only mode closed even with local opt-in", () => {
+  process.env.NODE_ENV = "development"
+  delete process.env.VERCEL
+  process.env.INSURANCE_LOCAL_LIVE_TEST = "true"
+  credentials()
+  process.env.INSURANCE_DEMO_ONLY = "true"
+  assert.equal(proxy(request("/api/codef-datasets/start")).status, 503)
+})
+
+test("requires CODEF credentials for local live testing", () => {
+  process.env.NODE_ENV = "development"
+  delete process.env.VERCEL
+  process.env.INSURANCE_LOCAL_LIVE_TEST = "true"
+  credentials()
+  delete process.env.CODEF_PUBLIC_KEY
+  assert.equal(proxy(request("/api/insurance/query")).status, 503)
+})
+
+test("allows explicit local live testing without forwarding Authorization", () => {
+  process.env.NODE_ENV = "development"
+  delete process.env.VERCEL
+  process.env.INSURANCE_LOCAL_LIVE_TEST = "true"
+  credentials()
+  const response = proxy(request("/api/insurance/query", "Bearer local-test-token"))
   assert.equal(response.status, 200)
   assert.equal(response.headers.get("x-middleware-next"), "1")
   assert.equal(response.headers.get("x-middleware-request-authorization"), null)
   assert.equal(response.headers.get("cache-control"), "private, no-store")
-})
-
-test("does not require preview credentials in a deployment", () => {
-  process.env.VERCEL = "1"
-  process.env.CODEF_CLIENT_ID = "sandbox-client"
-  process.env.CODEF_CLIENT_SECRET = "sandbox-secret"
-  process.env.CODEF_PUBLIC_KEY = "sandbox-public-key"
-  delete process.env.INSURANCE_PREVIEW_USER
-  delete process.env.INSURANCE_PREVIEW_PASSWORD
-
-  const response = proxy(request())
-
-  assert.equal(response.status, 200)
-  assert.equal(response.headers.get("cache-control"), "private, no-store")
-})
-
-test("allows a production live API outside Vercel without Basic Auth", () => {
-  process.env.NODE_ENV = "production"
-  delete process.env.VERCEL
-  process.env.CODEF_CLIENT_ID = "sandbox-client"
-  process.env.CODEF_CLIENT_SECRET = "sandbox-secret"
-  process.env.CODEF_PUBLIC_KEY = "sandbox-public-key"
-  delete process.env.INSURANCE_PREVIEW_USER
-  delete process.env.INSURANCE_PREVIEW_PASSWORD
-  delete process.env.INSURANCE_DEMO_ONLY
-
-  const response = proxy(request())
-
-  assert.equal(response.status, 200)
-  assert.equal(response.headers.get("www-authenticate"), null)
 })

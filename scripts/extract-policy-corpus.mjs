@@ -3,7 +3,6 @@ import { mkdir, readFile, writeFile } from "node:fs/promises"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
-import iconv from "iconv-lite"
 import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs"
 
 const ROOT = process.cwd()
@@ -66,15 +65,6 @@ const SECTION_PATTERNS = {
 
 function sleep(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds))
-}
-
-function kbPdfUrl(fileName) {
-  const encodedFileName = [...iconv.encode(fileName, "euc-kr")]
-    .map((byte) => /[A-Za-z0-9_.-]/.test(String.fromCharCode(byte))
-      ? String.fromCharCode(byte)
-      : `%${byte.toString(16).toUpperCase().padStart(2, "0")}`)
-    .join("")
-  return `https://www.kbinsure.co.kr/CG802030003.ec?fileNm=${encodedFileName}`
 }
 
 function normalizeText(value) {
@@ -225,12 +215,13 @@ function confidenceFor(evidence) {
 }
 
 function analyzeDocument(document, pages, sourceSha256) {
-  const coverageEvidence = collectEvidence(pages, SECTION_PATTERNS.coverage, 6)
-  const riderEvidence = collectEvidence(pages, SECTION_PATTERNS.riders, 5)
-  const exclusionEvidence = collectEvidence(pages, SECTION_PATTERNS.exclusions, 6)
-  const reductionEvidence = collectEvidence(pages, SECTION_PATTERNS.reduction, 6)
-  const waitingEvidence = collectEvidence(pages, SECTION_PATTERNS.waiting, 6)
-  const riderNames = detectRiderNames(pages)
+  const searchPages = pages.map((page, index) => index + 1 < (document.analysisStartPage ?? 1) ? "" : page)
+  const coverageEvidence = collectEvidence(searchPages, SECTION_PATTERNS.coverage, 6)
+  const riderEvidence = collectEvidence(searchPages, SECTION_PATTERNS.riders, 5)
+  const exclusionEvidence = collectEvidence(searchPages, SECTION_PATTERNS.exclusions, 6)
+  const reductionEvidence = collectEvidence(searchPages, SECTION_PATTERNS.reduction, 6)
+  const waitingEvidence = collectEvidence(searchPages, SECTION_PATTERNS.waiting, 6)
+  const riderNames = detectRiderNames(searchPages)
   const characterCount = pages.reduce((total, page) => total + page.length, 0)
   const charactersPerPage = Math.round(characterCount / Math.max(1, pages.length))
 
@@ -243,7 +234,7 @@ function analyzeDocument(document, pages, sourceSha256) {
     charactersPerPage,
     sourceSha256,
     coverage: {
-      topics: detectCoverageTopics(pages),
+      topics: detectCoverageTopics(searchPages),
       confidence: confidenceFor(coverageEvidence),
       evidence: coverageEvidence,
     },
@@ -258,14 +249,14 @@ function analyzeDocument(document, pages, sourceSha256) {
       evidence: exclusionEvidence,
     },
     reduction: {
-      ratesPercent: findNumericSignals(pages, /(\d{1,3})\s*%/g).filter((value) => value <= 100),
-      periodsMonths: findNumericSignals(pages, /(\d{1,3})\s*개월\s*(?:미만|이내|동안)/g),
-      periodsYears: findNumericSignals(pages, /(\d{1,2})\s*년\s*(?:미만|이내|동안)/g),
+      ratesPercent: findNumericSignals(searchPages, /(\d{1,3})\s*%/g).filter((value) => value <= 100),
+      periodsMonths: findNumericSignals(searchPages, /(\d{1,3})\s*개월\s*(?:미만|이내|동안)/g),
+      periodsYears: findNumericSignals(searchPages, /(\d{1,2})\s*년\s*(?:미만|이내|동안)/g),
       confidence: confidenceFor(reductionEvidence),
       evidence: reductionEvidence,
     },
     waiting: {
-      days: findNumericSignals(pages, /(\d{1,3})\s*일(?:이|이 되는|이 지난|째|간| 동안| 이후)/g),
+      days: findNumericSignals(searchPages, /(\d{1,3})\s*일(?:이|이 되는|이 지난|째|간| 동안| 이후)/g),
       confidence: confidenceFor(waitingEvidence),
       evidence: waitingEvidence,
     },
@@ -292,22 +283,39 @@ async function main() {
   const library = JSON.parse(await readFile(LIBRARY_PATH, "utf8"))
   await mkdir(TEXT_DIRECTORY, { recursive: true })
 
-  const analyses = []
+  const onlyId = process.argv[2] === "--id" ? process.argv[3] : null
+  if (onlyId && !library.documents.some((document) => document.id === onlyId)) {
+    throw new Error(`문서 ID가 없습니다: ${onlyId}`)
+  }
+  const previous = onlyId ? JSON.parse(await readFile(ANALYSIS_PATH, "utf8")) : null
+  const analyses = previous ? previous.documents : []
   const extractionCache = new Map()
 
   for (const [index, document] of library.documents.entries()) {
+    if (onlyId && document.id !== onlyId) continue
     process.stdout.write(`[${index + 1}/${library.documents.length}] ${document.sourceFileName} 다운로드... `)
-    const buffer = await downloadPdf(kbPdfUrl(document.sourceFileName))
+    const buffer = await downloadPdf(document.pdfUrl)
     const sourceSha256 = createHash("sha256").update(buffer).digest("hex")
+    if (document.expectedSha256 && document.expectedSha256 !== sourceSha256) {
+      throw new Error(`원본 PDF 해시가 변경되었습니다: ${document.id}`)
+    }
     let pages = extractionCache.get(sourceSha256)
     if (!pages) {
       pages = await extractPages(buffer)
       extractionCache.set(sourceSha256, pages)
     }
+    if (document.expectedPageCount && document.expectedPageCount !== pages.length) {
+      throw new Error(`원본 PDF 페이지 수가 변경되었습니다: ${document.id}`)
+    }
+    document.expectedSha256 = sourceSha256
+    document.expectedPageCount = pages.length
     const outputPath = path.join(TEXT_DIRECTORY, `${document.id}.txt`)
     await writeFile(outputPath, serializeText(document, pages), "utf8")
-    analyses.push(analyzeDocument(document, pages, sourceSha256))
-    process.stdout.write(`${pages.length}쪽, ${analyses.at(-1).characterCount.toLocaleString("ko-KR")}자\n`)
+    const analysis = analyzeDocument(document, pages, sourceSha256)
+    const previousIndex = analyses.findIndex((item) => item.id === document.id)
+    if (previousIndex >= 0) analyses[previousIndex] = analysis
+    else analyses.push(analysis)
+    process.stdout.write(`${pages.length}쪽, ${analysis.characterCount.toLocaleString("ko-KR")}자\n`)
     await sleep(250)
   }
 
@@ -331,6 +339,7 @@ async function main() {
   }
 
   await writeFile(ANALYSIS_PATH, `${JSON.stringify(result, null, 2)}\n`, "utf8")
+  await writeFile(LIBRARY_PATH, `${JSON.stringify(library, null, 2)}\n`, "utf8")
   console.log(`완료: ${result.summary.documentCount}건 / ${result.summary.pageCount.toLocaleString("ko-KR")}쪽 / ${result.summary.characterCount.toLocaleString("ko-KR")}자`)
 }
 

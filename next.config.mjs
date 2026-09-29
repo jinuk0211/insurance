@@ -1,19 +1,8 @@
-import { readFileSync } from "node:fs"
-
-const policyLibrary = JSON.parse(
-  readFileSync(new URL("./lib/generated/official-policy-library.json", import.meta.url), "utf8"),
-)
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  outputFileTracingIncludes: { "/api/terms/ask": ["./lib/generated/qa-pages/*.json.gz"], "/api/terms/archive": ["./lib/generated/document-archive.json"] },
   images: {
     unoptimized: true,
-  },
-  async rewrites() {
-    return policyLibrary.documents.map((document) => ({
-      source: `/policy-files/${document.id}`,
-      destination: document.pdfUrl,
-    }))
   },
 }
 

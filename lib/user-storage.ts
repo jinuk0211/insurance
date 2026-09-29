@@ -66,7 +66,11 @@ export function saveUser(user: Omit<SavedUser, "savedAt">): void {
 
 export function clearSavedUser(): void {
   if (typeof window === "undefined") return
-  localStorage.removeItem(STORAGE_KEY)
+  try {
+    localStorage.removeItem(STORAGE_KEY)
+  } catch {
+    // Private browsing may block storage; the synthetic demo must still render.
+  }
 }
 
 export function maskPhone(phone: string): string {

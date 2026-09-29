@@ -154,9 +154,9 @@ export const INSURANCE_DEMO_DATA = {
         contractId: "SAMPLE-001",
         type: "terms",
         name: "가온 종합보험 암진단 특별약관 (가상 샘플)",
-        status: "connected",
+        status: "needs_review",
         source: "terms",
-        note: "문서 버전 및 원문 페이지 연결 완료",
+        note: "가상 약관 샘플 · 공식 PDF와 실제 가입 개정본 미연결",
       },
       {
         id: "SAMPLE-DOC-004",

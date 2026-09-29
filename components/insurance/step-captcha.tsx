@@ -38,7 +38,7 @@ export function StepCaptcha({ state, onSuccess, onBack }: Props) {
   }
 
   return (
-    <div className="animate-slide-up rounded-[26px] border border-[#d8d3c8] bg-[#fffdf8] p-5 shadow-[0_18px_55px_rgba(23,33,31,0.07)] sm:p-7">
+    <div className="animate-slide-up rounded-[26px] border border-[#e2e8f0] bg-[#ffffff] p-5 shadow-[0_18px_55px_rgba(23,33,31,0.07)] sm:p-7">
       <p className="mb-2 text-[10px] font-semibold uppercase tracking-[2px] text-muted-foreground">Step 2</p>
       <h2 className="mb-1 font-serif text-2xl font-bold text-foreground">보안문자 입력</h2>
       <p className="mb-7 text-sm leading-relaxed text-muted-foreground">아래 이미지의 문자를 입력해주세요.</p>

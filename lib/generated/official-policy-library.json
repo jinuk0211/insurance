@@ -19,7 +19,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=25033_3_1.pdf",
       "sourceFileName": "25033_3_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 17645567
+      "byteLength": 17645567,
+      "expectedSha256": "0eb944952543d77fc08a669f0d1214aaa8dc1b4e75e31ff2f8368a8aedcb795b",
+      "expectedPageCount": 762
     },
     {
       "id": "kb-25034-2026-03-01",
@@ -33,7 +35,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=25034_3_1.pdf",
       "sourceFileName": "25034_3_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 17645567
+      "byteLength": 17645567,
+      "expectedSha256": "0eb944952543d77fc08a669f0d1214aaa8dc1b4e75e31ff2f8368a8aedcb795b",
+      "expectedPageCount": 762
     },
     {
       "id": "kb-25035-2026-03-01",
@@ -47,7 +51,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=25035_3_1.pdf",
       "sourceFileName": "25035_3_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 17645567
+      "byteLength": 17645567,
+      "expectedSha256": "0eb944952543d77fc08a669f0d1214aaa8dc1b4e75e31ff2f8368a8aedcb795b",
+      "expectedPageCount": 762
     },
     {
       "id": "kb-25290-2026-07-01",
@@ -61,7 +67,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=25290_1_1.pdf",
       "sourceFileName": "25290_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 13182991
+      "byteLength": 13182991,
+      "expectedSha256": "e97dcee90b7a978792672666bc0813cf40b94805253548761113780f631b2ee5",
+      "expectedPageCount": 774
     },
     {
       "id": "kb-25291-2026-07-01",
@@ -75,7 +83,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=25291_1_1.pdf",
       "sourceFileName": "25291_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 13182991
+      "byteLength": 13182991,
+      "expectedSha256": "e97dcee90b7a978792672666bc0813cf40b94805253548761113780f631b2ee5",
+      "expectedPageCount": 774
     },
     {
       "id": "kb-25292-2026-07-01",
@@ -89,7 +99,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=25292_1_1.pdf",
       "sourceFileName": "25292_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 13182991
+      "byteLength": 13182991,
+      "expectedSha256": "e97dcee90b7a978792672666bc0813cf40b94805253548761113780f631b2ee5",
+      "expectedPageCount": 774
     },
     {
       "id": "kb-25303-2026-07-01",
@@ -103,7 +115,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=25303_1_1%28%B0%A3%C6%ED%29.pdf",
       "sourceFileName": "25303_1_1(간편).pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": null
+      "byteLength": null,
+      "expectedSha256": "e4fec7f4113ff8c939bdac2ddc8e7e8c61183bbe84b6b70f0ec16c644f554dbf",
+      "expectedPageCount": 236
     },
     {
       "id": "kb-25334-2026-07-01",
@@ -117,7 +131,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=25334_1_1.pdf",
       "sourceFileName": "25334_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 7550740
+      "byteLength": 7550740,
+      "expectedSha256": "119624f8b28559fea83afb51d5b43402d9948add537debfebba7736328701d1c",
+      "expectedPageCount": 390
     },
     {
       "id": "kb-25335-2026-07-01",
@@ -131,7 +147,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=25335_1_1.pdf",
       "sourceFileName": "25335_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 7550740
+      "byteLength": 7550740,
+      "expectedSha256": "119624f8b28559fea83afb51d5b43402d9948add537debfebba7736328701d1c",
+      "expectedPageCount": 390
     },
     {
       "id": "kb-25342-2026-07-01",
@@ -145,7 +163,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=25342_1_1.pdf",
       "sourceFileName": "25342_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 3289654
+      "byteLength": 3289654,
+      "expectedSha256": "9c843a2247fb75992db4eca2f592d4cef8094380fad6c749cefbcd2add642a5e",
+      "expectedPageCount": 144
     },
     {
       "id": "kb-20635-1997-12-03",
@@ -159,7 +179,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=20635_1_1.pdf",
       "sourceFileName": "20635_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 240581
+      "byteLength": 240581,
+      "expectedSha256": "8099860a4aa742fa465c03390f4a91cf083461541cd153ad9a6fe04574a9390a",
+      "expectedPageCount": 51
     },
     {
       "id": "kb-20640-1998-09-07",
@@ -173,7 +195,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=20640_1_1.pdf",
       "sourceFileName": "20640_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 289338
+      "byteLength": 289338,
+      "expectedSha256": "f4164817e4fde428b25b507e334114505f0f6076416e65f0dd686ac192662c07",
+      "expectedPageCount": 73
     },
     {
       "id": "kb-20644-1999-05-01",
@@ -187,7 +211,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=20644_1_1.pdf",
       "sourceFileName": "20644_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 357595
+      "byteLength": 357595,
+      "expectedSha256": "7c58927e7d63234558fbc6faf5acb3ec3db9e786d4d326f4e8ad22923ef65bba",
+      "expectedPageCount": 77
     },
     {
       "id": "kb-20658-1999-05-01",
@@ -201,7 +227,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=20658_1_1.pdf",
       "sourceFileName": "20658_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 325959
+      "byteLength": 325959,
+      "expectedSha256": "8cffbd29c129f253ae14500770792fb457725d9292a9aa8c094f1feb40070029",
+      "expectedPageCount": 58
     },
     {
       "id": "kb-20673-2000-05-01",
@@ -215,7 +243,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2673_1_1.pdf",
       "sourceFileName": "2673_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 245686
+      "byteLength": 245686,
+      "expectedSha256": "a9e669c28151c31f524b72fe4fe065da780d83278dee59e69414cfe1b69dfca5",
+      "expectedPageCount": 62
     },
     {
       "id": "kb-20677-2000-05-01",
@@ -229,7 +259,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2677_1_1.pdf",
       "sourceFileName": "2677_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 119035
+      "byteLength": 119035,
+      "expectedSha256": "92f128316d722f1da5aedefea649096875315dcd91ec633fcd7eecc93d0452f8",
+      "expectedPageCount": 31
     },
     {
       "id": "kb-20679-2000-05-01",
@@ -243,7 +275,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2679_1_1.pdf",
       "sourceFileName": "2679_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 358487
+      "byteLength": 358487,
+      "expectedSha256": "d3eede0f7e5eed0a36be0a89bf07cd22ac8caa06a8c8c30a028fc13bb0370de7",
+      "expectedPageCount": 38
     },
     {
       "id": "kb-20689-2000-07-03",
@@ -257,7 +291,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2689_1_1.pdf",
       "sourceFileName": "2689_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 315562
+      "byteLength": 315562,
+      "expectedSha256": "17fa7fe82e90a24b040364b215ce2b760b2efdedb01c57028cda6967c8717eda",
+      "expectedPageCount": 122
     },
     {
       "id": "kb-20690-2000-07-10",
@@ -271,7 +307,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2690_1_1.pdf",
       "sourceFileName": "2690_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 315566
+      "byteLength": 315566,
+      "expectedSha256": "b50ddce955244524d9a9fffd2894d286872c1d29a86ff1b8d8f686915d172628",
+      "expectedPageCount": 122
     },
     {
       "id": "kb-20707-2001-05-07",
@@ -285,7 +323,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2707_1_1.PDF",
       "sourceFileName": "2707_1_1.PDF",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 284872
+      "byteLength": 284872,
+      "expectedSha256": "f069cff6df9a57a8e70a8f209d422343367e03b6ac3bb0090ee56f42057bc050",
+      "expectedPageCount": 56
     },
     {
       "id": "kb-20712-2001-05-14",
@@ -299,7 +339,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2712_1_1.PDF",
       "sourceFileName": "2712_1_1.PDF",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 197391
+      "byteLength": 197391,
+      "expectedSha256": "2276bd1c348efd66d526a0d15fa9b4e90c64f92eced7e97d2d380b23beff1869",
+      "expectedPageCount": 41
     },
     {
       "id": "kb-20713-2001-05-07",
@@ -313,7 +355,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2713_1_1.PDF",
       "sourceFileName": "2713_1_1.PDF",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 194139
+      "byteLength": 194139,
+      "expectedSha256": "ade8c7886963884f475b3a95e11c65d5a6a10f744d2661f0cb69a944ed3a07eb",
+      "expectedPageCount": 36
     },
     {
       "id": "kb-20720-2001-05-14",
@@ -327,7 +371,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2720_1_1.PDF",
       "sourceFileName": "2720_1_1.PDF",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 168246
+      "byteLength": 168246,
+      "expectedSha256": "9a577a078402073549f4b9c7de71753c426f2e88bcd54301a8b57f5031db902e",
+      "expectedPageCount": 34
     },
     {
       "id": "kb-20721-2001-07-26",
@@ -341,7 +387,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2721_1_1.PDF",
       "sourceFileName": "2721_1_1.PDF",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 229011
+      "byteLength": 229011,
+      "expectedSha256": "cbfc698f7144b258d7768e59fd1899a8a1c46a7b456e106fe9d4ef0fadaea91e",
+      "expectedPageCount": 48
     },
     {
       "id": "kb-20741-2001-11-06",
@@ -355,7 +403,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2741_1_1.pdf",
       "sourceFileName": "2741_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 463511
+      "byteLength": 463511,
+      "expectedSha256": "7339c8a45975a75869db598a3d336a6f30eeec485997d22eae4c6112a7aac66a",
+      "expectedPageCount": 39
     },
     {
       "id": "kb-20742-2001-12-01",
@@ -369,7 +419,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2742_1_1.pdf",
       "sourceFileName": "2742_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 422340
+      "byteLength": 422340,
+      "expectedSha256": "685f4ec4d812731680727675e75aa7e44545e0f491bc2181d3b454e1d0afcca2",
+      "expectedPageCount": 34
     },
     {
       "id": "kb-20743-2001-11-06",
@@ -383,7 +435,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2743_1_1.pdf",
       "sourceFileName": "2743_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 374381
+      "byteLength": 374381,
+      "expectedSha256": "aff15ab762df8b43c7fdf0b21ea9960398ec735565a3d6a7eb07cd7e5f2fe781",
+      "expectedPageCount": 35
     },
     {
       "id": "kb-20744-2002-01-10",
@@ -397,7 +451,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2744_1_1.pdf",
       "sourceFileName": "2744_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 120833
+      "byteLength": 120833,
+      "expectedSha256": "702ee4b8b49462929c83fb5a516b2aa5491c4e1bb332af88b1e749e29509cb08",
+      "expectedPageCount": 27
     },
     {
       "id": "kb-20745-2002-01-10",
@@ -411,7 +467,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2745_1_1.pdf",
       "sourceFileName": "2745_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 542720
+      "byteLength": 542720,
+      "expectedSha256": "48b8de3c94acaa418c7b15c08310951669b98ad5704136827d264afcb0ce9183",
+      "expectedPageCount": 60
     },
     {
       "id": "kb-20747-2002-04-26",
@@ -425,7 +483,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2747_1_1.pdf",
       "sourceFileName": "2747_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 345330
+      "byteLength": 345330,
+      "expectedSha256": "831443f4d3948281f0dd4ecf0f3e6a9f1d152e5ba2db8c3871118397b75e8f57",
+      "expectedPageCount": 25
     },
     {
       "id": "kb-20752-2002-09-05",
@@ -439,7 +499,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2752_1_1.pdf",
       "sourceFileName": "2752_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 1089385
+      "byteLength": 1089385,
+      "expectedSha256": "974aa2d47895b1b93a7478c50f4abdbc829a295c09e9b52cdfabd6b611479caa",
+      "expectedPageCount": 191
     },
     {
       "id": "kb-20758-2003-01-02",
@@ -453,7 +515,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2758_1_1.pdf",
       "sourceFileName": "2758_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 397137
+      "byteLength": 397137,
+      "expectedSha256": "480e6e69d9bcae041da76abc4699e676887ae105654bde4ca8f27faded3d2a26",
+      "expectedPageCount": 32
     },
     {
       "id": "kb-20759-2003-01-02",
@@ -467,7 +531,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2759_1_1.pdf",
       "sourceFileName": "2759_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 429945
+      "byteLength": 429945,
+      "expectedSha256": "061a503d8794770a6171ba97aa06de5ed90790a78c4704f0cd4193515b01f39a",
+      "expectedPageCount": 43
     },
     {
       "id": "kb-20760-2003-01-02",
@@ -481,7 +547,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2760_1_1.pdf",
       "sourceFileName": "2760_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 530827
+      "byteLength": 530827,
+      "expectedSha256": "dfe65e0ca019307051ebb1f5b948f993f3a387a7d9a45cc96bde3be0bb0f483d",
+      "expectedPageCount": 91
     },
     {
       "id": "kb-20764-2003-01-02",
@@ -495,7 +563,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2764_1_1.pdf",
       "sourceFileName": "2764_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 758313
+      "byteLength": 758313,
+      "expectedSha256": "9d15acf2f9bb4e3a9fd28562fca02a6c96d7235aa03805c95ae62bd7b3f21f6a",
+      "expectedPageCount": 94
     },
     {
       "id": "kb-20768-2003-01-20",
@@ -509,7 +579,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2768_1_1(0).pdF",
       "sourceFileName": "2768_1_1(0).pdF",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 1655602
+      "byteLength": 1655602,
+      "expectedSha256": "cab26fe7250c76e21d48bc5ddc037cf08c8d8183b23371d6e78f1752ab70bf7e",
+      "expectedPageCount": 48
     },
     {
       "id": "kb-20781-2003-07-21",
@@ -523,7 +595,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2781_1_1.pdf",
       "sourceFileName": "2781_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 665914
+      "byteLength": 665914,
+      "expectedSha256": "49fd3634a193b25b456f2607c1a22431793266e41ceba4a56a05d1c5ce0b68dd",
+      "expectedPageCount": 62
     },
     {
       "id": "kb-20795-2003-10-01",
@@ -537,7 +611,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2795_1_1.pdf",
       "sourceFileName": "2795_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 374951
+      "byteLength": 374951,
+      "expectedSha256": "cb30afb87e557d7c342f7b610e7571012c0d7707c9f142261ef6a7b4770ca687",
+      "expectedPageCount": 92
     },
     {
       "id": "kb-20797-2003-10-01",
@@ -551,7 +627,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2797_1_1.pdf",
       "sourceFileName": "2797_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 579805
+      "byteLength": 579805,
+      "expectedSha256": "dac4d89216ddfffe6e9495bb8500cc0aa4df7e7a09978109ce6bb5ff689f68d1",
+      "expectedPageCount": 143
     },
     {
       "id": "kb-20801-2003-10-01",
@@ -565,7 +643,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2801_1_1.pdf",
       "sourceFileName": "2801_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 458819
+      "byteLength": 458819,
+      "expectedSha256": "b98b95d918c781fd1d345159880c6af234e6c8bdbb0855bfd1fd609fe4a9b9e7",
+      "expectedPageCount": 66
     },
     {
       "id": "kb-20806-2003-10-01",
@@ -579,7 +659,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2806_1_1.pdf",
       "sourceFileName": "2806_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 578236
+      "byteLength": 578236,
+      "expectedSha256": "c884dba895ba23d3af083afdc3c61f8f1e170078f6bf43843d1580d40f2df267",
+      "expectedPageCount": 109
     },
     {
       "id": "kb-20818-2004-11-01",
@@ -593,7 +675,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2818_1_1.pdf",
       "sourceFileName": "2818_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 810992
+      "byteLength": 810992,
+      "expectedSha256": "becf09e0ec104baaab692bcdc53395bdc42f7e61988a78b79ca11c74fc28ba20",
+      "expectedPageCount": 187
     },
     {
       "id": "kb-20837-2005-05-01",
@@ -607,7 +691,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2837_1_1.pdf",
       "sourceFileName": "2837_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 538318
+      "byteLength": 538318,
+      "expectedSha256": "eeb8aaf7da9945aae8b8b3d45a2f76e572ba10620c6914611c7f652497dee3df",
+      "expectedPageCount": 32
     },
     {
       "id": "kb-20847-2005-05-01",
@@ -621,7 +707,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2847_1_1.pdf",
       "sourceFileName": "2847_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 821415
+      "byteLength": 821415,
+      "expectedSha256": "d26dae79e57b855e0b5ebf8200653d881964bd5a148354be7f8c2d55b69fe857",
+      "expectedPageCount": 199
     },
     {
       "id": "kb-20882-2006-04-03",
@@ -635,7 +723,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2882_1_1.pdf",
       "sourceFileName": "2882_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 853899
+      "byteLength": 853899,
+      "expectedSha256": "257eb58394eac1fed1f3baccd43d2a82998979101e0cc5d15ffe92728ec38b9b",
+      "expectedPageCount": 172
     },
     {
       "id": "kb-20899-2007-02-12",
@@ -649,7 +739,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2899_1_1.pdf",
       "sourceFileName": "2899_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 762200
+      "byteLength": 762200,
+      "expectedSha256": "181ec8b2e5c17003778e30621b9f8aa01b95f57c23ca8023e332d14647fb9b58",
+      "expectedPageCount": 156
     },
     {
       "id": "kb-20900-2007-02-12",
@@ -663,7 +755,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2900_1_1.pdf",
       "sourceFileName": "2900_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 762200
+      "byteLength": 762200,
+      "expectedSha256": "181ec8b2e5c17003778e30621b9f8aa01b95f57c23ca8023e332d14647fb9b58",
+      "expectedPageCount": 156
     },
     {
       "id": "kb-20928-2007-04-02",
@@ -677,7 +771,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2928_1_1.pdf",
       "sourceFileName": "2928_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 788618
+      "byteLength": 788618,
+      "expectedSha256": "a1de9cc14963a38209e2906cfc9f307afdb8366e47048e26be9856a904ce1009",
+      "expectedPageCount": 210
     },
     {
       "id": "kb-20929-2007-04-02",
@@ -691,7 +787,9 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2929_1_1.pdf",
       "sourceFileName": "2929_1_1.pdf",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 702423
+      "byteLength": 702423,
+      "expectedSha256": "5f1afaedd131f1f59f637a0d2ae90f9e1974ddc306f006da9a0bfa6c0db4bcf0",
+      "expectedPageCount": 185
     },
     {
       "id": "kb-20931-2007-04-02",
@@ -705,7 +803,177 @@
       "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=2931_1_1.pdF",
       "sourceFileName": "2931_1_1.pdF",
       "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
-      "byteLength": 788618
+      "byteLength": 788618,
+      "expectedSha256": "a1de9cc14963a38209e2906cfc9f307afdb8366e47048e26be9856a904ce1009",
+      "expectedPageCount": 210
+    },
+    {
+      "id": "hanwha-e-cancer-2026-04-17",
+      "insurer": "한화생명",
+      "productName": "한화생명 e암보험(비갱신형) 무배당",
+      "productType": "암보험",
+      "saleStatus": "on_sale",
+      "versionKey": "2026-04-17-pdf",
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "pdfUrl": "https://direct.hanwhalife.com/products/downloadProxy/%ED%95%9C%ED%99%94%EC%83%9D%EB%AA%85%20e%EC%95%94%EB%B3%B4%ED%97%98%28%EB%B9%84%EA%B0%B1%EC%8B%A0%ED%98%95%29%20%EB%AC%B4%EB%B0%B0%EB%8B%B9_%EC%95%BD%EA%B4%80_20260417.pdf?docUrl=dynamic%2Fdirect%2Fproduct%2Fcms_T3jquWCZurf6YKm6_1776383470397.pdf",
+      "sourceFileName": "한화생명 e암보험(비갱신형) 무배당_약관_20260417.pdf",
+      "sourcePageUrl": "https://direct.hanwhalife.com/products/CMS00012",
+      "byteLength": 3661413,
+      "expectedSha256": "918796d28b8274195258621c08c32c87159c18b1a50fb6e6f653a8c42ba8f7ed",
+      "expectedPageCount": 181
+    },
+    {
+      "id": "samsungfire-direct-realloss-conversion-2605-1",
+      "insurer": "삼성화재",
+      "productName": "무배당 삼성화재 다이렉트 실손의료비보험(2605.1, 계약전환용)",
+      "productType": "실손의료비보험",
+      "saleStatus": "on_sale",
+      "versionKey": "2605.1-conversion-pdf",
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "pdfUrl": "https://direct.samsungfire.com/docs/realloss.pdf",
+      "sourceFileName": "realloss.pdf (무배당 삼성화재 다이렉트 실손의료비보험 2605.1 계약전환용)",
+      "sourcePageUrl": "https://direct.samsungfire.com/m/mall/MP030404_001.html",
+      "byteLength": 2519879,
+      "expectedSha256": "db0ed9738c9f59fbb28b678b910e0bdd3ef4bf08bdac52643c2e2dd167003415",
+      "expectedPageCount": 157
+    },
+    {
+      "id": "db-direct-cancer-2607",
+      "insurer": "DB손해보험",
+      "productName": "무배당 프로미라이프 참좋은암보험2607(CM)",
+      "productType": "암보험",
+      "saleStatus": "on_sale",
+      "versionKey": "2607-pdf",
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "pdfUrl": "https://www.directdb.co.kr/doc/pdf/terms/ltm_direct_cancer2607.pdf",
+      "sourceFileName": "ltm_direct_cancer2607.pdf",
+      "sourcePageUrl": "https://www.directdb.co.kr/ltm/prd/canr/custInfoView.do?pdcDvcd=l_cancer&searchPdcCd=30604",
+      "byteLength": 4382829,
+      "expectedSha256": "d9525158bda7f6f7a7cb44e68118a683c3813b86a548d8a0a23532e6a92e108e",
+      "expectedPageCount": 314,
+      "analysisStartPage": 38
+    },
+    {
+      "id": "hyundai-direct-repeat-cancer-hi2504-20250901",
+      "insurer": "현대해상",
+      "productName": "무배당 현대해상다이렉트 계속받는암보험(Hi2504)",
+      "productType": "암보험",
+      "saleStatus": "unknown",
+      "versionKey": "Hi2504-20250901-pdf",
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "pdfUrl": "https://direct.hi.co.kr/dhNAS/terms/CM171M_20250901.pdf",
+      "sourceFileName": "CM171M_20250901.pdf",
+      "sourcePageUrl": "https://direct.hi.co.kr/dhNAS/terms/CM171M_20250901.pdf",
+      "byteLength": 4554531,
+      "expectedSha256": "be85fdea7a50fc028c183a99835b5f734733113a2e3e19e5105cd0c2c01b1eee",
+      "expectedPageCount": 215,
+      "analysisStartPage": 39
+    },
+    {
+      "id": "kdb-direct-cancer-renewal-2026-04-01",
+      "insurer": "KDB생명",
+      "productName": "KDB 다이렉트 암보험(갱신형)(무)",
+      "productType": "암보험",
+      "saleStatus": "unknown",
+      "versionKey": "renewal-2026-04-01-pdf",
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "pdfUrl": "https://direct.kdblife.co.kr/resources/doc/policy/40869_policy.pdf",
+      "sourceFileName": "40869_policy.pdf",
+      "sourcePageUrl": "https://direct.kdblife.co.kr/edirect/product/cancerDetail.do",
+      "byteLength": 6658723,
+      "expectedSha256": "73fda0712d0e484f0717299e2fcbe683347a2ae0b160b63d41e0bcf9925c2673",
+      "expectedPageCount": 258,
+      "analysisStartPage": 26
+    },
+    {
+      "id": "kdb-direct-cancer-standard-no-refund-2026-04-01",
+      "insurer": "KDB생명",
+      "productName": "KDB 다이렉트 암보험(표준형, 해약환급금 미지급형Ⅲ)(무)",
+      "productType": "암보험",
+      "saleStatus": "unknown",
+      "versionKey": "standard-no-refund-2026-04-01-pdf",
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "pdfUrl": "https://direct.kdblife.co.kr/resources/doc/policy/40870_policy.pdf",
+      "sourceFileName": "40870_policy.pdf",
+      "sourcePageUrl": "https://direct.kdblife.co.kr/edirect/product/cancerDetail.do",
+      "byteLength": 6741745,
+      "expectedSha256": "0bb88e7957e9b29d3e3f963dc44012f6255067c1e55da51cf395d24c5761b1ae",
+      "expectedPageCount": 256,
+      "analysisStartPage": 26
+    },
+    {
+      "id": "nhlife-wonderful-memory-dementia-2605",
+      "insurer": "NH농협생명",
+      "productName": "NH올원더풀기억안심치매보험(해약환급금일부지급형,무배당)_2605",
+      "productType": "치매보험",
+      "saleStatus": "on_sale",
+      "versionKey": "2605-2026-07-sale-pdf",
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "pdfUrl": "https://www.nhlife.co.kr/ho/zz/FileDwld.nhl?apdFlid=FILE_000000000024354&fileSeqn=2",
+      "sourceFileName": "NH올원더풀기억안심치매보험_2605_약관.pdf",
+      "sourcePageUrl": "https://m.nhlife.co.kr/mo/pr/10/30/MOPR1030M00?source=P3040513",
+      "byteLength": 13235671,
+      "expectedSha256": "eef7bb8c3810e1078d81716eee1511183c2d9f686da10a3287b6a9a1d6bbdb88",
+      "expectedPageCount": 328,
+      "analysisStartPage": 39
+    },
+    {
+      "id": "nhlife-new-ansimcare-realloss-2605",
+      "insurer": "NH농협생명",
+      "productName": "New안심케어NH실손의료비보험(갱신형,무배당)_2605",
+      "productType": "실손의료비보험",
+      "saleStatus": "on_sale",
+      "versionKey": "2605-2026-05-sale-pdf",
+      "effectiveFrom": null,
+      "effectiveTo": null,
+      "pdfUrl": "https://www.nhlife.co.kr/ho/zz/FileDwld.nhl?apdFlid=FILE_000000000024178&fileSeqn=2",
+      "sourceFileName": "New안심케어NH실손의료비보험_2605_약관.pdf",
+      "sourcePageUrl": "https://m.nhlife.co.kr/mo/pr/10/30/MOPR1030M00?source=P3075002",
+      "byteLength": 9729509,
+      "expectedSha256": "42ce81976809453b8e3d80ba893c75ef2872897847c2412d1cf24518de95b955",
+      "expectedPageCount": 176,
+      "analysisStartPage": 28
+    },
+    {
+      "id": "kb-25469-2026-09-01",
+      "insurer": "KB손해보험",
+      "productName": "KB 골든라이프케어 간병보험(무배당)(26.09)",
+      "productType": "질병보험",
+      "saleStatus": "on_sale",
+      "versionKey": "2026-09-01",
+      "effectiveFrom": "2026-09-01",
+      "effectiveTo": null,
+      "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=25469_1_1.pdf",
+      "sourceFileName": "25469_1_1.pdf",
+      "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
+      "byteLength": 11568250,
+      "expectedSha256": "9383617085cc37c4a7dede31cac6e9ef635f7efaa2d3144ada63611521bfcf56",
+      "expectedPageCount": 388,
+      "analysisStartPage": 62
+    },
+    {
+      "id": "kb-25470-2026-09-01",
+      "insurer": "KB손해보험",
+      "productName": "KB 골든라이프케어 간병보험(무배당)(26.09)_해약환급금 미지급형",
+      "productType": "질병보험",
+      "saleStatus": "on_sale",
+      "versionKey": "2026-09-01",
+      "effectiveFrom": "2026-09-01",
+      "effectiveTo": null,
+      "pdfUrl": "https://www.kbinsure.co.kr/CG802030003.ec?fileNm=25470_1_1.pdf",
+      "sourceFileName": "25470_1_1.pdf",
+      "sourcePageUrl": "https://www.kbinsure.co.kr/CG802030001.ec",
+      "byteLength": 11568250,
+      "expectedSha256": "9383617085cc37c4a7dede31cac6e9ef635f7efaa2d3144ada63611521bfcf56",
+      "expectedPageCount": 388,
+      "analysisStartPage": 62
     }
   ]
 }

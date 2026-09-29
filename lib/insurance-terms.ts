@@ -95,12 +95,11 @@ function versionStatus(
   contractStartDate: string,
 ): InsuranceTermsMatch["versionStatus"] {
   if (!document.versionCode || !document.effectiveFrom) return "unavailable"
-  if (normalizedProductName.includes(document.versionCode)) return "exact"
-
   const startDate = parseDate(contractStartDate)
-  const effectiveDate = parseDate(document.effectiveFrom.replace(/-/g, "") + "01")
+  const effectiveDate = parseDate(document.effectiveFrom.replace(/-/g, ""))
+  if (startDate && effectiveDate && startDate < effectiveDate) return "conflict"
+  if (normalizedProductName.includes(document.versionCode)) return "exact"
   if (!startDate || !effectiveDate) return "unavailable"
-  if (startDate < effectiveDate) return "conflict"
   return "inferred"
 }
 
@@ -195,13 +194,13 @@ function documentRecord(contract: InsuranceDashboardContract, match: InsuranceTe
     contractId: contract.id,
     type: "terms",
     name: match.document.sourceDocument,
-    status: match.matchStatus === "exact" && versionConfirmed ? "connected" : "needs_review",
+    status: "needs_review",
     source: "terms",
     note: versionConfirmed
-      ? `상품명·문서 버전 ${match.document.versionCode} 일치`
+      ? `상품명·문서 버전 ${match.document.versionCode} 일치 후보 · 원본 PDF 배포본 미제공`
       : match.versionStatus === "inferred"
-        ? `계약일 기준 문서 버전 ${match.document.versionCode} 추정 · 판매시기 확인 필요`
-        : "상품명 매칭 · 정확한 판매시기와 약관 버전 확인 필요",
+        ? `계약일 기준 문서 버전 ${match.document.versionCode} 추정 · 원본 PDF 배포본 미제공`
+        : "상품명 매칭 후보 · 원본 PDF 배포본 미제공, 발행기관 공시 대조 필요",
   }
 }
 
@@ -218,9 +217,9 @@ function replacementRisk(contract: InsuranceDashboardContract, match: InsuranceT
   return {
     id: `${contract.id}-replacement-waiting-risk`,
     contractIds: [contract.id],
-    severity: "high",
-    title: "신규 가입 시 면책·감액기간 재시작 가능",
-    description: `${contract.name}에서 ${conditions || "면책·감액 조건"}이 확인되었습니다. 기존계약 해지 전 신규안의 보장개시일과 감액기간을 대조해야 합니다.`,
+    severity: "unknown",
+    title: "원본 PDF·가입 약관 버전 확인 후 면책·감액 대조",
+    description: `${contract.name}과 상품명이 유사한 로컬 추출 문서에서 ${conditions || "면책·감액 조건"} 문구를 찾았습니다. 원본 PDF와 실제 가입 약관을 대조해야 합니다.`,
     reviewAction: "기존 계약 유지 상태에서 신규안 청약일·보장개시일·감액 종료일 비교",
     sourceDocument: match.document.sourceDocument,
     sourcePage: source?.page ?? null,

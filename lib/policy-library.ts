@@ -18,6 +18,9 @@ export interface OfficialPolicyDocument {
   sourceFileName: string | null
   sourcePageUrl: string
   byteLength: number | null
+  expectedSha256: string
+  expectedPageCount: number
+  analysisStartPage?: number
 }
 
 interface OfficialPolicyLibrary {
@@ -97,6 +100,19 @@ export const OFFICIAL_POLICY_ANALYSIS_GENERATED_AT = officialAnalysis.generatedA
 export const OFFICIAL_POLICY_ANALYSIS_METHOD = officialAnalysis.method
 export const OFFICIAL_POLICY_ANALYSIS_NOTICE = officialAnalysis.notice
 export const OFFICIAL_POLICY_ANALYSIS_SUMMARY = officialAnalysis.summary
+const uniquePdfAnalyses = [...new Map(officialAnalysis.documents.map((document) =>
+  [document.sourceSha256, document])).values()]
+const uniquePdfEvidence = uniquePdfAnalyses.flatMap((document) =>
+  [document.coverage, document.riders, document.exclusions, document.reduction, document.waiting]
+    .flatMap((section) => section.evidence.map((evidence) =>
+      JSON.stringify([document.sourceSha256, evidence.page, evidence.excerpt]))))
+export const OFFICIAL_POLICY_UNIQUE_PDF_SUMMARY = {
+  pdfCount: uniquePdfAnalyses.length,
+  pageCount: uniquePdfAnalyses.reduce((total, document) => total + document.pageCount, 0),
+  characterCount: uniquePdfAnalyses.reduce((total, document) => total + document.characterCount, 0),
+  evidenceCount: new Set(uniquePdfEvidence).size,
+  categoryEvidenceCount: uniquePdfEvidence.length,
+}
 export const ANALYZED_POLICY_DOCUMENTS = INSURANCE_TERMS_DOCUMENTS
 
 export function policyCategory(productName: string): string {
@@ -105,7 +121,8 @@ export function policyCategory(productName: string): string {
   if (/간병|요양|치매/.test(productName)) return "간병"
   if (/어린이|자녀|태아/.test(productName)) return "어린이"
   if (/실손|의료비/.test(productName)) return "실손"
-  return "건강"
+  if (/건강|의료|상해/.test(productName)) return "건강"
+  return "기타"
 }
 
 export function officialPolicyProxyPath(document: OfficialPolicyDocument): string {

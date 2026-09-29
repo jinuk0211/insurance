@@ -306,42 +306,46 @@ function includesType(types: readonly CancerDiagnosisType[], diagnosisType: Canc
 function coverageKeywords(diagnosisType: CancerDiagnosisType): readonly string[] {
   const keywords: Record<CancerDiagnosisType, readonly string[]> = {
     general_cancer: ["일반암", "암진단", "암진단급여", "암진단보험"],
-    thyroid_cancer: ["중증이외갑상선암", "갑상선암", "소액암"],
+    thyroid_cancer: ["중증이외갑상선암", "갑상선암"],
     severe_thyroid_cancer: ["중증갑상선암"],
-    other_skin_cancer: ["기타피부암", "소액암"],
-    in_situ_carcinoma: ["제자리암", "소액암"],
-    borderline_tumor: ["경계성종양", "소액암"],
-    colorectal_mucosal_cancer: ["대장점막내암", "소액암"],
-    noninvasive_bladder_cancer: ["비침습방광암", "소액암"],
-    prostate_cancer: ["전립선암", "소액암"],
-    early_breast_cancer: ["초기유방암", "소액암"],
+    other_skin_cancer: ["기타피부암"],
+    in_situ_carcinoma: ["제자리암"],
+    borderline_tumor: ["경계성종양"],
+    colorectal_mucosal_cancer: ["대장점막내암"],
+    noninvasive_bladder_cancer: ["비침습방광암"],
+    prostate_cancer: ["전립선암"],
+    early_breast_cancer: ["초기유방암"],
   }
   return keywords[diagnosisType]
 }
 
 function candidateCancerCoverages(contract: InsuranceDashboardContract): InsuranceCoverageItem[] {
   return contract.coverageItems.filter((coverage) => {
+    const name = normalizeMatchText(coverage.rawName)
+    if (["치료", "수술", "입원", "사망"].some((keyword) => name.includes(keyword))) return false
     if (coverage.standardCategoryId === "cancer") return true
     if (coverage.standardCategoryId !== null) return false
-    const name = normalizeMatchText(coverage.rawName)
-    return name.includes("암") && !["치료", "수술", "입원", "사망"].some((keyword) => name.includes(keyword))
+    return name.includes("암")
   })
 }
 
 function findCoverage(contract: InsuranceDashboardContract, diagnosisType: CancerDiagnosisType, classification: CancerClassification): InsuranceCoverageItem | null {
   const coverages = candidateCancerCoverages(contract)
   const keywords = coverageKeywords(diagnosisType).map(normalizeMatchText)
+  const nonGeneralKeywords = ["갑상선", "피부암", "제자리", "경계성", "대장점막", "비침습", "전립선", "유방암", "소액암", "유사암", "재진단암", "고액암", "특정암"]
+  const isNonGeneral = (name: string) => nonGeneralKeywords.some((keyword) => name.includes(normalizeMatchText(keyword)))
   const exact = coverages.find((coverage) => {
     const name = normalizeMatchText(coverage.rawName)
+    if (diagnosisType === "general_cancer" && isNonGeneral(name)) return false
+    if (diagnosisType === "thyroid_cancer" && name.includes("중증갑상선암")) return false
     return keywords.some((keyword) => name.includes(keyword))
   })
   if (exact) return exact
   if (classification === "separate_benefit") return null
 
-  const separateKeywords = ["갑상선", "피부암", "제자리", "경계성", "대장점막", "비침습", "전립선", "유방암"]
   return coverages.find((coverage) => {
     const name = normalizeMatchText(coverage.rawName)
-    return !separateKeywords.some((keyword) => name.includes(normalizeMatchText(keyword)))
+    return !isNonGeneral(name)
   }) ?? null
 }
 
@@ -355,8 +359,14 @@ export function evaluateCancerScenario(
   contract: InsuranceDashboardContract,
   input: CancerScenarioInput,
 ): CancerRuleAssessment {
-  const curatedRule = findCancerProductRule(contract.company, contract.name)
-  const termsMatch = findInsuranceTermsMatch(contract.company, contract.name, contract.startDate)
+  const namedRevision = findInsuranceTermsMatch(contract.company, contract.name)
+  const contractDate = parseDate(contract.startDate)
+  const revisionDate = parseDate(namedRevision?.document.effectiveFrom ?? "")
+  const versionConflict = namedRevision?.versionStatus === "exact" && Boolean(
+    contractDate && revisionDate && contractDate < revisionDate,
+  )
+  const curatedRule = versionConflict ? null : findCancerProductRule(contract.company, contract.name)
+  const termsMatch = versionConflict ? null : findInsuranceTermsMatch(contract.company, contract.name, contract.startDate)
   const extractedRule = curatedRule ? null : termsMatch ? catalogCancerRule(termsMatch) : null
   const rule = curatedRule ?? extractedRule
   const ruleStatus: CancerRuleAssessment["ruleStatus"] = curatedRule
@@ -388,7 +398,9 @@ export function evaluateCancerScenario(
       sourceDocument: termsMatch?.document.sourceDocument ?? null,
       sourcePage: termsSourcePage(termsMatch),
       clauseSummary: "현재 검증된 상품 규칙과 정확히 매칭되지 않았습니다.",
-      checks: ["정확한 상품·약관 버전 연결"],
+      checks: versionConflict
+        ? ["계약일이 약관 적용 시작일보다 빠름", "정확한 상품·약관 버전 연결"]
+        : ["정확한 상품·약관 버전 연결"],
     }
   }
 
@@ -398,8 +410,12 @@ export function evaluateCancerScenario(
   if (ruleStatus === "provisional") checks.add("자동 추출 규칙 원문 검토")
   else checks.add("실제 가입 약관 버전·특약 대조")
   if (termsMatch && termsMatch.versionStatus !== "exact") checks.add("정확한 판매시기·약관 버전 확인")
-  const startDate = parseDate(contract.startDate)
+  const startDate = contractDate
+  const endDate = parseDate(contract.endDate)
   const diagnosisDate = parseDate(input.diagnosisDate)
+  const diagnosisBeforeContract = Boolean(startDate && diagnosisDate && diagnosisDate < startDate)
+  const diagnosisAfterContract = Boolean(endDate && diagnosisDate && diagnosisDate > endDate)
+  const diagnosisOutsideContract = diagnosisBeforeContract || diagnosisAfterContract
   const waitingApplies = includesType(rule.waitingAppliesTo, input.diagnosisType)
   const reductionApplies = includesType(rule.reductionAppliesTo, input.diagnosisType)
   const waitingEnd = startDate && waitingApplies ? addDays(startDate, rule.waitingPeriodDays) : null
@@ -407,6 +423,8 @@ export function evaluateCancerScenario(
 
   if (!startDate) checks.add("계약일 또는 보장개시일 확인")
   if (!diagnosisDate) checks.add("정확한 진단일 확인")
+  if (diagnosisBeforeContract) checks.add("진단일이 계약일보다 빠름")
+  if (diagnosisAfterContract) checks.add("진단일이 계약 종료일보다 늦음")
 
   const coverage = findCoverage(contract, input.diagnosisType, classification)
   const coverageAmount = coverage?.amount ?? null
@@ -416,10 +434,12 @@ export function evaluateCancerScenario(
     checks.add("담보 가입금액 확인")
   }
 
-  const isWaiting = Boolean(waitingEnd && diagnosisDate && diagnosisDate < waitingEnd)
-  const payoutRate = diagnosisDate && reductionEnd && diagnosisDate < reductionEnd ? rule.reductionRate : diagnosisDate ? 1 : null
+  const isWaiting = Boolean(waitingEnd && diagnosisDate && !diagnosisOutsideContract && diagnosisDate < waitingEnd)
+  const payoutRate = diagnosisOutsideContract ? null
+    : diagnosisDate && reductionEnd && diagnosisDate < reductionEnd ? rule.reductionRate : diagnosisDate ? 1 : null
   const canCalculate = Boolean(
-    ruleStatus === "matched" && startDate && diagnosisDate && !isWaiting && coverage && coverage.amount !== null,
+    ruleStatus === "matched" && startDate && diagnosisDate && !diagnosisOutsideContract &&
+    !isWaiting && coverage && coverage.amount !== null,
   )
 
   return {
@@ -428,19 +448,21 @@ export function evaluateCancerScenario(
     company: contract.company,
     ruleId: rule.id,
     ruleStatus,
-    resultStatus: isWaiting ? "waiting_period" : canCalculate ? "candidate" : "needs_review",
+    resultStatus: isWaiting && ruleStatus === "matched" ? "waiting_period" : canCalculate ? "candidate" : "needs_review",
     classification,
     classificationLabel: classification === "general_cancer" ? "일반암 담보 검토" : "일반암 제외 · 별도 담보 검토",
     diagnosisLabel,
-    waitingPeriodEnd: waitingEnd ? formatDate(waitingEnd) : null,
-    reductionEndDate: reductionEnd ? formatDate(reductionEnd) : null,
-    payoutRate,
+    waitingPeriodEnd: ruleStatus === "matched" && waitingEnd ? formatDate(waitingEnd) : null,
+    reductionEndDate: ruleStatus === "matched" && reductionEnd ? formatDate(reductionEnd) : null,
+    payoutRate: ruleStatus === "matched" ? payoutRate : null,
     coverageName: coverage?.rawName ?? null,
     coverageAmount,
     candidateAmount: canCalculate && coverageAmount !== null && payoutRate !== null
       ? Math.round(coverageAmount * payoutRate)
       : null,
-    premiumWaiverStatus: premiumWaiverStatus(rule, input.diagnosisType),
+    premiumWaiverStatus: ruleStatus === "matched" && !diagnosisOutsideContract
+      ? premiumWaiverStatus(rule, input.diagnosisType)
+      : "needs_review",
     sourceDocument: termsMatch?.document.sourceDocument ?? rule.sourceDocument,
     sourcePage: termsSourcePage(termsMatch),
     clauseSummary: rule.clauseSummary,

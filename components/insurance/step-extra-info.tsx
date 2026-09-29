@@ -60,7 +60,7 @@ export function StepExtraInfo({ state, updateState, onCaptcha, onAuthWait, onReg
   }
 
   return (
-    <div className="animate-slide-up mt-3 rounded-[26px] border border-[#d8d3c8] bg-[#fffdf8] p-5 shadow-[0_18px_55px_rgba(23,33,31,0.07)] sm:p-7">
+    <div className="animate-slide-up mt-3 rounded-[26px] border border-[#e2e8f0] bg-[#ffffff] p-5 shadow-[0_18px_55px_rgba(23,33,31,0.07)] sm:p-7">
       <p className="mb-2 text-[10px] font-semibold uppercase tracking-[2px] text-muted-foreground">
         추가 정보
       </p>
