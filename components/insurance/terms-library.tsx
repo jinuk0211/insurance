@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic"
 import Link from "next/link"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -40,6 +40,8 @@ import {
   type PolicyAnalysisSection,
   type PolicyEvidence,
 } from "@/lib/policy-library"
+
+const DocumentArchive = dynamic(() => import("@/components/insurance/document-archive").then((module) => module.DocumentArchive), { ssr: false })
 
 const SummaryLibrary = dynamic(() => import("@/components/insurance/summary-library").then((module) => module.SummaryLibrary), { ssr: false })
 
@@ -225,6 +227,9 @@ function EvidenceSummary({ section, tone, documentId }: {
 
 export function TermsLibrary() {
   const [view, setView] = useState<View>("questions")
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("view") === "files") setView("files")
+  }, [])
   const [selectedQaId, setSelectedQaId] = useState<string | null>(null)
   const [query, setQuery] = useState("")
   const [category, setCategory] = useState("all")
@@ -602,21 +607,7 @@ export function TermsLibrary() {
         </section>
       )}
 
-      {view === "files" && (
-        <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6" aria-labelledby="files-title">
-          <div><p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#4338ca]">Source archive</p><h2 id="files-title" className="mt-1 text-2xl font-semibold">PDF · TXT 원문 자료실</h2><p className="mt-2 text-xs leading-5 text-neutral-500">TXT는 다운로드 전용이 아니라 브라우저에서 바로 열립니다. 각 페이지는 <code className="rounded bg-white px-1.5 py-0.5">===== PAGE N =====</code>으로 구분했습니다.</p></div>
-          <div className="mt-6 overflow-hidden rounded-2xl border border-black/10 bg-white">
-            {POLICY_RECORDS.map(({ document, analysis }, index) => (
-              <article key={document.id} className={`grid gap-4 p-4 sm:p-5 lg:grid-cols-[90px_minmax(0,1fr)_170px_auto] lg:items-center ${index ? "border-t border-black/10" : ""}`}>
-                <div><span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold ${document.saleStatus === "on_sale" ? "bg-emerald-100 text-emerald-800" : "bg-neutral-100 text-neutral-600"}`}>{saleStatusLabel(document.saleStatus)}</span><span className="mt-2 block text-[10px] font-bold text-neutral-500">{policyCategory(document.productName)}</span></div>
-                <div className="min-w-0"><p className="text-[10px] font-semibold text-[#4338ca]">{document.insurer}</p><h3 className="mt-1 text-sm font-semibold leading-6">{document.productName}</h3><p className="mt-1 text-[10px] text-neutral-500">{document.sourceFileName}</p><a href={document.sourcePageUrl} target="_blank" rel="noreferrer" className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-[#4f46e5] underline-offset-2 hover:underline">보험사 공식 출처 <ArrowUpRight className="h-3 w-3" /></a></div>
-                <dl className="grid grid-cols-2 gap-2 text-[10px] lg:block"><div><dt className="text-neutral-500">적용 시작</dt><dd className="mt-0.5 font-semibold tabular-nums">{formatDate(document.effectiveFrom)}</dd></div><div className="lg:mt-2"><dt className="text-neutral-500">추출 분량</dt><dd className="mt-0.5 font-semibold tabular-nums">{formatNumber(analysis.pageCount)}쪽 · {formatCharacters(analysis.characterCount)}</dd></div></dl>
-                <div className="grid grid-cols-2 gap-2"><Link href={`/insurance/terms/viewer/${document.id}`} target="_blank" className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl bg-[#17243b] px-3 text-[10px] font-semibold text-white hover:bg-[#4338ca]"><BookOpen className="h-4 w-4" /> PDF</Link><a href={analysis.textPath} target="_blank" className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-black/10 bg-white px-3 text-[10px] font-semibold hover:border-black/25"><FileText className="h-4 w-4" /> TXT</a></div>
-              </article>
-            ))}
-          </div>
-        </section>
-      )}
+      {view === "files" && <DocumentArchive />}
 
       <footer className="border-t border-[#e2e8f0] bg-[#f8fafc]">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-8 text-[11px] leading-5 text-neutral-500 sm:px-6 lg:flex-row lg:items-center lg:justify-between"><p>자동 구조화는 약관 탐색을 돕는 1차 결과이며 법률·보험금 지급 판단이 아닙니다. 각 결과의 페이지 원문과 실제 가입 증권을 함께 확인하세요.</p><div className="flex items-center gap-2 font-bold text-[#17243b]"><BookOpen className="h-4 w-4" /> KFin Legal Insurance Desk</div></div>
